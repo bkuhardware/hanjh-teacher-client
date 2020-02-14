@@ -1,6 +1,6 @@
 import React from 'react';
 import Spin from '@/elements/spin/primary';
-import logo from '@/assets/images/logo_trans.png';
+import logo from '@/assets/images/logo_white.png';
 import styles from './index.less';
 
 export default () => {
