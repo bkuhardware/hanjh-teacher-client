@@ -3,7 +3,7 @@ import darkTheme from '@ant-design/dark-theme';
 export default {
     ...darkTheme,
     '@primary-color': 'white',
-    '@link-color': 'white',
+    '@link-color': '#fff0f0',
     '@header-height': '64px',
     '@footer-height': '64px',
     '@btn-primary-color': '#000',
@@ -12,8 +12,8 @@ export default {
     '@skeleton-to-color': 'shade(rgb(40, 40, 40), 5%);',
     '@popover-background': 'rgb(30, 30, 30)',
     '@popover-bg': 'rgb(30, 30, 30)',
-    '@primary-5': '#fafafa',
-    '@primary-7': '#fafafa',
+    '@primary-5': '#fefefe',
+    '@primary-7': '#fefefe',
     '@primary-2': 'rgba(255, 255, 255, 0.7)',
     '@table-selected-row-bg': 'rgb(30, 30, 30)'
 };

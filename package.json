@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "start": "APP_TYPE=dev umi dev",
+    "start": "PORT=2112 APP_TYPE=dev umi dev",
     "build": "APP_TYPE=prod umi build",
     "test": "APP_TYPE=test umi test",
     "lint": "eslint {src,mock,tests}/**/*.{js,jsx} --fix",
@@ -21,6 +21,7 @@
     "draft-js-plugins-editor": "^3.0.0",
     "draft-js-resizeable-plugin": "^2.0.9",
     "dva": "^2.6.0-beta.6",
+    "es6-shim": "^0.35.5",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "os": "^0.1.1",
