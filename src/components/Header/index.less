@@ -27,7 +27,11 @@
             cursor: pointer;
             .accountText {
                 padding: 0 15px;
-                padding-right: 10px
+                padding-right: 10px;
+                :global(.ant-avatar-circle) {
+                    position: relative;
+                    top: -3px;
+                }
             }
         }
         .notifications {
