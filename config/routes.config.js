@@ -9,7 +9,7 @@ export default [
                 title: 'route.user.login'
             },
             {
-                redirect: '/user/login'
+                redirect: '/error/404'
             }
         ]
     },
