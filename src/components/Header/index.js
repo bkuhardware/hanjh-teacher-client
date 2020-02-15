@@ -66,6 +66,9 @@ const Header = ({ user, dispatch }) => {
                 {/* <div className={styles.notifications}>
                     <Notifications />
                 </div> */}
+                <div className={styles.learn}>
+                    Learn on Hanjh
+                </div>
             </div>
         </AntHeader>
     )

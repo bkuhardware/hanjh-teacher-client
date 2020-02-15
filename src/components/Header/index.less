@@ -20,9 +20,10 @@
         }
     }
     .rightContent {
-        float: right;
-        .account {
+        &, .account, .learn, .notifications {
             float: right;
+        }
+        .account {
             cursor: pointer;
             .accountText {
                 padding: 0 15px;
@@ -30,8 +31,18 @@
             }
         }
         .notifications {
-            float: right;
             padding: 0 15px;
+        }
+        .learn {
+            line-height: @header-height;
+            text-align: center;
+            padding-left: 25px;
+            padding-right: 25px;
+            cursor: pointer;
+            &:hover {
+                opacity: 0.75;
+                background-color: rgba(0, 21, 41, 0.6);
+            }
         }
     }
 }
