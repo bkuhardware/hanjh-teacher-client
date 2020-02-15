@@ -1,0 +1,51 @@
+.sider {
+    height: calc(100vh - 64px);
+    overflow-y: scroll;
+    background: rgb(30, 30, 30);
+    position: fixed;
+    left: 0;
+    top: 64px;
+    &::-webkit-scrollbar {
+        display: none;
+    } 
+    .inlineDiv {
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    :global(.ant-layout-sider-trigger) {
+        background-color: rgb(20, 20, 20);
+    }
+    .menu {
+        padding-bottom: 40px;
+        padding-top: 10px;
+        background: inherit;
+        :global {
+            .ant-menu-sub {
+                background: rgb(30, 30, 30);
+            }
+            .ant-menu-item-selected {
+                color: @primary-color;
+            }
+            .ant-menu-item::after {
+                border-right: 3px solid @primary-color;
+            }
+        }
+    }
+}
+
+.subMenuPopup {
+    ul {
+        background-color: rgb(30, 30, 30) !important;
+        :global {
+            .ant-menu-item-selected {
+                color: @primary-color;
+            }
+            .ant-menu-item::after {
+                border-right: 3px solid @primary-color;
+            }
+        }
+    }
+}
