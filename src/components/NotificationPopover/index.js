@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
-import { formatMessage } from 'umi-plugin-react/locale';
 import router from 'umi/router';
 import { Popover, List, Badge, Avatar, Icon, Empty, Spin as Loading } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -16,7 +15,7 @@ const Notifications = ({ dispatch, ...props }) => {
         return () => dispatch({
             type: 'notifications/reset'
         });
-    }, [dispatch]);
+    }, []);
     const getContent = () => {
         const {
             notifications,
@@ -38,7 +37,7 @@ const Notifications = ({ dispatch, ...props }) => {
                     rowKey={item => item._id + _.uniqueId("notification_")}
                     renderItem={item => (
                         <div className={styles.notiItem} onClick={() => handleViewNotify(item)}>
-                            <List.Item style={{ background: (item.seen ? 'inherit' : 'rgba(250, 218, 94, 0.05)')}}>
+                            <List.Item style={{ background: (item.seen ? 'inherit' : 'rgba(255, 255, 255, 0.05)')}}>
                                 <List.Item.Meta
                                     avatar={<Avatar src={item.avatar} size={36} />}
                                     title={<span>{truncate(item.content, 92)}</span>}
@@ -108,7 +107,7 @@ const Notifications = ({ dispatch, ...props }) => {
     const { unseen } = props;
     let count = 0;
     if (unseen > 0)
-        count = <Avatar style={{ background: 'lime', fontSize: '11px' }} size={16}>{unseen > 99 ? '99+' : unseen}</Avatar>;
+        count = <Avatar style={{ background: 'green', fontSize: '11px' }} size={16}>{unseen > 99 ? '99+' : unseen}</Avatar>;
     const trigger = (
         <span className={styles.trigger}>
             <Badge

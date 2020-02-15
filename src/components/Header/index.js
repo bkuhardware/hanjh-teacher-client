@@ -63,9 +63,9 @@ const Header = ({ user, dispatch }) => {
                         </div>
                     </Popover>
                 </div>
-                {/* <div className={styles.notifications}>
+                <div className={styles.notifications}>
                     <Notifications />
-                </div> */}
+                </div>
                 <div className={styles.learn}>
                     Learn on Hanjh
                 </div>
