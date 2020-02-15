@@ -85,7 +85,7 @@ export default [
             },
             {
                 path: '/performance',
-                title: 'route.basic/performance',
+                title: 'route.basic.performance',
                 routes: [
                     {
                         path: '/performance/overview',
