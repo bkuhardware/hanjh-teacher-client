@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import withRouter from 'umi/withRouter';
 import router from 'umi/router'
 import { Layout, Menu, Icon } from 'antd';
@@ -9,7 +9,6 @@ const { SubMenu } = Menu;
 const MenuItem = Menu.Item;
 
 const Sider = ({ location }) => {
-    const [openKeys, setOpenKeys] = useState(['communications', 'performance']);
     return (
         <AntSider
             className={styles.sider}
@@ -19,7 +18,7 @@ const Sider = ({ location }) => {
             <Menu
                 mode="inline"
                 className={styles.menu}
-                defaultOpenKeys={openKeys}
+                defaultOpenKeys={['communications', 'performance']}
                 selectedKeys={location.pathname}
             >
                 <MenuItem key="/courses" onClick={() => router.push('/courses')}>

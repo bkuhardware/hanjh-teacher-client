@@ -12,15 +12,15 @@ const BasicLayout = ({ children }) => {
     return (
         <Layout className={styles.basicLayout}>
             <Header />
-            <ScrollLayout>
+            <Layout className={styles.container}>
                 <Sider />
-                <Layout>
+                <ScrollLayout className={styles.content}>
                     <Content>
                         {children}
                     </Content>
                     <Footer />
-                </Layout>
-            </ScrollLayout>
+                </ScrollLayout>
+            </Layout>
         </Layout>
     )
 };

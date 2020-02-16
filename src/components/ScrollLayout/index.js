@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import withRouter from 'umi/withRouter';
 import { Layout } from 'antd';
 import Scrollbars from 'react-custom-scrollbars';
+import styles from './index.less';
 
 const ScrollLayout = ({ children, location }) => {
     const scrollElRef = useRef(null);
@@ -12,11 +13,9 @@ const ScrollLayout = ({ children, location }) => {
     }, [pathname]);
     return (
         <Scrollbars
+            className={styles.container}
             ref={scrollElRef}
-            autoHeight
-            autoHeightMax={window.outerHeight - 64}
-            style={{ marginTop: 64 }}
-            renderView={props => <div {...props} id="mainScrollbar"/>}
+            style={{ height: 'auto' }}
         >
             <Layout>
                 {children}
