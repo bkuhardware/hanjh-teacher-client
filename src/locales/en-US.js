@@ -1,4 +1,6 @@
 export default {
+  'locale.english': 'English',
+	'locale.vietnamese': 'Vietnamese',
   'route.user': 'User',
   'route.user.login': 'Login',
   'route.error': 'Error',
@@ -37,5 +39,6 @@ export default {
 	'login.forgotpass': 'Forgot password',
 	'login.btn': 'Log in',
 	'login.or': 'Or',
-	'login.registernow': 'register now!',
+  'login.registernow': 'register now!',
+
 }
