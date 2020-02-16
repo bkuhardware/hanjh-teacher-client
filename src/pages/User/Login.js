@@ -68,13 +68,12 @@ const Login = ({ dispatch, ...props }) => {
                             valuePropName: 'checked',
                             initialValue: true,
                         })(<Checkbox>{formatMessage({ id: 'login.rememberme' })}</Checkbox>)}
-                    <Link className={styles.forgot} to="/">
-                        {formatMessage({ id: 'login.forgotpass' })}
-                    </Link>
-                    <Button type="primary" htmlType="submit" className={styles.btn} size="large" icon={loading ? "loading" : null}>
-                        {formatMessage({ id: 'login.btn' })}
-                    </Button>
-                    {formatMessage({ id: 'login.or' })} <Link to="/user/register">{formatMessage({ id: 'login.registernow' })}</Link>
+                        <Link className={styles.forgot} to="/">
+                            {formatMessage({ id: 'login.forgotpass' })}
+                        </Link>
+                        <Button type="primary" htmlType="submit" className={styles.btn} size="large" icon={loading ? "loading" : null}>
+                            {formatMessage({ id: 'login.btn' })}
+                        </Button>
                     </Form.Item>
                 </Form>
             </div>
