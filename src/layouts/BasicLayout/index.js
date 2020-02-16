@@ -14,8 +14,8 @@ const BasicLayout = ({ children }) => {
             <Header />
             <Layout className={styles.container}>
                 <Sider />
-                <ScrollLayout className={styles.content}>
-                    <Content>
+                <ScrollLayout>
+                    <Content className={styles.main}>
                         {children}
                     </Content>
                     <Footer />
