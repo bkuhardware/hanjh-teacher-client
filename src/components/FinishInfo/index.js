@@ -12,7 +12,7 @@ import styles from './index.less';
 const { Step } = Steps;
 const FormItem = Form.Item;
 
-const FinishInfo = ({ dispatch, ...props }) => {
+const FinishInfo = ({ dispatch, callback, ...props }) => {
     const {
         user,
         firstStepLoading,
@@ -48,6 +48,10 @@ const FinishInfo = ({ dispatch, ...props }) => {
         validateStatus: 'success',
         help: ''
     });
+    const [twitter, setTwitter] = useState('');
+    const [facebook, setFacebook] = useState('');
+    const [youtube, setYoutube] = useState('');
+    const [instagram, setInstagram] = useState('');
     const handleChangeEmail = e => {
         const val = e.target.value;
         saveNext(1, 1);
@@ -82,7 +86,7 @@ const FinishInfo = ({ dispatch, ...props }) => {
             value: val,
             help: '',
             validateStatus: 'success'
-        })
+        });
     };
     const handleChangeBiography = newBiography => {
         const content = biography.value.getCurrentContent();
@@ -104,6 +108,26 @@ const FinishInfo = ({ dispatch, ...props }) => {
                 help: 'You must enter biography!'
             });
         }
+    };
+    const handleChangeTwitter = e => {
+        const val = e.target.value;
+        saveNext(2, 1);
+        setTwitter(val);
+    };
+    const handleChangeFacebook = e => {
+        const val = e.target.value;
+        saveNext(2, 1);
+        setFacebook(val);
+    };
+    const handleChangeYoutube = e => {
+        const val = e.target.value;
+        saveNext(2, 1);
+        setYoutube(val);
+    };
+    const handleChangeInsta = e => {
+        const val = e.target.value;
+        saveNext(2, 1);
+        setInstagram(val);
     };
     const saveNext = (id, val) => {
         const newNext = [...next];
@@ -149,13 +173,23 @@ const FinishInfo = ({ dispatch, ...props }) => {
                 });
             }
             else {
-
+                dispatch({
+                    type: 'user/changeSocial',
+                    payload: {
+                        data: {
+                            twitter, facebook, instagram, youtube
+                        }, 
+                        callback: () => {
+                            saveNext(2, 0);
+                            callback();
+                        }
+                    }
+                })
             }
-            //save
-            //callback -> setNext(), setCurrent()
         }
         else {
-            setCurrent(current + 1);
+            if (current === 2) callback();
+            else setCurrent(current + 1);
         }
     };
     const checkDisabled = () => {
@@ -261,10 +295,24 @@ const FinishInfo = ({ dispatch, ...props }) => {
                 </div>
             )
         }
-        else {
-
-        }
-        return null;
+        return (
+            <div className={styles.third}>
+                <Form>
+                    <FormItem label="Twitter">
+                        <Input type="text" placeholder="twitter" value={twitter} addonAfter={<Icon type="twitter" />} addonBefore={"https://twitter.com/"} onChange={handleChangeTwitter} size="large" />
+                    </FormItem>
+                    <FormItem label="Facebook">
+                        <Input type="text" placeholder="facebook" value={facebook} addonAfter={<Icon type="facebook" />} addonBefore={"https://fb.com/"} onChange={handleChangeFacebook} size="large" />
+                    </FormItem>
+                    <FormItem label="Youtube">
+                        <Input type="text" placeholder="youtube" value={youtube} addonAfter={<Icon type="youtube" />} addonBefore={"https://youtube.com/"} onChange={handleChangeYoutube} size="large" />
+                    </FormItem>
+                    <FormItem label="Instagram">
+                        <Input type="text" placeholder="instagram" value={instagram} addonAfter={<Icon type="instagram" />} addonBefore={"https://instagram.com/"} onChange={handleChangeInsta} size="large"/>
+                    </FormItem>
+                </Form>
+            </div>
+        );
     };
     const getIcon = () => {
         if (

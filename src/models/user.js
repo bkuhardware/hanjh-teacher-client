@@ -9,7 +9,7 @@ const USER = {
     avatar: "https://scontent.fdad3-3.fna.fbcdn.net/v/t1.0-9/32693290_1729250587169728_2501159919764373504_o.jpg?_nc_cat=104&_nc_oc=AQllC4kZi1J0VQ8hav_F1SYwgNBwbJ4E-Pol2o7GJ5_4POzFiFZkxG6p--dxvbp4GmE&_nc_ht=scontent.fdad3-3.fna&oh=0a832bd43f4e839d143f8cbb4a4ab206&oe=5EC92867",
     job: 'Developer at Google Inc.',
     biography: '',
-    email: '',
+    email: 'luannguyentrong98@gmail.com',
     noOfUsNotification: 22,
     twitter: '',
     facebook: '',
@@ -53,6 +53,17 @@ export default {
                 type: 'update',
                 payload: {
                     ...info
+                }
+            });
+            if (callback) callback();
+        },
+        *changeSocial({ payload }, { call, put }) {
+            const { data, callback } = payload;
+            yield delay(1200);
+            yield put({
+                type: 'update',
+                payload: {
+                    ...data
                 }
             });
             if (callback) callback();
