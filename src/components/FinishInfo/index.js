@@ -130,7 +130,23 @@ const FinishInfo = ({ dispatch, ...props }) => {
                 })
             }
             else if (current === 1) {
-
+                const biographyText = exportToHTML(biography.value);
+                dispatch({
+                    type: 'user/changeInfo',
+                    payload: {
+                        info: {
+                            name: user.name,
+                            phone: user.phone, 
+                            email: email.value,
+                            job: job.value,
+                            biography: biographyText
+                        },
+                        callback: () => {
+                            saveNext(1, 0);
+                            setCurrent(current + 1)
+                        }
+                    }
+                });
             }
             else {
 
@@ -147,7 +163,12 @@ const FinishInfo = ({ dispatch, ...props }) => {
             return !user.avatar && !avatar;
         }
         else if (current === 1) {
-
+            return _.isEmpty(email.value)
+                || !checkEmail(email.value)
+                || _.isEmpty(job.value)
+                || job.value.length < 60
+                || !biography.value.getCurrentContent().hasText()
+                || biography.value.getCurrentContent().getPlainText('').length < 100;
         }
         return false;
     };

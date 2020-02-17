@@ -44,7 +44,7 @@ const Header = ({ user, dispatch }) => {
                                             </Col>
                                             <Col span={20}>
                                                 <div className={styles.name}><b>{user.name}</b></div>
-                                                <div className={styles.mail}>{user.email}</div>
+                                                <div className={styles.mail}>{user.email || 'noreply@gmail.com'}</div>
                                             </Col>
                                         </Row>
                                         <div className={styles.item} onClick={() => router.push('/settings')}>
