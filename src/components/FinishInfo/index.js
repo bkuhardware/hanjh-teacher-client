@@ -161,12 +161,10 @@ const FinishInfo = ({ dispatch, ...props }) => {
                         <Steps current={current} className={styles.steps}>
                             <Step key="avatar" title="Avatar" />
                             <Step key="basic" title="Information" />
-                            <Step key="social" title="Social links" />
+                            <Step key="social" title="Social links" description="(Optional)" />
                         </Steps>
                         <div className={styles.content}>
-                            <div>
-                                {content}
-                            </div>
+                            {content}
                         </div>
                         <Row className={styles.action}>
                             <Col span={12} className={styles.left}>

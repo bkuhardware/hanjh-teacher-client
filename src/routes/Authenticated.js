@@ -37,8 +37,13 @@ const Authenticated = ({ user, children, location, dispatch }) => {
                 }}
             />
         );
-    if (check(user)) return children;
-    return <FinishInfo />;
+    if (status === 'authenticated') {
+        if (check(user)) setStatus('finished');
+        else setStatus('filling-info')
+    }
+    if (status === 'finished') return children;
+    if (status === 'filling-info') return <FinishInfo callback={() => setStatus('finished')} />;
+    return null;
 };
 
 export default withRouter(connect(({ user }) => ({ user }))(Authenticated));
