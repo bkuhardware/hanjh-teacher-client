@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { connect } from 'dva';
 import { Steps, Button, Row, Col, Upload, Avatar, Icon, Form, Input, message } from 'antd';
 import FinishLayout from '@/layouts/FinishLayout';
-// import Editor from '@/components/Editor/SimpleEditor';
+import Editor from '@/components/Editor/SimpleEditor';
 import { EditorState } from 'draft-js';
 import { capitalText, checkEmail } from '@/utils/utils';
 import { exportToHTML } from '@/utils/editor';
@@ -43,9 +43,14 @@ const FinishInfo = ({ dispatch, ...props }) => {
         validateStatus: 'success',
         help: ''
     });
-    const [biography, setBiography] = useState(EditorState.createEmpty());
+    const [biography, setBiography] = useState({
+        value: EditorState.createEmpty(),
+        validateStatus: 'success',
+        help: ''
+    });
     const handleChangeEmail = e => {
         const val = e.target.value;
+        saveNext(1, 1);
         if (_.isEmpty(val))
             return setEmail({
                 value: val,
@@ -66,6 +71,7 @@ const FinishInfo = ({ dispatch, ...props }) => {
     };
     const handleChangeJob = e => {
         const val = e.target.value;
+        saveNext(1, 1);
         if (_.isEmpty(val))
             return setJob({
                 value: val,
@@ -77,6 +83,27 @@ const FinishInfo = ({ dispatch, ...props }) => {
             help: '',
             validateStatus: 'success'
         })
+    };
+    const handleChangeBiography = newBiography => {
+        const content = biography.value.getCurrentContent();
+        const newContent = newBiography.getCurrentContent();
+        if (content !== newContent) {
+            saveNext(1, 1);
+        }
+        if (newContent.hasText()) {
+            setBiography({
+                value: newBiography,
+                validateStatus: 'success',
+                help: ''
+            });
+        }
+        else {
+            setBiography({
+                value: newBiography,
+                validateStatus: 'error',
+                help: 'You must enter biography!'
+            });
+        }
     };
     const saveNext = (id, val) => {
         const newNext = [...next];
@@ -184,13 +211,31 @@ const FinishInfo = ({ dispatch, ...props }) => {
             return (
                 <div className={styles.second}>
                     <Form>
-                        <FormItem label="Email" help={email.help} validateStatus={email.validateStatus} required>
-                            <Input value={email.value} onChange={handleChangeEmail} placeholder="Email" size="large" />
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <FormItem label="Email" help={email.help} validateStatus={email.validateStatus} required>
+                                    <Input value={email.value} onChange={handleChangeEmail} placeholder="Email" size="large" />
+                                </FormItem>
+                            </Col>
+                            <Col span={12}>
+                                <FormItem label="Headline" help={job.help} validateStatus={job.validateStatus} required>
+                                    <Input value={job.value} onChange={handleChangeJob} placeholder="Headline (Job)" size="large" addonAfter={job.value.length < 60 ? `(${60 - job.value.length})` : <Icon type="check" />}/>
+                                </FormItem>
+                            </Col>
+                        </Row>
+                        <FormItem
+                            label="Biography"
+                            className={styles.bio}
+                            help={biography.help}
+                            validateStatus={biography.validateStatus}
+                            required>
+                            <Editor
+                                editorState={biography.value}
+                                onChange={handleChangeBiography}
+                                minCount={100}
+                                placeholder="Biography"
+                            />
                         </FormItem>
-                        <FormItem label="Headline" help={job.help} validateStatus={job.validateStatus} required>
-                            <Input value={job.value} onChange={handleChangeJob} placeholder="Headline (Job)" size="large" addonAfter={job.value.length < 60 ? `(${60 - job.value.length})` : <Icon type="check" />}/>
-                        </FormItem>
-
                     </Form>
                 </div>
             )

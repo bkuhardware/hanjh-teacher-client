@@ -1,13 +1,20 @@
 import React from 'react';
 import { Layout } from 'antd';
 import Header from '@/components/Header';
+import Scrollbars from 'react-custom-scrollbars';
 import styles from './index.less';
 
 const FinishLayout = ({ children }) => {
     return (
         <Layout className={styles.finishLayout}>
             <Header />
-            <Layout className={styles.layout}>{children}</Layout>
+            <Scrollbars
+                className={styles.layout}
+            >
+                <Layout>
+                    {children}
+                </Layout>
+            </Scrollbars>
         </Layout>
     )
 };

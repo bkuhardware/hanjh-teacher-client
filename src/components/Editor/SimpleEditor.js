@@ -2,9 +2,9 @@ import React, { useRef } from 'react';
 import classNames from 'classnames';
 import { Button, Tooltip, Icon } from 'antd';
 import { Editor, RichUtils } from 'draft-js';
-import styles from './index.less';
+import styles from './SimpleEditor.less';
 
-const SimpleEditor = ({ placeholder, editorState, onChange }) => {
+const SimpleEditor = ({ placeholder, editorState, onChange, minCount }) => {
     const editorRef = useRef(null);
     const handleFocus = () => editorRef.current.focus();
     const handleKeyCommand = command => {
@@ -25,6 +25,11 @@ const SimpleEditor = ({ placeholder, editorState, onChange }) => {
         if (currentInlineStyle.has(inlineStyle)) return classNames(styles.btn, styles.btnActive);
         return styles.btn;
     };
+    let remainWordsCount;
+    if (minCount) {
+        const length = editorState.getCurrentContent().getPlainText('').length;
+        remainWordsCount = length < minCount ? `(${minCount - length})` : <Icon type="check" />;
+    }
     return (
         <div className={styles.simpleEditor}>
             <div className={styles.buttons}>
@@ -34,6 +39,11 @@ const SimpleEditor = ({ placeholder, editorState, onChange }) => {
                 <Tooltip placement="top" title="Italic | Cmd+I">
                     <span className={inlineStyleBtnClass('ITALIC')} onMouseDown={handleInlineStyle('ITALIC')}><Icon type="italic" /></span>
                 </Tooltip>
+                {minCount && (
+                    <span className={styles.extra}>
+                        {remainWordsCount}
+                    </span>
+                )}
             </div>
             <div className={styles.editor} onClick={handleFocus}>
                 <Editor
