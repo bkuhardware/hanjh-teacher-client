@@ -99,4 +99,8 @@ export const checkValidLink = link => {
 export const capitalText = name => {
     const matches = name.match(/\b(\w)/g); // ['J','S','O','N']
     return _.join(_.takeRight(matches, 2), '');
-}
+};
+
+export const checkEmail = email => {
+    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
+};

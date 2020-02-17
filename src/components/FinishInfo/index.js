@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
-import { Steps, Button, Row, Col, Upload, Avatar, Icon } from 'antd';
+import { Steps, Button, Row, Col, Upload, Avatar, Icon, Form, Input, message } from 'antd';
 import FinishLayout from '@/layouts/FinishLayout';
-import { capitalText } from '@/utils/utils';
+// import Editor from '@/components/Editor/SimpleEditor';
+import { EditorState } from 'draft-js';
+import { capitalText, checkEmail } from '@/utils/utils';
+import { exportToHTML } from '@/utils/editor';
 import styles from './index.less';
 
 const { Step } = Steps;
+const FormItem = Form.Item;
 
 const FinishInfo = ({ dispatch, ...props }) => {
     const {
@@ -29,6 +33,51 @@ const FinishInfo = ({ dispatch, ...props }) => {
     const [avatar, setAvatar] = useState(null);
     const [fileList, setFileList] = useState([]);
     const [uploadLoading, setUploadLoading] = useState(false);
+    const [email, setEmail] = useState({
+        value: '',
+        validateStatus: 'success',
+        help: ''
+    });
+    const [job, setJob] = useState({
+        value: '',
+        validateStatus: 'success',
+        help: ''
+    });
+    const [biography, setBiography] = useState(EditorState.createEmpty());
+    const handleChangeEmail = e => {
+        const val = e.target.value;
+        if (_.isEmpty(val))
+            return setEmail({
+                value: val,
+                help: 'You must enter your email!',
+                validateStatus: 'error'
+            });
+        else if (!checkEmail(val))
+            return setEmail({
+                value: val,
+                help: 'Your email is invalid!',
+                validateStatus: 'error'
+            });
+        setEmail({
+            value: val,
+            help: '',
+            validateStatus: 'success'
+        });
+    };
+    const handleChangeJob = e => {
+        const val = e.target.value;
+        if (_.isEmpty(val))
+            return setJob({
+                value: val,
+                help: 'You must enter headline!',
+                validateStatus: 'error'
+            });
+        setJob({
+            value: val,
+            help: '',
+            validateStatus: 'success'
+        })
+    };
     const saveNext = (id, val) => {
         const newNext = [...next];
         newNext[id] = val;
@@ -132,7 +181,19 @@ const FinishInfo = ({ dispatch, ...props }) => {
             );
         }
         else if (current === 1) {
+            return (
+                <div className={styles.second}>
+                    <Form>
+                        <FormItem label="Email" help={email.help} validateStatus={email.validateStatus} required>
+                            <Input value={email.value} onChange={handleChangeEmail} placeholder="Email" size="large" />
+                        </FormItem>
+                        <FormItem label="Headline" help={job.help} validateStatus={job.validateStatus} required>
+                            <Input value={job.value} onChange={handleChangeJob} placeholder="Headline (Job)" size="large" addonAfter={job.value.length < 60 ? `(${60 - job.value.length})` : <Icon type="check" />}/>
+                        </FormItem>
 
+                    </Form>
+                </div>
+            )
         }
         else {
 
