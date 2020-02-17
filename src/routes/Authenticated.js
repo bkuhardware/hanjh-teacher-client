@@ -23,7 +23,7 @@ const Authenticated = ({ user, children, location, dispatch }) => {
         }
     }, []);
     const check = user => {
-        return true;
+        return false;
     };
     if (status === 'pending') return <PageLoading />;
     if (status === 'not-authenticated') 
