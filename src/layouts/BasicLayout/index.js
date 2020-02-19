@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { connect } from 'dva';
 import { Layout } from 'antd';
 import Header from '@/components/Header';
 import Sider from '@/components/Sider';
@@ -8,7 +9,14 @@ import styles from './index.less';
 
 const { Content } = Layout;
 
-const BasicLayout = ({ children }) => {
+const BasicLayout = ({ children, settings, dispatch }) => {
+    useEffect(() => {
+        if (!settings.areasMenu) {
+            dispatch({
+                type: 'settings/fetch'
+            });
+        }
+    }, []);
     return (
         <Layout className={styles.basicLayout}>
             <Header />
@@ -25,4 +33,4 @@ const BasicLayout = ({ children }) => {
     )
 };
 
-export default BasicLayout;
+export default connect(({ settings }) => ({ settings }))(BasicLayout);
