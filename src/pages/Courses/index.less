@@ -1,0 +1,22 @@
+.courses {
+    width: 100%;
+    padding: 0;
+    .actions {
+        .filters {
+            float: right;
+            .search {
+                transition: all 0.2s;
+            }
+            .sortBy {
+                margin-left: 15px;
+            }
+        }
+        &::after {
+            content: '';
+            clear: both;
+        }
+    }
+    .main {
+        margin-top: 45px;
+    }
+}
