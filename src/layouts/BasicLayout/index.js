@@ -30,7 +30,7 @@ const BasicLayout = ({ children, settings, dispatch }) => {
                 </ScrollLayout>
             </Layout>
         </Layout>
-    )
+    );
 };
 
 export default connect(({ settings }) => ({ settings }))(BasicLayout);

@@ -42,3 +42,65 @@
         }
     }
 }
+
+.newCourseModal {
+    :global(.ant-modal-header) {
+        background-color: rgba(20, 20, 20, 0.5);
+        .title {
+            color: @primary-color;
+            text-align: center;
+        }
+    }
+    :global(.ant-modal-footer) {
+        background-color: rgba(20, 20, 20, 0.5);
+    }
+    .courseType {
+        margin-bottom: 24px;
+        .title {
+            color: white;
+            line-height: 40px;
+        }
+        .options {
+            .option {
+                border-radius: 4px;
+                border: 0.5px solid rgba(255, 255, 255, 0.5);
+                color: inherit;
+                padding: 12px 0;
+                height: 102px;
+                cursor: pointer;
+                .icon {
+                    line-height: 78px;
+                    text-align: center;
+                    i {
+                        color: inherit;
+                        font-size: 2.5em;
+                    }
+                }
+                .name {
+                    margin-bottom: 6px;
+                    font-size: 1.1em;
+                }
+                .description {
+                    font-size: 0.8em;
+                    overflow: hidden;
+                    height: 49px;
+                }
+                &:hover {
+                    opacity: 0.8;
+                }
+            }
+            .selected {
+                color: rgba(250, 218, 94, 0.6);
+                border: 0.5px solid rgba(250, 218, 94, 0.6);
+            }
+        }
+    }
+}
+
+.courseAreaDropdown ul {
+    max-height: 200px;
+    overflow: auto;
+    &::-webkit-scrollbar {
+        width: 0;
+    }
+}
