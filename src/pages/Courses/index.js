@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import Link from 'umi/Link';
 import { connect } from 'dva';
 import { Select, Button, Icon, Input, Progress as ProgressBar, Table, Spin, Divider } from 'antd';
-import { fromNow } from '@/utils/utils';
 import styles from './index.less';
 
 const { Option } = Select;
@@ -28,12 +28,18 @@ const Privacy = ({ value }) => {
 
 const Progress = ({ value }) => {
     if (value === 100)
-        return <Icon type="check-circle" theme="filled" style={{ fontSize: '1.2em', background: '#52c41a' }}/>;
+        return (
+            <span>
+                <Icon type="check-circle" theme="filled" style={{ fontSize: '1.2em', color: '#52c41a' }}/>
+                <span style={{ marginLeft: '5px' }}>Completed</span>
+            </span>
+        );;
     return <ProgressBar
         strokeColor={{
-            '0%': 'white',
-            '100%': 'lightgray'
+            '0%': '#FADA5E',
+            '100%': 'yellow'
         }}
+        strokeWidth={6}
         percent={value}
     />;
 };
@@ -43,7 +49,8 @@ const columns = [
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        width: '40%'
+        width: '40%',
+        render: name => <span className={styles.name}>{name}</span>
     },
     {
         title: 'Privacy',
@@ -56,6 +63,7 @@ const columns = [
         title: 'Progress',
         dataIndex: 'progress',
         key: 'progress',
+        align: 'center',
         width: '15%',
         render: val => <Progress value={val} />
     },
@@ -64,16 +72,18 @@ const columns = [
         dataIndex: 'updatedAt',
         key: 'lastUpdated',
         width: '15%',
-        render: val => <span className={styles.lastUpdated}>{fromNow(val)}</span>
+        align: 'center',
+        render: val => <span className={styles.lastUpdated}>{moment(val).format('MM/YYYY')}</span>
     },
     {
         title: 'Action',
         key: 'action',
         width: '15%',
+        align: 'center',
         render: () => (
-            <span>
+            <span className={styles.action}>
                 <Link to="/">Edit content</Link>
-                <Divider type="vertical" />
+                <Divider type="vertical" className={styles.divider} />
                 <Link to="/">Manage</Link>
             </span>
         )
@@ -84,11 +94,13 @@ const Courses = ({ dispatch, ...props }) => {
     const [searchWidth, setSearchWidth] = useState('200px');
     const {
         courses,
-        hasMore,
+        total,
+        currentPage,
         sortBy,
         initLoading,
         loading,
-        sortLoading
+        sortLoading,
+        pageChangeLoading
     } = props;
     useEffect(() => {
         dispatch({
@@ -104,15 +116,13 @@ const Courses = ({ dispatch, ...props }) => {
             payload: val
         });
     };
-    const handleMore = () => {};
+    const handleChangePage = page => {
+        dispatch({
+            type: 'courses/page',
+            payload: page
+        });
+    };
     const disabled = !courses || initLoading;
-    const loadMore = (
-        !initLoading && !loading && hasMore && courses ? (
-            <div className={styles.loadMore}>
-                <Button size="small" onClick={handleMore}>More courses</Button>
-            </div>
-        ) : null
-    );
     return (
         <div className={styles.courses}>
             <div className={styles.actions}>
@@ -156,8 +166,14 @@ const Courses = ({ dispatch, ...props }) => {
                             columns={columns}
                             rowKey={course => course._id + _.uniqueId('course_')}
                             dataSource={courses}
+                            pagination={total > 8 ? {
+                                total: total,
+                                pageSize: 8,
+                                current: currentPage,
+                                onChange: handleChangePage
+                            } : false}
+                            loading={sortLoading || pageChangeLoading}
                         />
-                        {loadMore}
                     </React.Fragment>
                 )}
             </div>
@@ -168,10 +184,11 @@ const Courses = ({ dispatch, ...props }) => {
 export default connect(
     ({ courses, loading }) => ({
         courses: courses.list,
-        hasMore: courses.hasMore,
         sortBy: courses.sortBy,
+        total: courses.total,
+        currentPage: courses.currentPage,
         initLoading: !!loading.effects['courses/fetch'],
-        loading: !!loading.effects['courses/more'],
-        sortLoading: !!loading.effects['courses/sort']
+        sortLoading: !!loading.effects['courses/sort'],
+        pageChangeLoading: !!loading.effects['courses/page']
     })
 )(Courses);
