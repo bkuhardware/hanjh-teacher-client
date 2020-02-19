@@ -17,7 +17,7 @@ export default {
             yield put({
                 type: 'save',
                 payload: {
-                    total: 42,
+                    total: 20,
                     currentPage: 1,
                     sortBy: 'newest',
                     list: COURSES
@@ -30,7 +30,7 @@ export default {
             yield put({
                 type: 'save',
                 payload: {
-                    total: 42,
+                    total: 20,
                     currentPage: 1,
                     sortBy,
                     list: _.shuffle(COURSES)
@@ -44,7 +44,7 @@ export default {
                 type: 'save',
                 payload: {
                     currentPage: pageVal,
-                    total: 42,
+                    total: 20,
                     sortBy,
                     list: _.shuffle(COURSES)
                 }

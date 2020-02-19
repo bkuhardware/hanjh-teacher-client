@@ -92,7 +92,7 @@ const Notifications = ({ dispatch, ...props }) => {
 
     const handleViewAll = () => {
         handleVisibleChange(false);
-        router.push('/notifications');
+        router.push('/communications/notifications');
     };
 
     const handleViewNotify = item => {
