@@ -4,7 +4,7 @@ import moment from 'moment';
 import classNames from 'classnames';
 import Link from 'umi/Link';
 import { connect } from 'dva';
-import { Row, Col, Select, Button, Icon, Input, Progress as ProgressBar, Table, Spin, Divider, Modal, Form } from 'antd';
+import { Row, Col, Select, Button, Icon, Input, Progress as ProgressBar, Table, Spin, Divider, Modal, Form, message } from 'antd';
 import styles from './index.less';
 
 const { Option } = Select;
@@ -107,7 +107,8 @@ const Courses = ({ dispatch, ...props }) => {
         areasMenu,
         sortLoading,
         pageChangeLoading,
-        settingsLoading
+        settingsLoading,
+        createCourseLoading
     } = props;
     useEffect(() => {
         dispatch({
@@ -131,11 +132,28 @@ const Courses = ({ dispatch, ...props }) => {
     };
     const handleChangeCourseTitle = e => {
         const val = e.target.value;
-        
+        if (val.length <= 60)
+            setCourseTitle(val);
     };
     const handleChangeCourseArea = area => setCourseArea(area);
-    const handleCreateCourse = () => {};
-    const handleCancelCreateCourse = () => {};
+    const handleCreateCourse = () => {
+        if (_.isEmpty(courseTitle)) return message.error('You must enter course title!');
+        if (!courseArea) return message.error('You must select course area!');
+        dispatch({
+            type: 'courses/create',
+            payload: {
+                title: courseTitle,
+                area: courseArea,
+                callback: () => handleCancelCreateCourse()
+            }
+        });
+    };
+    const handleCancelCreateCourse = () => {
+        setCourseType('course');
+        setCourseTitle('');
+        setCourseArea(undefined);
+        setModalVisible(false);
+    };
     const disabled = !courses || initLoading;
     return (
         <div className={styles.courses}>
@@ -195,9 +213,9 @@ const Courses = ({ dispatch, ...props }) => {
                 className={styles.newCourseModal}
                 title={<div className={styles.title}>Create course</div>}
                 width={605}
-                okText="Completed"
+                okText="Create"
                 maskClosable={false}
-                visible={true}
+                visible={modalVisible}
                 onOk={handleCreateCourse}
                 onCancel={handleCancelCreateCourse}
                 bodyStyle={{
@@ -261,6 +279,22 @@ const Courses = ({ dispatch, ...props }) => {
                     </FormItem>
                 </Form>
             </Modal>
+            <Modal
+                className={styles.createLoadingModal}
+                width={180}
+                visible={createCourseLoading}
+                footer={null}
+                closable={false}
+                maskClosable={false}
+                title={null}
+                centered
+                bodyStyle={{ 
+                    padding: '10px'
+                }}
+            >
+                <div className={styles.icon}><Spin /></div>
+                <div className={styles.text}>Creating...</div>
+            </Modal>
         </div>
     );
 };
@@ -275,6 +309,7 @@ export default connect(
         initLoading: !!loading.effects['courses/fetch'],
         sortLoading: !!loading.effects['courses/sort'],
         pageChangeLoading: !!loading.effects['courses/page'],
-        settingsLoading: !!loading.effects['settings/fetch']
+        settingsLoading: !!loading.effects['settings/fetch'],
+        createCourseLoading: !!loading.effects['courses/create']
     })
 )(Courses);

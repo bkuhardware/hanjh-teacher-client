@@ -1,5 +1,6 @@
 import { delay } from '@/utils/utils';
 import _ from 'lodash';
+import router from 'umi/router';
 import COURSES from '@/assets/fakers/courses';
 
 export default {
@@ -49,6 +50,13 @@ export default {
                     list: _.shuffle(COURSES)
                 }
             })
+        },
+        *create({ payload }, { call, put }) {
+            const { title, area, callback } = payload;
+            yield delay(2000);
+            //call api with area, title
+            //after create, router.push(....) after call callback()
+            if (callback) callback();
         }
     },
     reducers: {
