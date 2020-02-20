@@ -7,12 +7,12 @@ const USER = {
     token: 'foo-token',
     name: 'Ngoc Hanh Vuong',
     avatar: "https://scontent.fdad3-3.fna.fbcdn.net/v/t1.0-9/32693290_1729250587169728_2501159919764373504_o.jpg?_nc_cat=104&_nc_oc=AQllC4kZi1J0VQ8hav_F1SYwgNBwbJ4E-Pol2o7GJ5_4POzFiFZkxG6p--dxvbp4GmE&_nc_ht=scontent.fdad3-3.fna&oh=0a832bd43f4e839d143f8cbb4a4ab206&oe=5EC92867",
-    job: '',
-    biography: '',
-    email: '',
+    job: 'Frontend developer at Google Inc. Passionate with Javasript, React, Angular and Vue.',
+    biography: '<div><div>Frontend developer at Google Inc. Passionate with Javasript, React, Angular and Vue.</div><div>Frontend developer at Google Inc. Passionate with Javasript, React, Angular and Vue.</div></div>',
+    email: 'luannguyentrong98@gmail.com',
     noOfUsNotification: 22,
     twitter: '',
-    facebook: '',
+    facebook: 'bkuhardware',
     youtube: '',
     instagram: ''
 };

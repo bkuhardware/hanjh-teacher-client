@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import _ from 'lodash';
 import { connect } from 'dva';
-import { Tabs, Form, Input, Upload, Avatar, Icon, Button } from 'antd';
+import { Tabs, Form, Input, Upload, Avatar, Icon, Button, message } from 'antd';
 import { EditorState, ContentState, convertFromHTML } from 'draft-js';
 import Editor from '@/components/Editor/SimpleEditor';
 import Wrapper from '@/components/PageWrapper';
 import { capitalText } from '@/utils/utils';
+import { exportToHTML } from '@/utils/editor';
 import styles from './index.less';
 
 const { TabPane } = Tabs;
@@ -13,7 +15,10 @@ const { Password } = Input;
 
 const Settings = ({ dispatch, form, ...props }) => {
     const {
-        user
+        user,
+        changeInfoLoading,
+        changeSocialLoading,
+        changePasswordLoading
     } = props;
     const { getFieldDecorator } = form;
     const [avatar, setAvatar] = useState(null);
@@ -48,6 +53,60 @@ const Settings = ({ dispatch, form, ...props }) => {
             });
         }
     };
+    
+    const handleUpdateInformation = () => {
+        const errors = form.getFieldsError(['name', 'email', 'job']);
+        if (_.some(errors, err => err)) return message.error('Your inputs is invalid!');
+        const content = biography.value.getCurrentContent();
+        if (content.getPlainText('').length < 100) return message.error('Your biography must has at least 100 characters!');
+        const { name, email, job } = form.getFieldsValue();
+        const biographyText = exportToHTML(biography.value);
+        dispatch({
+            type: 'user/changeInfo',
+            payload: {
+                info: {
+                    name, email, job, 
+                    biography: biographyText
+                },
+                callback: () => message.success('Update information successfully!') 
+            }
+        });
+    };
+
+    const handleUpdateSocial = () => {
+        const { twitter, facebook, youtube, instagram } = form.getFieldsValue();
+        dispatch({
+            type: 'user/changeSocial',
+            payload: {
+                data: { 
+                    twitter, facebook, youtube, instagram
+                },
+                callback: () => message.success('Update social links successfully!')
+            }
+        });
+    };
+
+    const handleChangePassword = () => { 
+        const errors = form.getFieldsError('oldPassword', 'newPassword');
+        if (_.some(errors, err => err)) return message.error('Invalid input, please try again!');
+        const { oldPassword, newPassword } = form.getFieldsValue();
+        if (!oldPassword || oldPassword.trim() === '') return message.error('Old password must not be empty!');
+        if (!newPassword || newPassword.trim() === '') return message.error('New password must not be empty!');
+        
+        dispatch({
+            type: 'user/changePassword',
+            payload: {
+                oldPassword,
+                newPassword,
+                onOk: () => {
+                    form.resetFields();
+                    message.success('Change password successfully!');
+                },
+                onIncorrect: () => message.error('Your old password is incorrect!')
+            }
+        });
+    };
+
     const handleBeforeUpload = (file, fileList) => {
         setAvatar(file);
         setFileList(fileList);
@@ -191,7 +250,7 @@ const Settings = ({ dispatch, form, ...props }) => {
                                     />
                                 </FormItem>
                                 <FormItem style={{ textAlign: 'center' }}>
-                                    <Button className={styles.btn} htmlType="button" type="primary" onClick={() => {}} size="large">
+                                    <Button className={styles.btn} htmlType="button" type="primary" onClick={handleUpdateInformation} size="large" icon={changeInfoLoading ? "loading" : null}>
                                         Update information
                                     </Button>
                                 </FormItem>
@@ -220,7 +279,7 @@ const Settings = ({ dispatch, form, ...props }) => {
                                     })(<Input type="text" placeholder="instagram" addonAfter={<Icon type="instagram" />} addonBefore={"https://instagram.com/"} size="large" />)}
                                 </FormItem>
                                 <FormItem style={{ textAlign: 'center' }}>
-                                    <Button className={styles.btn} htmlType="button" type="primary" onClick={() => {}} size="large">
+                                    <Button className={styles.btn} htmlType="button" type="primary" onClick={handleUpdateSocial} size="large" icon={changeSocialLoading ? "loading" : null}>
                                         Update social links
                                     </Button>
                                 </FormItem>
@@ -263,7 +322,9 @@ const Settings = ({ dispatch, form, ...props }) => {
                                     )}
                                 </Form.Item>
                                 <Form.Item style={{ textAlign: 'center' }}>
-                                    <Button className={styles.btn} type="primary" htmlType="button" size="large">Update password</Button> 
+                                    <Button className={styles.btn} type="primary" htmlType="button" size="large" icon={changePasswordLoading ? "loading" : null} onClick={handleChangePassword}>
+                                        Update password
+                                    </Button> 
                                 </Form.Item>
                             </Form>
                         </TabPane>
@@ -278,6 +339,9 @@ const Settings = ({ dispatch, form, ...props }) => {
 
 export default Form.create()(connect(
     ({ user, loading }) => ({
-        user: user
+        user: user,
+        changeInfoLoading: !!loading.effects['user/changeInfo'],
+        changeSocialLoading: !!loading.effects['user/changeSocial'],
+        changePasswordLoading: !!loading.effects['user/changePassword']
     })
 )(Settings));
