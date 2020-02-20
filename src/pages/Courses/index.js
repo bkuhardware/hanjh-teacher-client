@@ -82,11 +82,11 @@ const columns = [
         key: 'action',
         width: '15%',
         align: 'center',
-        render: () => (
+        render: (text, course) => (
             <span className={styles.action}>
-                <Link to="/">Edit content</Link>
+                <Link to={`/course/${course._id}/edit/goals`}>Edit content</Link>
                 <Divider type="vertical" className={styles.divider} />
-                <Link to="/">Manage</Link>
+                <Link to={`/course/${course._id}/manage`}>Manage</Link>
             </span>
         )
     }

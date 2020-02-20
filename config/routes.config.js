@@ -38,11 +38,63 @@ export default [
         ]
     },
     {
-        path: '/course', component: '../layouts/CourseLayout',
+        path: '/course/:courseId',
         title: 'route.course',
-        Routes: ['./src/routes/Authenticated'],
+        Routes: ['./src/routes/Authenticated', './src/routes/ValidCourse'],
         routes: [
-
+            {
+                path: '/course/:courseId/edit',
+                title: 'route.course.edit',
+                component: '../layouts/CourseLayouts/EditLayout',
+                routes: [
+                    {
+                        path: '/course/:courseId/edit/goals',
+                        title: 'route.course.edit.goals',
+                        component: './Course/Edit/Goals'
+                    },
+                    {
+                        path: '/course/:courseId/edit/tips',
+                        title: 'route.course.edit.tips',
+                        component: './Course/Edit/Tips'
+                    },
+                    {
+                        path: '/course/:courseId/edit/syllabus',
+                        title: 'route.course.edit.syllabus',
+                        component: './Course/Edit/Syllabus'
+                    },
+                    {
+                        path: '/course/:courseId/edit/lecture/:lectureId',
+                        title: 'route.course.edit.lecture',
+                        component: './Course/Edit/Lecture'
+                    },
+                    {
+                        path: '/course/:courseId/edit/landing',
+                        title: 'route.course.edit.landing',
+                        component: './Course/Edit/Landing'
+                    },
+                    {
+                        path: '/course/:courseId/edit/price',
+                        title: 'route.course.edit.price',
+                        component: './Course/Edit/Price'
+                    },
+                    {
+                        path: '/course/:courseId/edit/promotions',
+                        title: 'route.course.edit.promotions',
+                        component: './Course/Edit/Promotions'
+                    },
+                    {
+                        path: '/course/:courseId/edit/messages',
+                        title: 'route.course.edit.messages',
+                        component: './Course/Edit/Messages'
+                    },
+                    {
+                        component: '404'
+                    }
+                ]
+            },
+            {
+                redirect: '/error/404'
+            }
         ]
     },
     {
