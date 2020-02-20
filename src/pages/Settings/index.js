@@ -9,6 +9,7 @@ import styles from './index.less';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
+const { Password } = Input;
 
 const Settings = ({ dispatch, form, ...props }) => {
     const {
@@ -226,7 +227,45 @@ const Settings = ({ dispatch, form, ...props }) => {
                             </Form>
                         </TabPane>
                         <TabPane className={styles.tabPane} key="password" tab="Change password">
-                            
+                            <Form
+                                layout="vertical"
+                                className={styles.password}
+                                
+                            >
+                                <Form.Item label="Old password" className={styles.formItem}>
+                                    {getFieldDecorator('oldPassword', {
+                                        rules: [
+                                            {
+                                                required: true,
+                                                message: 'Please enter old password!'
+                                            },
+                                        ],
+                                        initialValue: ''
+                                    })(
+                                        <Password placeholder="Old password" style={{ width: '100%' }} size="large"  />
+                                    )}
+                                </Form.Item>
+                                <Form.Item label="New password" className={styles.formItem}>
+                                    {getFieldDecorator('newPassword', {
+                                        rules: [
+                                            {
+                                                required: true,
+                                                message: 'Please enter new password!'
+                                            },
+                                            {
+                                                min: 6,
+                                                message: 'Your password must has more than 5 character!'
+                                            }
+                                        ],
+                                        initialValue: ''
+                                    })(
+                                        <Password placeholder="New password" style={{ width: '100%' }} size="large" />
+                                    )}
+                                </Form.Item>
+                                <Form.Item style={{ textAlign: 'center' }}>
+                                    <Button className={styles.btn} type="primary" htmlType="button" size="large">Update password</Button> 
+                                </Form.Item>
+                            </Form>
                         </TabPane>
                         <TabPane className={styles.tabPane} key="payment" tab="Payments">
                             
