@@ -197,7 +197,33 @@ const Settings = ({ dispatch, form, ...props }) => {
                             </Form>
                         </TabPane>
                         <TabPane className={styles.tabPane} key="social" tab="Social links">
-                            
+                            <Form className={styles.social}>
+                                <FormItem label="Twitter">
+                                    {getFieldDecorator('twitter', {
+                                        initialValue: user.twitter
+                                    })(<Input type="text" placeholder="twitter" addonAfter={<Icon type="twitter" />} addonBefore={"https://twitter.com/"} size="large" />)}
+                                </FormItem>
+                                <FormItem label="Facebook">
+                                    {getFieldDecorator('facebook', {
+                                        initialValue: user.facebook
+                                    })(<Input type="text" placeholder="facebook" addonAfter={<Icon type="facebook" />} addonBefore={"https://fb.com/"} size="large" />)}
+                                </FormItem>
+                                <FormItem label="Youtube">
+                                    {getFieldDecorator('youtube', {
+                                        initialValue: user.youtube
+                                    })(<Input type="text" placeholder="youtube" addonAfter={<Icon type="youtube" />} addonBefore={"https://youtube.com/"} size="large" />)}
+                                </FormItem>
+                                <FormItem label="Instagram">
+                                    {getFieldDecorator('instagram', {
+                                        initialValue: user.instagram
+                                    })(<Input type="text" placeholder="instagram" addonAfter={<Icon type="instagram" />} addonBefore={"https://instagram.com/"} size="large" />)}
+                                </FormItem>
+                                <FormItem style={{ textAlign: 'center' }}>
+                                    <Button className={styles.btn} htmlType="button" type="primary" onClick={() => {}} size="large">
+                                        Update social links
+                                    </Button>
+                                </FormItem>
+                            </Form>
                         </TabPane>
                         <TabPane className={styles.tabPane} key="password" tab="Change password">
                             
