@@ -67,6 +67,18 @@ export default {
             });
             if (callback) callback();
         },
+        *changePassword({ payload }, { call, put }) {
+            const {
+                oldPassword,
+                newPassword,
+                onOk,
+                onIncorrect
+            } = payload;
+            yield delay(2000);
+            const status = 0;
+            if (status === 0) onOk();
+            else onIncorrect();
+        },
         *login({ from, payload }, { call, put }) {
             const { phone, password } = payload;
             yield delay(1600);

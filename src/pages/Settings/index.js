@@ -87,7 +87,7 @@ const Settings = ({ dispatch, form, ...props }) => {
     };
 
     const handleChangePassword = () => { 
-        const errors = form.getFieldsError('oldPassword', 'newPassword');
+        const errors = form.getFieldsError(['oldPassword', 'newPassword']);
         if (_.some(errors, err => err)) return message.error('Invalid input, please try again!');
         const { oldPassword, newPassword } = form.getFieldsValue();
         if (!oldPassword || oldPassword.trim() === '') return message.error('Old password must not be empty!');
@@ -99,7 +99,7 @@ const Settings = ({ dispatch, form, ...props }) => {
                 oldPassword,
                 newPassword,
                 onOk: () => {
-                    form.resetFields();
+                    form.resetFields(['oldPassword', 'newPassword']);
                     message.success('Change password successfully!');
                 },
                 onIncorrect: () => message.error('Your old password is incorrect!')
