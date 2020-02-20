@@ -141,6 +141,11 @@ export default [
                 ]
             },
             {
+                path: '/settings',
+                title: 'route.basic.settings',
+                component: './Settings'
+            },
+            {
                 path: '/',
                 redirect: '/courses'
             },

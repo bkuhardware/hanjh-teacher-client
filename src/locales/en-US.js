@@ -20,6 +20,7 @@ export default {
   'route.basic.performance.reviews': 'Reviews',
   'route.basic.tools': 'Tools',
   'route.basic.help': 'Help',
+  'route.basic.settings': 'Settings',
   'route.exception.404': '404',
   'route.exception.403': '403',
   'route.exception.500': '500',

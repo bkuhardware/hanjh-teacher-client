@@ -20,6 +20,7 @@ export default {
     'route.basic.performance.reviews': 'Reviews',
     'route.basic.tools': 'Công cụ',
     'route.basic.help': 'Trợ giúp',
+    'route.basic.settings': 'Thông tin cá nhân',
     'route.exception.404': '404',
     'route.exception.403': '403',
     'route.exception.500': '500',
