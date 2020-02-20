@@ -1,12 +1,14 @@
 .settings {
-    position: absolute;
-    width: 100%;
-    top: 0;
-    left: 0;
+    // position: absolute;
+    // width: 100%;
+    // top: 0;
+    // left: 0;
     .avatar {
         width: 100%;
         height: 360px;
-        position: relative;
+        position: absolute;
+        top: 0;
+        left: 0;
         .inlineDiv {
             position: absolute;
             top: 50%;
@@ -24,6 +26,13 @@
             .uploader {
                 width: 40%;
                 margin: auto;
+                :global {
+                    .ant-upload-list-item:hover {
+                        .ant-upload-list-item-info {
+                            background: rgba(20, 20, 20, 0.3);
+                        }
+                    }
+                }
             }
         }
         // border-radius: 4px;
@@ -33,7 +42,27 @@
         //border: 0.5px dashed rgba(255, 255, 255, 0.5);
         
     }
-    .tabs {
-
+    .fixed {
+        height: 320px;
+    }
+    .info {
+        .tabs {
+            position: relative;
+            bottom: 44px;
+            width: 100%;
+            margin: auto;
+        }
+        .tabPane {
+            width: 100%;
+            padding: 40px 0 25px 0;
+        }
+        .basicInfo {
+            width: 50%;
+            margin: auto;
+            .btn {
+                width: 60%;
+                margin-top: 15px;
+            }
+        }
     }
 }
