@@ -1,17 +1,28 @@
 import { delay } from '@/utils/utils';
 import COURSE_INFO from '@/assets/fakers/courseInfo';
+import GOALS from '@/assets/fakers/goals';
+
+const initialState = {
+    info: null,
+    goals: null
+};
 
 export default {
     namespace: 'course',
-    state: {
-        info: null
-    },
+    state: initialState,
     effects: {
         *fetchInfo({ payload: courseId }, { call, put }) {
             yield delay(1600);
             yield put({
                 type: 'saveInfo',
                 payload: COURSE_INFO
+            });
+        },
+        *fetchGoals({ payload: courseId }, { call, put }) {
+            yield delay(2000);
+            yield put({
+                type: 'saveGoals',
+                payload: GOALS
             });
         },
         *validate({ payload }, { call, put }) {
@@ -40,6 +51,15 @@ export default {
                 ...state,
                 info: null
             }
+        },
+        saveGoals(state, { payload }) {
+            return {
+                ...state,
+                goals: { ...payload }
+            };
+        },
+        resetGoals(state) {
+            return { ...state, goals: null };
         }
     }
 };

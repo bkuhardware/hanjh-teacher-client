@@ -78,8 +78,7 @@ const Sider = ({ courseId, syllabus, loading, selectedKeys }) => {
     return (
         <AntSider
             className={styles.sider}
-            width={250}
-            collapsible
+            width={300}
         >
             {!syllabus || loading ? (
                 <div className={styles.inlineDiv}>
@@ -135,7 +134,7 @@ const Sider = ({ courseId, syllabus, loading, selectedKeys }) => {
                                 popupClassName={styles.subMenuPopup}
                             >
                                 {_.map(chapter.lectures, lecture => (
-                                    <MenuItem key={lecture._id}>
+                                    <MenuItem key={`/lecture/${lecture._id}`}>
                                         <Link to={`/course/${courseId}/edit/lecture/${lecture._id}`}>
                                             {lecture.title}
                                         </Link>
