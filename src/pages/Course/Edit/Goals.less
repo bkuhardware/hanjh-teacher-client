@@ -6,6 +6,62 @@
         width: auto;
     }
     .main {
+        :global(.ant-collapse-borderless) {
+            background: inherit;
+        }
         
+        .panel {
+            border-bottom: 0.5px dashed @primary-color;
+            &:last-child {
+                border-bottom: none;
+            }
+            :global(.ant-collapse-header) {
+                font-size: 1.2em;
+                //font-weight: bold;
+                color: #FADA5E;
+            }
+            :global(.ant-collapse-content-box) { 
+                padding: 25px 40px;
+            }
+            .textTargetItem {
+                margin-bottom: 15px;
+                min-height: 32px;
+                .content {
+                    font-size: 1em;
+                    color: white;
+                    .icon {
+                        color: #FADA5E;
+                        font-size: 0.9em;
+                        margin-right: 8px;
+                    }
+                }
+                .extra {
+                    text-align: right;
+                }
+            }
+            .add {
+                margin-top: 15px;
+                color: @primary-color;
+                cursor: pointer;
+                &:hover {
+                    color: #FADA5E;
+                }
+                i {
+                    font-size: 1.8em;
+                    position: relative;
+                    top: 3px;
+                }
+                .text {
+                    margin-left: 15px;
+                }
+            }
+            .save {
+                margin-top: 25px;
+                text-align: right;
+                button {
+                    min-width: 100px;
+                }
+            }
+        }
     }
 }
