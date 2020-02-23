@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import _ from 'lodash';
 import withRouter from 'umi/withRouter';
 import Link from 'umi/link'
+import router from 'umi/router';
 import { connect } from 'dva';
 import { Row, Col, Layout, Menu, Skeleton, Icon, Button, Tooltip, Spin } from 'antd';
 import Footer from '@/components/Footer';
@@ -45,7 +46,7 @@ const Header = ({ courseInfo, loading, handlePreview }) => {
                         </React.Fragment>
                     ) : (
                         <div className={styles.infoContent}>
-                            <Icon type="arrow-left" style={{ fontSize: '2.0em', color: '#FADA5E' }}/>
+                            <Icon type="arrow-left" style={{ fontSize: '2.0em', color: '#FADA5E', cursor: 'pointer' }} onClick={() => router.push('/courses')} />
                             <span className={styles.name}>
                                 {courseInfo.name}
                             </span>

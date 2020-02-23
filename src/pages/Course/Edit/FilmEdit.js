@@ -10,26 +10,26 @@ const FilmEdit = () => {
                 <div>
                     <div className={styles.text}>
                         <div className={styles.title}>
-                            There's a course in you. Plan it out.
+                        You’re ready to share your knowledge.
                         </div>
                         <div className={styles.description}>
-                            Planning your course carefully will create a clear learning path for students and help you once you film. Think down to the details of each lecture including the skill you’ll teach, estimated video length, practical activities to include, and how you’ll create introductions and summaries.
+                        This is your moment! If you’ve structured your course and used our guides, you're well prepared for the actual shoot. Pace yourself, take time to make it just right, and fine-tune when you edit.
                         </div>
                     </div>
                     <div className={styles.box}>
                         <div className={styles.inlineDiv}>
                             <div className={styles.icon}>
-                                <Icon type="play-square" theme="filled" style={{ fontSize: '64px' }} />
+                                <Icon type="play-circle" theme="filled" style={{ fontSize: '64px', color: '#FADA5E' }} />
                             </div>
                             <div className={styles.title}>
-                                Our library of resources
+                            You’re in good company
                             </div>
                             <div className={styles.description}>
-                                Tips and guides to structuring a course students love
+                            Chat and get production help with other Udemy instructors
                             </div>
                             <div>
                                 <Link to="/">
-                                    <Button type="primary">Learn at TechHub</Button>
+                                    <Button type="primary">Join the community</Button>
                                 </Link>
                             </div>
                         </div>
@@ -48,50 +48,50 @@ const FilmEdit = () => {
                         </div>
                         <div className={styles.item}>
                             <div className={styles.title}>
-                                Create an outline.
+                            Take breaks and review frequently.
                             </div>
                             <div className={styles.content}>
-                                Decide what skills you’ll teach and how you’ll teach them. Organize lectures into sections. Each section should have 3-7 lectures, and include at least one assignment or practical activity.
+                            Check often for any changes such as new noises. Be aware of your own energy levels--filming can tire you out and that translates to the screen.
                             </div>
                         </div>
                         <div className={styles.item}>
                             <div className={styles.title}>
-                                Introduce yourself and create momentum.
+                            Build rapport.
                             </div>
                             <div className={styles.content}>
-                                People online want to start learning quickly. Make an introduction section that gives students something to be excited about in the first 10 minutes.
+                            Students want to know who’s teaching them. Even for a course that is mostly screencasts, film yourself for your introduction. Or go the extra mile and film yourself introducing each section!
                             </div>
                         </div>
                         <div className={styles.item}>
                             <div className={styles.title}>
-                                Sections have a clear learning objective.
+                            Being on camera takes practice.
                             </div>
                             <div className={styles.content}>
-                                Introduce each section by describing the section goal and why it’s important. Give lectures and sections titles that reflect their content and have a logical flow.
+                            Make eye contact with the camera and speak clearly. Do as many retakes as you need to get it right.
                             </div>
                         </div>
                         <div className={styles.item}>
                             <div className={styles.title}>
-                                Lectures cover one concept.
+                            Set yourself up for editing success.
                             </div>
                             <div className={styles.content}>
-                                A good lecture length is 2-7 minutes, to keep students interested and help them study in short bursts. Make lectures around single topics so students can easily re-watch specific points later.
+                            You can edit out long pauses, mistakes, and ums or ahs. Film a few extra activities or images that you can add in later to cover those cuts.
                             </div>
                         </div>
                         <div className={styles.item}>
                             <div className={styles.title}>
-                                Mix and match your lecture types.
+                            Create audio marks.
                             </div>
                             <div className={styles.content}>
-                                Alternate between filming yourself, your screen, and slides or other visuals. Showing yourself can help students feel connected.
+                            Clap when you start each take to easily locate the audio spike during editing. Use our guides to manage your recording day efficiently.
                             </div>
                         </div>
                         <div className={styles.item}>
                             <div className={styles.title}>
-                                Practice activities create hands-on learning.
+                            For screencasts, clean up.
                             </div>
                             <div className={styles.content}>
-                                Help students apply your lessons to their real world with projects, assignments, coding exercises, or worksheets.
+                            Move unrelated files and folders off your desktop and open any tabs in advance. Make on-screen text at least 24pt and use zooming to highlight.
                             </div>
                         </div>
                     </Col>
@@ -105,9 +105,9 @@ const FilmEdit = () => {
                             Requirements
                         </div>
                         <ul className={styles.list}>
-                            <li>Your course has at least five lectures</li>
-                            <li>All lectures add up to at least 30+ minutes of total video</li>
-                            <li>You course is composed of valuable educational content (learn more)</li>
+                            <li>Film and export in HD to create videos of at least 720p, or 1080p if possible</li>
+                            <li>Audio should come out of both the left and right channels and be synced to your video</li>
+                            <li>Audio should be free of echo and background noise so as not to be distracting to students</li>
                         </ul>
                     </Col>
                 </Row>
@@ -121,18 +121,26 @@ const FilmEdit = () => {
                         </div>
                         <div className={styles.item}>
                             <div className={styles.title}>
-                                <Link to="/">HuYeFen Trust & Safety</Link>
+                                <Link to="/">Create a test video</Link>
                             </div>
                             <div className={styles.content}>
-                                Our policies for instructors and students
+                            Get feedback before filming your whole course
                             </div>
                         </div>
                         <div className={styles.item}>
                             <div className={styles.title}>
-                                <Link to="/">Join the community</Link>
+                                <Link to="/">Teach Hub: Guide to quality A/V</Link>
                             </div>
                             <div className={styles.content}>
-                                A place to talk with other instructors
+                            Film and edit with confidence
+                            </div>
+                        </div>
+                        <div className={styles.item}>
+                            <div className={styles.title}>
+                                <Link to="/">Udemy trust & safety</Link>
+                            </div>
+                            <div className={styles.content}>
+                            Our policies for instructors and students
                             </div>
                         </div>
                     </Col>
