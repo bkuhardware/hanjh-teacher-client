@@ -111,9 +111,14 @@ const Sider = ({ courseId, syllabus, loading, selectedKeys }) => {
                                 Target your students
                             </Link>
                         </MenuItem>
-                        <MenuItem key="/tips">
-                            <Link to={`/course/${courseId}/edit/tips`}>
+                        <MenuItem key="/course-structure">
+                            <Link to={`/course/${courseId}/edit/course-structure`}>
                                 Course structure
+                            </Link>
+                        </MenuItem>
+                        <MenuItem key="/setup-test">
+                            <Link to={`/course/${courseId}/edit/setup-test`}>
+                                Setup & test video
                             </Link>
                         </MenuItem>
                     </SubMenu>
@@ -127,6 +132,11 @@ const Sider = ({ courseId, syllabus, loading, selectedKeys }) => {
                         )}
                         popupClassName={styles.subMenuPopup}
                     >
+                        <MenuItem key="/film-edit">
+                            <Link to={`/course/${courseId}/edit/film-edit`}>
+                                Film & edit
+                            </Link>
+                        </MenuItem>
                         <MenuItem key="/syllabus">
                             <Link to={`/course/${courseId}/edit/syllabus`}>
                                 Syllabus

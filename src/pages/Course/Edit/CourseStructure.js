@@ -2,11 +2,11 @@ import React from 'react';
 import { Icon, Button, Row, Col } from 'antd';
 import Link from 'umi/Link';
 import Library from '@/elements/icon/library';
-import styles from './CourseStructure.less';
+import styles from './Tips.less';
 
 const CourseStructure = () => {
     return (
-        <div className={styles.courseStructure}>
+        <div className={styles.page}>
             <div className={styles.jumpotron}>
                 <div>
                     <div className={styles.text}>
