@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { useEffectOnlyUpdates, usePrevious } from '@/utils/hooks';
 import { connect } from 'dva';
 import { Alert, Input, Icon, Collapse, Badge, Skeleton, Spin, Avatar, Tooltip, Button, Row, Col, Modal, message } from 'antd';
 import styles from './Goals.less';
@@ -78,26 +77,192 @@ const TargetItem = ({ item, inputValue, itemType, onChangeInput, onOk, onClose, 
         </Row>
     )
 };
-let whatLearnCount = 0;
 
-const Goals = ({ dispatch, match, ...props }) => {
-    const [activeKeys, setActiveKeys] = useState(['whatLearn', 'target', 'requirements']);
-    //what learn
-    
-    const [whatLearnChange, setWhatLearnChange] = useState({
+const Subject = ({ field, onSave, currentUser }) => {
+    const count = useRef(0);
+    const [change, setChange] = useState({
         add: [],
         update: {},
         delete: []
     });
-    const [whatLearnNewItem, setWhatLearnNewItem] = useState(null);
-    const [whatLearnMetaItem, setWhatLearnMetaItem] = useState({
+    const [newItem, setNewItem] = useState(null);
+    const [metaItem, setMetaItem] = useState({
         'new_item': {
             type: 'input',
             currentValue: ''
         }
+    }); 
+    useEffect(() => {
+        message.success('Ok')
+        let metaItemData = { ...metaItem };
+        _.forEach(field || [], fieldItem => {
+            if (
+                !metaItemData[fieldItem._id]
+                || (
+                    metaItemData[fieldItem._id].type === 'text'
+                    && _.isEmpty(change.update[fieldItem._id])
+                )
+            ) {
+                metaItemData = {
+                    ...metaItemData,
+                    [fieldItem._id] :{
+                        type: 'text',
+                        currentValue: fieldItem.content
+                    }
+                }
+            }
+        });
+        setMetaItem({ ...metaItemData });
+    }, [field]);
+
+    const handleChangeInput = (e, itemId) => {
+        const val = e.target.value;
+        setMetaItem({
+            ...metaItem,
+            [itemId]: {
+                ...metaItem[itemId],
+                currentValue: val
+            }
+        })
+    };
+    const handleNewAnswer = () => {
+        setNewItem({
+            _id: 'new_item',
+            content: ''
+        });
+    };
+    const handleOk = (data, itemId) => {
+        message.success('Change!');
+        setChange({
+            ...change,
+            update: {
+                ...change.update,
+                [itemId]: {
+                    ...data,
+                    owner: currentUser
+                }
+            }
+        });
+        setMetaItem({
+            ...metaItem,
+            [itemId]: {
+                ...metaItem[itemId],
+                type: 'text'
+            }
+        });
+    };
+    const handleClose = (content, itemId) => {
+        setMetaItem({
+            ...metaItem,
+            [itemId]: {
+                ...metaItem[itemId],
+                type: 'text',
+                currentValue: content
+            }
+        });
+    };
+    const handleNewOk = content => {
+        const countValue = count.current;
+        setNewItem(null);
+        setChange({
+            ...change,
+            add: [
+                ...change.add,
+                {
+                    _id: `new_complete_item_${countValue}`,
+                    owner: currentUser,
+                    content: content,
+                    editable: true,
+                    updatedAt: Date.now()
+                }
+            ]
+        });
+        setMetaItem({
+            ...metaItem,
+            [`new_complete_item_${countValue}`]: {
+                type: 'text',
+                currentValue: content
+            },
+            'new_item': {
+                type: 'input',
+                currentValue: ''
+            }
+        });
+        count.current += 1;
+    };
+    const handleNewClose = () => {
+        setNewItem(null);
+        setMetaItem({
+            ...metaItem,
+            'new_item': {
+                type: 'input',
+                currentValue: ''
+            }
+        });
+    };
+    const handleEdit = itemId => setMetaItem({
+        ...metaItem,
+        [itemId]: {
+            ...metaItem[itemId],
+            type: 'input'
+        }
     });
-    const [requirementsDisabled, setRequirementsDisabled] = useState(true);
-    const [targetStudentsDisabled, setTargetStudentsDisabled] = useState(true);
+    const handleDelete = itemId => setChange({
+        ...change,
+        delete: [
+            ...change.delete,
+            itemId
+        ]
+    });
+    let renderData;
+    if (field) {
+        renderData = _.map(field, item => ({ ...item }));
+        _.forEach(change.add, item => {
+            renderData.push(item);
+        });
+        if (newItem) renderData.push(newItem);
+        _.remove(renderData, item => _.indexOf(change.delete, item._id) > -1);
+        _.forEach(_.keys(change.update), key => {
+            const index = _.findIndex(renderData, item => item._id === key);
+            if (index > -1 && renderData[index])
+                renderData[index] = { ...change.update[key] };        
+        });
+    }
+    return (
+        <React.Fragment>
+            {_.map(renderData, item => !!metaItem[item._id] ? (
+                <TargetItem
+                    item={item}
+                    key={item._id}
+                    inputValue={metaItem[item._id].currentValue}
+                    itemType={metaItem[item._id].type}
+                    onChangeInput={e => handleChangeInput(e, item._id)}
+                    onOk={data => handleOk(data, item._id)}
+                    onClose={() => handleClose(item.content, item._id)}
+                    onNewOk={handleNewOk}
+                    onNewClose={handleNewClose}
+                    onEdit={() => handleEdit(item._id)}
+                    onDelete={() => handleDelete(item._id)}
+                />
+            ) : (
+                <div className={styles.itemLoading}>
+                    <Spin indicator={<Icon type="loading" spin />} />
+                </div>
+            ))}
+            {!newItem && (
+                <div className={styles.add}>
+                    <Button type="dashed" icon="plus" onClick={handleNewAnswer}>Add an answer</Button>
+                </div>
+            )}
+            <div className={styles.save}>
+                <Button type="primary" disabled={_.isEmpty(change.add) && _.isEmpty(change.delete) && _.isEmpty(change.update)} onClick={onSave}>Save</Button>
+            </div>
+        </React.Fragment>
+    )
+};
+
+const Goals = ({ dispatch, match, ...props }) => {
+    const [activeKeys, setActiveKeys] = useState(['whatLearn', 'target', 'requirements']);
     const { courseId } = match.params;
     const {
         goals: {
@@ -108,30 +273,6 @@ const Goals = ({ dispatch, match, ...props }) => {
         initLoading,
         user
     } = props;
-    //const previousWhatLearn = usePrevious(whatLearn);
-    // console.log(previousWhatLearn);
-    useEffectOnlyUpdates(() => {
-        message.success('PHP');
-        let whatLearnMetaItemData = { ...whatLearnMetaItem };
-        _.forEach(whatLearn, whatLearnItem => {
-            if (
-                !whatLearnMetaItemData[whatLearnItem._id]
-                || (
-                    whatLearnMetaItemData[whatLearnItem._id].type === 'text'
-                    && _.isEmpty(whatLearnChange.update[whatLearnItem._id])
-                )
-            ) {
-                whatLearnMetaItemData = {
-                    ...whatLearnMetaItemData,
-                    [whatLearnItem._id] :{
-                        type: 'text',
-                        currentValue: whatLearnItem.content
-                    }
-                }
-            }
-        });
-        setWhatLearnMetaItem({ ...whatLearnMetaItemData });
-    }, [whatLearn]);
     useEffect(() => {
         dispatch({
             type: 'course/fetchGoals',
@@ -144,126 +285,7 @@ const Goals = ({ dispatch, match, ...props }) => {
     const handleSaveWhatLearn = () => {};
     const handleSaveRequirements = () => {};
     const handleSaveTargetStudents = () => {};
-    const handleChangeInput = (e, itemId) => {
-        const val = e.target.value;
-        setWhatLearnMetaItem({
-            ...whatLearnMetaItem,
-            [itemId]: {
-                ...whatLearnMetaItem[itemId],
-                currentValue: val
-            }
-        })
-    };
-    const handleNewAnswer = () => {
-        setWhatLearnNewItem({
-            _id: 'new_item',
-            content: ''
-        });
-    };
-    const handleOk = (data, itemId) => {
-        message.success('Change!');
-        setWhatLearnChange({
-            ...whatLearnChange,
-            update: {
-                ...whatLearnChange.update,
-                [itemId]: {
-                    ...data,
-                    owner: {
-                        _id: user._id,
-                        name: user.name,
-                        avatar: user.avatar
-                    }
-                }
-            }
-        });
-        setWhatLearnMetaItem({
-            ...whatLearnMetaItem,
-            [itemId]: {
-                ...whatLearnMetaItem[itemId],
-                type: 'text'
-            }
-        });
-    };
-    const handleClose = (content, itemId) => {
-        setWhatLearnMetaItem({
-            ...whatLearnMetaItem,
-            [itemId]: {
-                ...whatLearnMetaItem[itemId],
-                type: 'text',
-                currentValue: content
-            }
-        });
-    };
-    const handleNewOk = content => {
-        setWhatLearnNewItem(null);
-        setWhatLearnChange({
-            ...whatLearnChange,
-            add: [
-                ...whatLearnChange.add,
-                {
-                    _id: `new_comp_item_${whatLearnCount}`,
-                    owner: {
-                        _id: user._id,
-                        name: user.name,
-                        avatar: user.avatar
-                    },
-                    content: content,
-                    editable: true,
-                    updatedAt: Date.now()
-                }
-            ]
-        });
-        setWhatLearnMetaItem({
-            ...whatLearnMetaItem,
-            [`new_comp_item_${whatLearnCount}`]: {
-                type: 'text',
-                currentValue: content
-            },
-            'new_item': {
-                type: 'input',
-                currentValue: ''
-            }
-        });
-        whatLearnCount++;
-    };
-    const handleNewClose = () => {
-        setWhatLearnNewItem(null);
-        setWhatLearnMetaItem({
-            ...whatLearnMetaItem,
-            'new_item': {
-                type: 'input',
-                currentValue: ''
-            }
-        });
-    };
-    const handleEdit = itemId => setWhatLearnMetaItem({
-        ...whatLearnMetaItem,
-        [itemId]: {
-            ...whatLearnMetaItem[itemId],
-            type: 'input'
-        }
-    });
-    const handleDelete = itemId => setWhatLearnChange({
-        ...whatLearnChange,
-        delete: [
-            ...whatLearnChange.delete,
-            itemId
-        ]
-    });
-    let whatLearnRenderData;
-    if (whatLearn) {
-        whatLearnRenderData = _.map(whatLearn, item => ({ ...item }));
-        _.forEach(whatLearnChange.add, item => {
-            whatLearnRenderData.push(item);
-        });
-        if (whatLearnNewItem) whatLearnRenderData.push(whatLearnNewItem);
-        _.remove(whatLearnRenderData, item => _.indexOf(whatLearnChange.delete, item._id) > -1);
-        _.forEach(_.keys(whatLearnChange.update), key => {
-            const index = _.findIndex(whatLearnRenderData, item => item._id === key);
-            if (index > -1 && whatLearnRenderData[index])
-                whatLearnRenderData[index] = { ...whatLearnChange.update[key] };        
-        });
-    }
+    const currentUser = _.pick(user, ['_id', 'name', 'avatar']);
     return (
         <div className={styles.goals}>
             <div className={styles.alert}>
@@ -295,55 +317,25 @@ const Goals = ({ dispatch, match, ...props }) => {
                         bordered={false}
                     >
                         <Panel key="whatLearn" header="What will students learn in your course?" className={styles.panel}>
-                            {_.map(whatLearnRenderData, item => !!whatLearnMetaItem[item._id] ? (
-                                <TargetItem
-                                    item={item}
-                                    key={item._id}
-                                    inputValue={whatLearnMetaItem[item._id].currentValue}
-                                    itemType={whatLearnMetaItem[item._id].type}
-                                    onChangeInput={e => handleChangeInput(e, item._id)}
-                                    onOk={data => handleOk(data, item._id)}
-                                    onClose={() => handleClose(item.content, item._id)}
-                                    onNewOk={handleNewOk}
-                                    onNewClose={handleNewClose}
-                                    onEdit={() => handleEdit(item._id)}
-                                    onDelete={() => handleDelete(item._id)}
-                                />
-                            ) : (
-                                <div className={styles.itemLoading}>
-                                    <Spin indicator={<Icon type="loading" spin />} />
-                                </div>
-                            ))}
-                            {!whatLearnNewItem && (
-                                <div className={styles.add}>
-                                    <Button type="dashed" icon="plus" onClick={handleNewAnswer}>Add an answer</Button>
-                                </div>
-                            )}
-                            <div className={styles.save}>
-                                <Button type="primary" disabled={_.isEmpty(whatLearnChange.add) && _.isEmpty(whatLearnChange.delete) && _.isEmpty(whatLearnChange.update)} onClick={handleSaveWhatLearn}>Save</Button>
-                            </div>
+                            <Subject
+                                currentUser={currentUser}
+                                field={whatLearn}
+                                onSave={handleSaveWhatLearn}
+                            />
                         </Panel>
                         <Panel key="requirements" header="Are there any course requirements or prerequisites?" className={styles.panel}>
-                            {/* {_.map(requirements, item => (
-                                <TargetItem item={item} key={item._id + _.uniqueId('requirement_')} onChange={() => setRequirementsDisabled(false)}/>
-                            ))}
-                            <div className={styles.add}>
-                                <Button type="dashed" icon="plus">Add an answer</Button>
-                            </div>
-                            <div className={styles.save}>
-                                <Button type="primary" disabled={requirementsDisabled} onClick={handleSaveRequirements}>Save</Button>
-                            </div> */}
+                            <Subject
+                                currentUser={currentUser}
+                                field={requirements}
+                                onSave={handleSaveRequirements}
+                            />
                         </Panel>
                         <Panel key="target" header="Who are your target students?" className={styles.panel}>
-                            {/* {_.map(targetStudents, item => (
-                                <TargetItem item={item} key={item._id + _.uniqueId('target_student_')} onChange={() => setTargetStudentsDisabled(false)}/>
-                            ))}
-                            <div className={styles.add}>
-                                <Button type="dashed" icon="plus">Add an answer</Button>
-                            </div>
-                            <div className={styles.save}>
-                                <Button type="primary" disabled={targetStudentsDisabled} onClick={handleSaveTargetStudents}>Save</Button>
-                            </div> */}
+                            <Subject
+                                currentUser={currentUser}
+                                field={targetStudents}
+                                onSave={handleSaveTargetStudents}
+                            />
                         </Panel>
                     </Collapse>
                 )}
