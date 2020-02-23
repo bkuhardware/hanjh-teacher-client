@@ -199,7 +199,8 @@ const Sider = ({ courseId, syllabus, loading, selectedKeys }) => {
 const EditLayout = ({ children, dispatch, match, location, ...props }) => {
     const {
         courseInfo,
-        loading
+        loading,
+        areasMenu
     } = props;
     const { courseId } = match.params;
     useEffect(() => {
@@ -211,6 +212,12 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
             type: 'course/resetInfo'
         });
     }, [courseId]);
+    useEffect(() => {
+        if (!areasMenu)
+            dispatch({
+                type: 'settings/fetch'
+            });
+    }, []);
     const pathname = location.pathname;
     const selectedKeys = [_.replace(pathname, `/course/${courseId}/edit`, '')]
     return (
@@ -238,8 +245,9 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
 };
 
 export default withRouter(connect(
-    ({ loading, course }) => ({
+    ({ settings, loading, course }) => ({
         courseInfo: course.info,
-        loading: !!loading.effects['course/fetchInfo']
+        loading: !!loading.effects['course/fetchInfo'],
+        areasMenu: settings.areasMenu
     })
 )(EditLayout));
