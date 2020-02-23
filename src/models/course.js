@@ -4,7 +4,11 @@ import GOALS from '@/assets/fakers/goals';
 
 const initialState = {
     info: null,
-    goals: null
+    goals: {
+        whatLearn: null,
+        requirements: null,
+        targetStudents: null
+    }
 };
 
 export default {
@@ -59,7 +63,14 @@ export default {
             };
         },
         resetGoals(state) {
-            return { ...state, goals: null };
+            return {
+                ...state,
+                goals: {
+                    whatLearn: null,
+                    requirements: null,
+                    targetStudents: null
+                }
+            };
         }
     }
 };

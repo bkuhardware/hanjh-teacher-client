@@ -29,10 +29,13 @@
                 .content {
                     font-size: 1em;
                     color: white;
+                    position: relative;
                     .icon {
-                        color: #FADA5E;
                         font-size: 0.9em;
-                        margin-right: 8px;
+                        position: absolute;
+                        line-height: 21px;
+                        top: 0;
+                        left: 0;
                     }
                 }
                 .extra {
@@ -41,19 +44,6 @@
             }
             .add {
                 margin-top: 15px;
-                color: @primary-color;
-                cursor: pointer;
-                &:hover {
-                    color: #FADA5E;
-                }
-                i {
-                    font-size: 1.8em;
-                    position: relative;
-                    top: 3px;
-                }
-                .text {
-                    margin-left: 15px;
-                }
             }
             .save {
                 margin-top: 25px;

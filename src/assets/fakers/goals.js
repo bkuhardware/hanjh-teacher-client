@@ -2,7 +2,7 @@ export default {
     whatLearn: [
         {
             _id: 1,
-            content: 'Get in-depth knowledge of <strong>Vue JS</strong> & <strong>Firebase</strong> from the ground up',
+            content: 'Get in-depth knowledge of <strong>Vue JS</strong> & <strong>Firebase</strong> from the ground up. Use other Firebase services such as a Firestore database, Cloud Functions & Hosting. Build & deploy 3 real-world web apps with Vue JS & Firebase',
             owner: {
                 //last owner
                 _id: 1,
@@ -11,7 +11,7 @@ export default {
             },
             createdAt: 1567476499584,
             updatedAt: 1567476499584,
-            editable: false
+            editable: true
         },
         {
             _id: 2,
