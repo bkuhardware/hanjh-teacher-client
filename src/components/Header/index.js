@@ -71,7 +71,7 @@ const Header = ({ user, dispatch }) => {
                     </React.Fragment>
                 ) : null}
                 <div className={styles.learn}>
-                    Learn on Hanjh
+                    Learn on HuYeFen
                 </div>
             </div>
         </AntHeader>

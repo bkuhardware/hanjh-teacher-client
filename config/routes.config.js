@@ -53,9 +53,19 @@ export default [
                         component: './Course/Edit/Goals'
                     },
                     {
-                        path: '/course/:courseId/edit/tips',
-                        title: 'route.course.edit.tips',
-                        component: './Course/Edit/Tips'
+                        path: '/course/:courseId/edit/course-structure',
+                        title: 'route.course.edit.coursestructure',
+                        component: './Course/Edit/CourseStructure'
+                    },
+                    {
+                        path: '/course/:courseId/edit/setup-test',
+                        title: 'route.course.edit.setuptest',
+                        component: './Course/Edit/SetupTest'
+                    },
+                    {
+                        path: '/course/:courseId/edit/film-edit',
+                        title: 'route.course.edit.filmedit',
+                        component: './Course/Edit/FilmEdit'
                     },
                     {
                         path: '/course/:courseId/edit/syllabus',

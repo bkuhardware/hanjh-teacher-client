@@ -36,7 +36,7 @@ const plugins = [
                 ],
             },
             title: {
-                defaultTitle: 'Hanjh Teacher',
+                defaultTitle: 'HuYeFen Teacher',
                 useLocale: true,
                 format: '{current}{separator}{parent}'
             },
@@ -90,7 +90,7 @@ export default {
                 .split('/')
                 .map(a => a.replace(/([A-Z])/g, '-$1'))
                 .map(a => a.toLowerCase());
-                return `hanhjh-teacher-${arr.join('-')}-${localName}`.replace(/--/g, '-');
+                return `huyefen-teacher-${arr.join('-')}-${localName}`.replace(/--/g, '-');
             }
             return localName;
         },

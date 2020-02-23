@@ -93,7 +93,6 @@ const Subject = ({ field, onSave, currentUser }) => {
         }
     }); 
     useEffect(() => {
-        message.success('Ok')
         let metaItemData = { ...metaItem };
         _.forEach(field || [], fieldItem => {
             if (

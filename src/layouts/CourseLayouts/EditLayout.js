@@ -61,6 +61,11 @@ const Header = ({ courseInfo, loading, handlePreview }) => {
                             <Button type="primary" onClick={handlePreview} className={styles.preview}>
                                 Preview
                             </Button>
+                            <span className={styles.history}>
+                                <Tooltip title="History" placement="bottom">
+                                    <Icon type="history" style={{ color: 'white', fontSize: '2em' }}/>
+                                </Tooltip>
+                            </span>
                             <span className={styles.toManage}>
                                 <Tooltip title="Go to manage" placement="bottom">
                                     <Icon type="folder-open" theme="filled" style={{ color: 'white', fontSize: '2em' }}/>
