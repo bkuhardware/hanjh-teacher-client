@@ -1,7 +1,7 @@
 export default {
     whatLearn: [
         {
-            _id: 1,
+            _id: 'what_learn_1',
             content: 'Get in-depth knowledge of <strong>Vue JS</strong> & <strong>Firebase</strong> from the ground up. Use other Firebase services such as a Firestore database, Cloud Functions & Hosting. Build & deploy 3 real-world web apps with Vue JS & Firebase',
             owner: {
                 //last owner
@@ -9,12 +9,11 @@ export default {
                 name: 'Thuy Huyen',
                 avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
             },
-            createdAt: 1567476499584,
             updatedAt: 1567476499584,
-            editable: true
+            editable: false
         },
         {
-            _id: 2,
+            _id: 'what_learn_2',
             content: 'Build & deploy 3 real-world web apps with Vue JS & Firebase',
             owner: {
                 //last owner
@@ -22,12 +21,11 @@ export default {
                 name: 'Trong Luan',
                 avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-9/83558548_2290286491264377_331290296627232768_n.jpg?_nc_cat=107&_nc_oc=AQnpLi8nWGbC-08nBlYjhCuZyGVkcZMFHaqWTcBFbEZK1GzrkY73FWhSwonUwq-m0aE&_nc_ht=scontent.fsgn5-2.fna&oh=84246739e4ba3279ce49566f8f59bb01&oe=5EC49D12'
             },
-            createdAt: 1567476499584,
             updatedAt: 1567476499584,
             editable: true
         },
         {
-            _id: 3,
+            _id: 'what_learn_3',
             content: 'Learn about & implement Firebase authentication into Vue JS web apps',
             owner: {
                 //last owner
@@ -35,12 +33,11 @@ export default {
                 name: 'Thuy Huyen',
                 avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
             },
-            createdAt: 1567476499584,
             updatedAt: 1567476499584,
             editable: false
         },
         {
-            _id: 4,
+            _id: 'what_learn_4',
             content: 'Use other Firebase services such as a Firestore database, Cloud Functions & Hosting',
             owner: {
                 //last owner
@@ -48,12 +45,11 @@ export default {
                 name: 'Thuy Huyen',
                 avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
             },
-            createdAt: 1567476499584,
             updatedAt: 1567476499584,
             editable: false
         },
         {
-            _id: 5,
+            _id: 'what_learn_5',
             content: 'Understand how using frameworks like Django will save you a ton of time in web development',
             owner: {
                 //last owner
@@ -61,7 +57,6 @@ export default {
                 name: 'Trong Luan',
                 avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-9/83558548_2290286491264377_331290296627232768_n.jpg?_nc_cat=107&_nc_oc=AQnpLi8nWGbC-08nBlYjhCuZyGVkcZMFHaqWTcBFbEZK1GzrkY73FWhSwonUwq-m0aE&_nc_ht=scontent.fsgn5-2.fna&oh=84246739e4ba3279ce49566f8f59bb01&oe=5EC49D12'
             },
-            createdAt: 1567476499584,
             updatedAt: 1567476499584,
             editable: true
         }
@@ -76,7 +71,6 @@ export default {
                 name: 'Thuy Huyen',
                 avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
             },
-            createdAt: 1567476499584,
             updatedAt: 1567476499584,
             editable: false
         },

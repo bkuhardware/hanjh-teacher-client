@@ -10,9 +10,23 @@ const { Panel } = Collapse;
 const ButtonGroup = Button.Group;
 
 const TargetItem = ({ item, inputValue, itemType, onChangeInput, onOk, onClose, onEdit, onDelete, onNewOk, onNewClose }) => {
-    useEffect(() => {
-        return () => message.error('A');
-    }, []);
+    const handleDelete = () => {
+        Modal.confirm({
+            content: 'Are you sure?',
+            okText: 'Delete',
+            cancelText: 'Cancel',
+            onOk: onDelete
+        })
+    };
+    const handleOk = () => {
+        onOk({
+            _id: item._id,
+            content: inputValue,
+            updatedAt: Date.now(),
+            editable: true
+        });
+    };
+    const handleNewOk = () => onNewOk(inputValue);
     const [extraVisible, setExtraVisible] = useState(false);
     if (itemType === 'text') {
         return (
@@ -25,15 +39,16 @@ const TargetItem = ({ item, inputValue, itemType, onChangeInput, onOk, onClose, 
                 <Col span={22} className={styles.content}>
                     <Tooltip
                         placement="left"
+                        overlayStyle={{ maxWidth: '1000px' }}
                         title={(
                             <span>
                                 <Avatar shape="circle" size={32} alt="Avatar" src={item.owner.avatar} style={{ marginRight: '8px' }}/>
-                                <span style={{ lineHeight: '32px' }}>{`${item.owner.name} at ${moment(item.owner.updatedAt).format('HH:mm, D MMM')}`}</span>
+                                <span style={{ lineHeight: '32px' }}>{`${item.owner.name} at ${moment(item.updatedAt).format('HH:mm, D MMM')}`}</span>
                             </span>
                         )}
                     >
                         <span className={styles.icon}>
-                            <Icon type={item.isAdded ? "plus-circle" : "check-circle"} theme="filled" style={{ color: item.isAdded ? "tomato" : "#fada5e" }} />
+                            <Icon type={item.isAdded ? "plus-circle" : "check-circle"} theme="filled" style={{ color: item.isAdded ? "#fada5e" : "#fafafa" }} />
                         </span>
                         <div style={{ marginLeft: '16px' }}>{item.content}</div>
                     </Tooltip>
@@ -42,7 +57,7 @@ const TargetItem = ({ item, inputValue, itemType, onChangeInput, onOk, onClose, 
                     {item.editable && extraVisible && (
                         <ButtonGroup>
                             <Button icon="edit" onClick={onEdit}/>
-                            <Button icon="rest" onClick={onDelete} />
+                            <Button icon="rest" onClick={handleDelete} />
                         </ButtonGroup>
                     )}
                 </Col>
@@ -56,18 +71,19 @@ const TargetItem = ({ item, inputValue, itemType, onChangeInput, onOk, onClose, 
             </Col>
             <Col span={2} className={styles.extra}>
                 <ButtonGroup>
-                    <Button icon="check" disabled={item.content === inputValue} onClick={item._id === 'new_item' ? onNewOk : onOk} />
+                    <Button icon="check" disabled={item.content === inputValue} onClick={item._id === 'new_item' ? handleNewOk : handleOk} />
                     <Button icon="close" onClick={item._id === 'new_item' ? onNewClose : onClose} />
                 </ButtonGroup>
             </Col>
         </Row>
     )
 };
+let whatLearnCount = 0;
 
 const Goals = ({ dispatch, match, ...props }) => {
     const [activeKeys, setActiveKeys] = useState(['whatLearn', 'target', 'requirements']);
     //what learn
-    let whatLearnCount = 0;
+    
     const [whatLearnChange, setWhatLearnChange] = useState({
         add: [],
         update: {},
@@ -95,6 +111,7 @@ const Goals = ({ dispatch, match, ...props }) => {
     //const previousWhatLearn = usePrevious(whatLearn);
     // console.log(previousWhatLearn);
     useEffectOnlyUpdates(() => {
+        message.success('PHP');
         let whatLearnMetaItemData = { ...whatLearnMetaItem };
         _.forEach(whatLearn, whatLearnItem => {
             if (
@@ -137,12 +154,26 @@ const Goals = ({ dispatch, match, ...props }) => {
             }
         })
     };
+    const handleNewAnswer = () => {
+        setWhatLearnNewItem({
+            _id: 'new_item',
+            content: ''
+        });
+    };
     const handleOk = (data, itemId) => {
+        message.success('Change!');
         setWhatLearnChange({
             ...whatLearnChange,
             update: {
                 ...whatLearnChange.update,
-                [itemId]: { ...data }
+                [itemId]: {
+                    ...data,
+                    owner: {
+                        _id: user._id,
+                        name: user.name,
+                        avatar: user.avatar
+                    }
+                }
             }
         });
         setWhatLearnMetaItem({
@@ -177,7 +208,7 @@ const Goals = ({ dispatch, match, ...props }) => {
                         avatar: user.avatar
                     },
                     content: content,
-                    checkable: true,
+                    editable: true,
                     updatedAt: Date.now()
                 }
             ]
@@ -221,7 +252,7 @@ const Goals = ({ dispatch, match, ...props }) => {
     });
     let whatLearnRenderData;
     if (whatLearn) {
-        whatLearnRenderData = [...whatLearn];
+        whatLearnRenderData = _.map(whatLearn, item => ({ ...item }));
         _.forEach(whatLearnChange.add, item => {
             whatLearnRenderData.push(item);
         });
@@ -230,7 +261,7 @@ const Goals = ({ dispatch, match, ...props }) => {
         _.forEach(_.keys(whatLearnChange.update), key => {
             const index = _.findIndex(whatLearnRenderData, item => item._id === key);
             if (index > -1 && whatLearnRenderData[index])
-                whatLearnRenderData[index] = { ...whatLearnChange.update[key] };
+                whatLearnRenderData[index] = { ...whatLearnChange.update[key] };        
         });
     }
     return (
@@ -264,7 +295,7 @@ const Goals = ({ dispatch, match, ...props }) => {
                         bordered={false}
                     >
                         <Panel key="whatLearn" header="What will students learn in your course?" className={styles.panel}>
-                            {_.map(whatLearnRenderData, item => (
+                            {_.map(whatLearnRenderData, item => !!whatLearnMetaItem[item._id] ? (
                                 <TargetItem
                                     item={item}
                                     key={item._id}
@@ -278,12 +309,18 @@ const Goals = ({ dispatch, match, ...props }) => {
                                     onEdit={() => handleEdit(item._id)}
                                     onDelete={() => handleDelete(item._id)}
                                 />
+                            ) : (
+                                <div className={styles.itemLoading}>
+                                    <Spin indicator={<Icon type="loading" spin />} />
+                                </div>
                             ))}
-                            <div className={styles.add}>
-                                <Button type="dashed" icon="plus">Add an answer</Button>
-                            </div>
+                            {!whatLearnNewItem && (
+                                <div className={styles.add}>
+                                    <Button type="dashed" icon="plus" onClick={handleNewAnswer}>Add an answer</Button>
+                                </div>
+                            )}
                             <div className={styles.save}>
-                                <Button type="primary" disabled={_.isEmpty(whatLearnChange.add) && _.isEmpty(whatLearnChange.delete) && _.isEmpty(whatLearnChange.delete)} onClick={handleSaveWhatLearn}>Save</Button>
+                                <Button type="primary" disabled={_.isEmpty(whatLearnChange.add) && _.isEmpty(whatLearnChange.delete) && _.isEmpty(whatLearnChange.update)} onClick={handleSaveWhatLearn}>Save</Button>
                             </div>
                         </Panel>
                         <Panel key="requirements" header="Are there any course requirements or prerequisites?" className={styles.panel}>
