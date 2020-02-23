@@ -64,4 +64,47 @@
     .clear {
         height: 300px;
     }
+    .main {
+        padding: 70px 0px;
+        .tips, .requirements, .resources {
+            .icon {
+                i {
+                    color: #FADA5E;
+                    font-size: 2.2em;
+                    margin-right: 20px;
+                    position: relative;
+                    top: 4px;
+                }
+            }
+            .content {
+                width: 75%;
+                & > .title {
+                    color: @primary-color;
+                    font-size: 1.6em;
+                    margin-bottom: 36px;
+                }
+            }
+            margin-bottom: 25px;
+        }
+        .tips, .resources {
+            .item {
+                .title {
+                    color: @primary-color;
+                    font-size: 1.2em;
+                }
+                .content {
+                    margin-top: 12px;
+                    margin-bottom: 20px;
+                }
+            }
+        }
+        .requirements {
+            .list {
+                padding: 0 18px;
+                li {
+                    margin-bottom: 12px;
+                }
+            }
+        }
+    }
 }
