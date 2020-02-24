@@ -9,7 +9,84 @@
             margin-bottom: 25px;
         }
         .main {
-
+            .basicInfo {
+                .topicsList {
+                    margin-top: 18px;
+                    .topic {
+                        display: inline-block;
+                        :global {
+                            .ant-tag {
+                                background-color: #1e1e1e;
+                                color: inherit;
+                                cursor: pointer;
+                                padding: 5px 10px;
+                                font-size: 1.1em;
+                                .anticon-close {
+                                    font-size: 1.1em;
+                                }
+                            }
+                        }
+                    }
+                    .primary {
+                        :global {
+                            .ant-tag {
+                                background-color: #fada5e;
+                                color: black;
+                                .anticon-close {
+                                    color: black;
+                                }
+                            }
+                        }
+                    }
+                }
+                .btnCont {
+                    text-align: right;
+                    .submitBtn {
+                        min-width: 100px;
+                    }
+                }
+            }
+            .avatarLoading {
+                text-align: center;
+                width: 100%;
+                padding: 120px 0;
+            }
+            .avatarContainer {
+                height: 300px;
+                padding: 16px;
+                border-radius: 8px;
+                border: 0.5px dashed rgba(255, 255, 255, 0.3);
+                background-color: rgba(30, 30, 30, 0.5);
+                .avatar {
+                    height: 100%;
+                    overflow: hidden;
+                    background-color: white;
+                    position: relative;
+                    img {
+                        width: 100%;
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                    }
+                }
+                .upload {
+                    height: 100%;
+                    position: relative;
+                    .inlineDiv {
+                        text-align: center;
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 80%;
+                        .intro {
+                            font-size: 1.1em;
+                            margin-bottom: 25px;
+                        }
+                    }
+                }
+            }
         }
     }
 }

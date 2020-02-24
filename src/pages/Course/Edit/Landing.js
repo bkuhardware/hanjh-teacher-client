@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
+import classNames from 'classnames';
 import { usePrevious } from '@/utils/hooks';
-import { Form, Input, Icon, Select, Row, Col } from 'antd';
+import { Form, Input, Icon, Select, Row, Col, AutoComplete, Tooltip, Tag, Spin, Button, Upload } from 'antd';
 import { EditorState, ContentState, convertFromHTML } from 'draft-js';
 import Editor from '@/components/Editor/DescriptionEditor';
+import { TweenOneGroup } from 'rc-tween-one';
 import { exportToHTML } from '@/utils/editor';
+import defaultCourseAvatar from '@/assets/images/course_default.png';
 import styles from './Landing.less';
 
 const FormItem = Form.Item;
@@ -14,6 +17,12 @@ const { Option } = Select;
 const Landing = ({ form, match, dispatch, ...props }) => {
     const [categoryOpen, setCategoryOpen] = useState(false);
     const [description, setDescription] = useState(EditorState.createEmpty());
+    const [dataSource, setDataSource] = useState([]);
+    const [topics, setTopics] = useState([]);
+    const [primaryTopic, setPrimaryTopic] = useState(null);
+    const [avatar, setAvatar] = useState(null);
+    const [fileList, setFileList] = useState([]);
+    const [uploadLoading, setUploadLoading] = useState(false);
     const { getFieldDecorator } = form;
     const { courseId } = match.params;
     const {
@@ -37,6 +46,8 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                 blocksFromHTML.entityMap,
             );
             setDescription(EditorState.createWithContent(description));
+            setTopics([...landing.topics]);
+            setPrimaryTopic(landing.primaryTopic);
         }
     }, [landing]);
     const handleChangeArea = val => {
@@ -45,6 +56,47 @@ const Landing = ({ form, match, dispatch, ...props }) => {
         });
         setCategoryOpen(true);
     };
+    const handleRemoveTopic = topicId => {
+        const filterTopics = _.filter(topics, topic => topic._id !== topicId);
+        setTopics(filterTopics);
+        if (topicId === primaryTopic) setPrimaryTopic(null);
+    };
+    const handleChangePrimaryTopic = topicId => {
+        if (primaryTopic === topicId) return setPrimaryTopic(null);
+        setPrimaryTopic(topicId);
+    };
+    const handleSubmitBasicInfo = e => {
+        e.preventDefault();
+
+    };
+    const handleBeforeUpload = (file, fileList) => {
+        setUploadLoading(true);
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+        fileReader.onload = () => {
+            setAvatar(fileReader.result);
+            setFileList(fileList);
+            setUploadLoading(false);
+        };
+        
+        return false;
+    };
+    const handleRemoveAvatar = () => {
+        setAvatar(null);
+        setFileList([]);
+    };
+    const handleSetAvatar = () => {};
+    const avatarProps = {
+        accept: 'image/*',
+        name: 'avatarfile',
+        beforeUpload: handleBeforeUpload,
+        onRemove: handleRemoveAvatar,
+        fileList: fileList,
+        openFileDialogOnClick: !avatar,
+        showUploadList: {
+            showRemoveIcon: true
+        }
+    };
     return (
         <div className={styles.landing}>
             <div className={styles.content}>
@@ -52,6 +104,7 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                 <div className={styles.main}>
                     <Form
                         className={styles.basicInfo}
+                        onSubmit={handleSubmitBasicInfo}
                     >
                         <FormItem label="Title">
                             {getFieldDecorator('title', {
@@ -196,6 +249,75 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                                 </FormItem>
                             </Col>
                         </Row>
+                        <FormItem
+                            label={(
+                                <span>
+                                    <span style={{ marginRight: '8px' }}>Topics and <b style={{ color: '#fada5e' }}>primary</b> topic?</span>
+                                    <span className={styles.icon}>
+                                        <Tooltip trigger="click" placement="right" title="Which topic do you spend the most time covering in your course? If you believe two topics are equally representative of your entire course, select either one. All of the topics listed will still count as being taught in your course">
+                                            <Icon type="info-circle" theme="filled" style={{ fontSize: '0.8em', color: '#fada5e' }} />
+                                        </Tooltip>
+                                    </span>
+                                </span>
+                            )}
+                            colon={false}
+                        >
+                            <AutoComplete
+                                size="large"
+                                style={{ width: '30%' }}
+                                placeholder="Topics"
+                                dropdownMatchSelectWidth={false}
+                                className={styles.topicsAutoComplete}
+                                dataSource={dataSource}
+                                onSearch={searchText => setDataSource(!searchText ? [] : [searchText, searchText.repeat(2), searchText.repeat(3)])}
+                                disabled={!landing || loading}
+                            >
+                                <Input suffix={!landing || loading ? <Icon type="loading" /> : <Icon type="search" />} />
+                            </AutoComplete>
+                            <div className={styles.topicsList}>
+                                {landing && !loading ? (
+                                    <TweenOneGroup
+                                        enter={{
+                                            scale: 0.8,
+                                            opacity: 0,
+                                            type: 'from',
+                                            duration: 100,
+                                            onComplete: e => {
+                                                e.target.style = '';
+                                            },
+                                        }}
+                                        leave={{ opacity: 0, width: 0, scale: 0, duration: 200 }}
+                                        appear={false}
+                                    >
+                                        {!_.isEmpty(topics) ? _.map(topics, topic => (
+                                                <Tooltip key={topic._id} placement="bottom" title={`Click to toggle ${topic.title} be primary topic`} mouseEnterDelay={1.5}>
+                                                    <span className={primaryTopic === topic._id ? classNames(styles.topic, styles.primary) : styles.topic} onClick={() => handleChangePrimaryTopic(topic._id)}>
+                                                        <Tag
+                                                            closable
+                                                            onClose={() => handleRemoveTopic(topic._id)}
+                                                        >
+                                                            {topic.title}
+                                                        </Tag>
+                                                    </span>
+                                                </Tooltip>
+                                        )) : (
+                                            <span className={styles.empty}>
+                                                Empty topic.
+                                            </span>
+                                        )}
+                                    </TweenOneGroup>
+                                ) : (
+                                    <div style={{ marginTop: '18px'}}>
+                                        <Spin indicator={<Icon type="loading" spin style={{ color: '#fada5e' }} />} />
+                                    </div>
+                                )}
+                            </div>
+                        </FormItem>
+                        <FormItem className={styles.btnCont}>
+                            <Button htmlType="submit" type="primary" className={styles.submitBtn}>
+                                Save
+                            </Button>
+                        </FormItem>
                     </Form>
                 </div>
             </div>
@@ -204,15 +326,45 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                     Course avatar
                 </div>
                 <div className={styles.main}>
-
+                    {!landing || loading ? (
+                        <div className={styles.avatarLoading}>
+                            <Spin indicator={<Icon type="loading-3-quarters" spin style={{ color: '#fada5e', fontSize: 44 }} />} />
+                        </div>
+                    ) : (
+                        <Row className={styles.avatarContainer}>
+                            <Col span={10} className={styles.avatar}>
+                                <img alt="course-avatar" className={styles.img} src={avatar || landing.avatar || defaultCourseAvatar} />
+                            </Col>
+                            <Col span={14} className={styles.upload}>
+                                <div className={styles.inlineDiv}>
+                                    <div className={styles.intro}>
+                                        Make your course stand out with a great image. Important guidelines: 750x422 pixels; .jpg, .jpeg,. gif, or .png. no text on the image.
+                                    </div>
+                                    <div>
+                                        <Upload {...avatarProps}>
+                                            {!avatar ? (
+                                                <Button className={styles.upBtn} type="primary">
+                                                    <Icon type={uploadLoading ? "loading" : "upload"} /> {landing.avatar ? 'Change avatar' : 'Upload avatar'}
+                                                </Button>
+                                            ) : (
+                                                <Button className={styles.upBtn} onClick={handleSetAvatar} type="primary">
+                                                    <Icon type="check" /> Set avatar
+                                                </Button>
+                                            )}
+                                        </Upload>
+                                    </div>
+                                </div>
+                            </Col>
+                        </Row>
+                    )}
                 </div>
             </div>
             <div className={styles.content}>
                 <div className={styles.title}>
-                    Promotionial video
+                    Promotional video
                 </div>
                 <div className={styles.main}>
-                    
+                    Sorry, this function is not available.
                 </div>
             </div>
         </div>
