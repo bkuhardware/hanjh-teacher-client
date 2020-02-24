@@ -1,6 +1,7 @@
 import { delay } from '@/utils/utils';
 import COURSE_INFO from '@/assets/fakers/courseInfo';
 import GOALS from '@/assets/fakers/goals';
+import LANDING from '@/assets/fakers/landing';
 
 const FOO = [
     {
@@ -95,7 +96,8 @@ const initialState = {
         whatLearn: null,
         requirements: null,
         targetStudents: null
-    }
+    },
+    landing: null
 };
 
 export default {
@@ -114,6 +116,13 @@ export default {
             yield put({
                 type: 'saveGoals',
                 payload: GOALS
+            });
+        },
+        *fetchLanding({ payload: courseId }, { call, put }) {
+            yield delay(1500);
+            yield put({
+                type: 'saveLanding',
+                payload: LANDING
             });
         },
         *validate({ payload }, { call, put }) {
@@ -159,5 +168,17 @@ export default {
                 }
             };
         },
+        saveLanding(state, { payload }) {
+            return {
+                ...state,
+                landing: { ...payload }
+            };
+        },
+        resetLanding(state) {
+            return {
+                ...state,
+                landing: null
+            };
+        }
     }
 };

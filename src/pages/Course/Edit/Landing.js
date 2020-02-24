@@ -7,11 +7,28 @@ import styles from './Landing.less';
 const FormItem = Form.Item;
 const { Option } = Select;
 
-const Landing = ({ form, dispatch, ...props }) => {
+const Landing = ({ form, match, dispatch, ...props }) => {
+    const [categoryOpen, setCategoryOpen] = useState(false);
     const { getFieldDecorator } = form;
+    const { courseId } = match.params;
     const {
-        areasMenu
+        areasMenu,
+        landing,
+        loading
     } = props;
+    useEffect(() => {
+        dispatch({
+            type: 'course/fetchLanding',
+            payload: courseId
+        });
+        return () => dispatch({ type: 'course/resetLanding' });
+    }, [courseId]);
+    const handleChangeArea = val => {
+        form.setFieldsValue({
+            category: undefined
+        });
+        setCategoryOpen(true);
+    };
     return (
         <div className={styles.landing}>
             <Form
@@ -25,12 +42,22 @@ const Landing = ({ form, dispatch, ...props }) => {
                                 message: 'Course title must not has more than 60 characters!'
                             }
                         ],
-                        initialValue: ''
+                        initialValue: (landing && landing.title) || ''
                     })(
                         <Input
                             placeholder="Course title"
                             size="large"
-                            addonAfter={(form.getFieldValue('title').length <= 60) ? `${form.getFieldValue('title').length}/60` : <Icon type="exclamation-circle" />}
+                            addonAfter={
+                                !landing || loading ? (
+                                    <Icon type="loading" />
+                                ) : (
+                                    (form.getFieldValue('title').length <= 60) ? (
+                                        `${form.getFieldValue('title').length}/60`
+                                    ) : (
+                                        <Icon type="exclamation-circle" />
+                                    )
+                                )
+                            }
                         />
                     )}
                 </FormItem>
@@ -42,12 +69,22 @@ const Landing = ({ form, dispatch, ...props }) => {
                                 message: 'Course sub title must not has more than 150 characters!'
                             }
                         ],
-                        initialValue: ''
+                        initialValue: (landing && landing.subTitle) || ''
                     })(
                         <Input
                             placeholder="Course sub title"
                             size="large"
-                            addonAfter={(form.getFieldValue('subTitle').length <= 150) ? `${form.getFieldValue('subTitle').length}/150` : <Icon type="exclamation-circle" />}
+                            addonAfter={
+                                !landing || loading ? (
+                                    <Icon type="loading" />
+                                ) : (
+                                    (form.getFieldValue('subTitle').length <= 150) ? (
+                                        `${form.getFieldValue('subTitle').length}/150`
+                                    ) : (
+                                        <Icon type="exclamation-circle" />
+                                    )
+                                )
+                            }
                         />
                     )}
                 </FormItem>
@@ -55,11 +92,13 @@ const Landing = ({ form, dispatch, ...props }) => {
                     <Col span={12}>
                         <FormItem label="Language">
                             {getFieldDecorator('language', {
-                                initialValue: undefined
+                                initialValue: (landing && landing.language) || undefined
                             })(
                                 <Select
                                     size="large"
                                     placeholder="Language"
+                                    loading={!landing || loading}
+                                    disabled={!landing || loading}
                                 >
                                     <Option key="english">English (US)</Option>
                                     <Option key="vietnamese">Vietnamese</Option>
@@ -71,11 +110,13 @@ const Landing = ({ form, dispatch, ...props }) => {
                     <Col span={12}>
                         <FormItem label="Level">
                             {getFieldDecorator('level', {
-                                initialValue: undefined
+                                initialValue: (landing && landing.level) || undefined
                             })(
                                 <Select
                                     size="large"
                                     placeholder="Level"
+                                    loading={!landing || loading}
+                                    disabled={!landing || loading}
                                 >
                                     <Option key="allLevel">All level</Option>
                                     <Option key="beginner">Beginner</Option>
@@ -90,15 +131,16 @@ const Landing = ({ form, dispatch, ...props }) => {
                     <Col span={12}>
                         <FormItem label="Area">
                             {getFieldDecorator('area', {
-                                initialValue: undefined
+                                initialValue: (landing && landing.area) || undefined
                             })(
                                 <Select
                                     size="large"
                                     placeholder="Area"
-                                    loading={!areasMenu}
-                                    disabled={!areasMenu}
+                                    loading={!areasMenu || !landing || loading}
+                                    disabled={!areasMenu || !landing || loading}
+                                    onChange={handleChangeArea}
                                 >
-                                    {_.map(areasMenu, area => (
+                                    {areasMenu && _.map(areasMenu, area => (
                                         <Option key={area._id}>{area.title}</Option>
                                     ))}
                                 </Select>
@@ -108,15 +150,20 @@ const Landing = ({ form, dispatch, ...props }) => {
                     <Col span={12}>
                         <FormItem label="Category">
                             {getFieldDecorator('category', {
-                                initialValue: undefined
+                                initialValue: (landing && landing.category) || undefined
                             })(
                                 <Select
                                     size="large"
                                     placeholder="Category"
-                                    loading={!areasMenu}
-                                    disabled={!areasMenu}
+                                    loading={!areasMenu || !landing || loading}
+                                    disabled={!areasMenu || !landing || loading}
+                                    open={categoryOpen}
+                                    onDropdownVisibleChange={open => setCategoryOpen(open)}
                                 >
-                                    
+                                    {(areasMenu && landing && form.getFieldValue('area')) && 
+                                    _.map(_.find(areasMenu, area => area._id === form.getFieldValue('area')).children, category => (
+                                        <Option key={category._id}>{category.title}</Option>
+                                    ))}
                                 </Select>
                             )}
                         </FormItem>
@@ -129,6 +176,8 @@ const Landing = ({ form, dispatch, ...props }) => {
 
 export default Form.create()(connect(
     ({ settings, course, loading }) => ({
-        areasMenu: settings.areasMenu
+        areasMenu: settings.areasMenu,
+        landing: course.landing,
+        loading: !!loading.effects['course/fetchLanding']
     })
 )(Landing));

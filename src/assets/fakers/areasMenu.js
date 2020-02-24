@@ -1,66 +1,108 @@
 export default [
     {
-        _id: 1,
+        _id: 'area_1',
         title: 'Development',
-        children: []
+        children: [
+            {
+                _id: 'cate_1',
+                title: 'Web Development'
+            },
+            {
+                _id: 'cate_2',
+                title: 'Mobile Development'
+            },
+            {
+                _id: 'cate_3',
+                title: 'Data Science'
+            },
+            {
+                _id: 'cate_4',
+                title: 'Aftifical Inteligence'
+            },
+            {
+                _id: 'cate_5',
+                title: 'Game Development'
+            }
+        ]
     },
     {
-        _id: 2,
+        _id: 'area_2',
         title: 'Business',
-        children: []
+        children: [
+            {
+                _id: 'cate_11',
+                title: 'Marketing'
+            },
+            {
+                _id: 'cate_12',
+                title: 'Finance'
+            },
+            {
+                _id: 'cate_13',
+                title: 'Communications'
+            },
+            {
+                _id: 'cate_14',
+                title: 'Sales'
+            },
+            {
+                _id: 'cate_15',
+                title: 'Data Analytics'
+            }
+        ]
     },
     {
-        _id: 3,
+        _id: 'area_3',
         title: 'Finance & Accounting',
         children: []
     },
     {
-        _id: 4,
+        _id: 'area_4',
         title: 'IT & Software',
         children: []
     },
     {
-        _id: 5,
+        _id: 'area_5',
         title: 'Office Productivity',
         children: []
     },
     {
-        _id: 6,
+        _id: 'area_6',
         title: 'Personal Development',
         children: []
     },
     {
-        _id: 7,
+        _id: 'area_7',
         title: 'Design',
         children: []
     },
     {
-        _id: 8,
+        _id: 'area_8',
         title: 'Marketing',
         children: []
     },
     {
-        _id: 9,
+        _id: 'area_9',
         title: 'Lifestyle',
         children: []
     },
     {
-        _id: 10,
+        _id: 'area_10',
         title: 'Photography',
         children: []
     },
     {
-        _id: 11,
+        _id: 'area_11',
         title: 'Health & Fitness',
         children: []
     },
     {
-        _id: 12,
+        _id: 'area_12',
         title: 'Music',
         children: []
     },
     {
-        _id: 13,
+        _id: 'area_13',
         title: 'Teaching & Academics',
         children: []
     }
