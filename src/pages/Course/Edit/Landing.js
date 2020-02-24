@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
 import classNames from 'classnames';
 import { usePrevious } from '@/utils/hooks';
-import { Form, Input, Icon, Select, Row, Col, AutoComplete, Tooltip, Tag, Spin, Button, Upload } from 'antd';
+import { Form, Input, Icon, Select, Row, Col, AutoComplete, Tooltip, Tag, Spin, Button, Upload, message, Modal } from 'antd';
+import Cropper from 'react-cropper';
 import { EditorState, ContentState, convertFromHTML } from 'draft-js';
 import Editor from '@/components/Editor/DescriptionEditor';
 import { TweenOneGroup } from 'rc-tween-one';
@@ -15,6 +16,7 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 const Landing = ({ form, match, dispatch, ...props }) => {
+    const cropper = useRef();
     const [categoryOpen, setCategoryOpen] = useState(false);
     const [description, setDescription] = useState(EditorState.createEmpty());
     const [dataSource, setDataSource] = useState([]);
@@ -22,6 +24,11 @@ const Landing = ({ form, match, dispatch, ...props }) => {
     const [primaryTopic, setPrimaryTopic] = useState(null);
     const [avatar, setAvatar] = useState(null);
     const [fileList, setFileList] = useState([]);
+    const [cropVisible, setCropVisible] = useState(false);
+    const [originImg, setOriginImg] = useState(null);
+    const [cropCallback, setCropCallback] = useState({
+        callback: null
+    });
     const [uploadLoading, setUploadLoading] = useState(false);
     const { getFieldDecorator } = form;
     const { courseId } = match.params;
@@ -69,14 +76,44 @@ const Landing = ({ form, match, dispatch, ...props }) => {
         e.preventDefault();
 
     };
+    const handleCloseCropModal = () => {
+        setCropVisible(false);
+        setOriginImg(null);
+        setCropCallback({
+            callback: null
+        }); 
+    };
+    const handleCrop = () => {
+        cropCallback.callback(cropper.current.getCroppedCanvas({
+            width: 750,
+            height: 422,
+            fillColor: 'white'
+        }).toDataURL());
+        handleCloseCropModal();
+    };
     const handleBeforeUpload = (file, fileList) => {
         setUploadLoading(true);
         const fileReader = new FileReader();
         fileReader.readAsDataURL(file);
         fileReader.onload = () => {
-            setAvatar(fileReader.result);
-            setFileList(fileList);
-            setUploadLoading(false);
+            const image = new Image();
+            image.src = fileReader.result;
+            image.onload = () => {
+                const height = image.naturalHeight;
+                const width = image.naturalWidth;
+                if (height >= 422 && width >= 750) {
+                    setOriginImg(fileReader.result);
+                    setCropVisible(true);
+                    setCropCallback({
+                        callback: croppedAvatar => {
+                            setAvatar(croppedAvatar);
+                            setFileList(fileList);
+                        }
+                    });
+                }
+                else message.error('Your image has invalid dimensions! Must has min 750x422 pixels!');
+                setUploadLoading(false);
+            }
         };
         
         return false;
@@ -367,6 +404,30 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                     Sorry, this function is not available.
                 </div>
             </div>
+            <Modal
+                className={styles.cropImageModal}
+                title={<div className={styles.title}>Crop course avatar</div>}
+                width={900}
+                maskClosable={false}
+                visible={cropVisible}
+                footer={null}
+                onCancel={handleCloseCropModal}
+                bodyStyle={{
+                    padding: '0',
+                    paddingBottom: 25
+                }}
+            >
+                <Cropper
+                    ref={cropper}
+                    src={originImg}
+                    style={{ height: 450, width: '100%' }}
+                    aspectRatio={750 / 422}
+                    cropBoxResizable={false}
+                />
+                <div className={styles.btn}>
+                    <Button type="primary" icon="scissor" onClick={handleCrop}>Crop</Button>
+                </div>
+            </Modal>
         </div>
     )
 };

@@ -52,7 +52,7 @@
                 padding: 120px 0;
             }
             .avatarContainer {
-                height: 300px;
+                height: 280px;
                 padding: 16px;
                 border-radius: 8px;
                 border: 0.5px dashed rgba(255, 255, 255, 0.3);
@@ -88,5 +88,28 @@
                 }
             }
         }
+    }
+}
+
+.cropImageModal {
+    :global(.ant-modal-header) {
+        background-color: rgba(20, 20, 20, 0.5);
+        .title {
+            color: @primary-color;
+            text-align: center;
+        }
+    }
+    .cropContainer {
+        position: relative;
+        width: 100%;
+        height: 450px;
+    }
+    .media {
+        max-width: none;
+        max-height: none;
+    }
+    .btn {
+        margin-top: 25px;
+        text-align: right;
     }
 }
