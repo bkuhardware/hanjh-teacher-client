@@ -153,4 +153,31 @@
             transform: translate(-50%, -50%);
         }
     }
+    .historyList {
+        padding: 24px 0;
+        .history {
+            padding: 0 24px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            &:hover {
+                opacity: 0.7;
+            }
+            .content {
+                margin-left: 12px;
+            }
+        }
+    }
+    .loadMore {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #fada5e;
+        cursor: pointer;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
 }

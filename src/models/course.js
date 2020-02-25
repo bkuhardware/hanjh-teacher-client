@@ -3,6 +3,7 @@ import COURSE_INFO from '@/assets/fakers/courseInfo';
 import GOALS from '@/assets/fakers/goals';
 import LANDING from '@/assets/fakers/landing';
 import MESSAGES from '@/assets/fakers/messages';
+import HISTORY from '@/assets/fakers/history';
 
 const FOO = [
     {
@@ -93,7 +94,10 @@ const FOO = [
 
 const initialState = {
     info: null,
-    history: null,
+    history: {
+        list: null,
+        hasMore: true,
+    },
     goals: {
         whatLearn: null,
         requirements: null,
@@ -114,6 +118,19 @@ export default {
                 type: 'saveInfo',
                 payload: COURSE_INFO
             });
+        },
+        *fetchHistory({ payload: courseId }, { call, put }) {
+            yield delay(1500);
+            yield put({
+                type: 'saveHistory',
+                payload: {
+                    data: HISTORY,
+                    hasMore: true
+                }
+            });
+        },
+        *moreHistory({ payload: courseId }, { call, put, select }) {
+
         },
         *fetchGoals({ payload: courseId }, { call, put }) {
             yield delay(2000);
@@ -186,6 +203,35 @@ export default {
                 ...state,
                 info: null
             }
+        },
+        saveHistory(state, { payload }) { 
+            const { data, hasMore } = payload;
+            return {
+                ...state,
+                history: {
+                    list: data,
+                    hasMore
+                }
+            };
+        },
+        pushHistory(state, { payload }) {
+            const { data, hasMore } = payload;
+            return {
+                ...state,
+                history: {
+                    list: [...state.history.list, ...data],
+                    hasMore
+                }
+            };
+        },
+        resetHistory(state) {
+            return {
+                ...state,
+                history: {
+                    list: null,
+                    hasMore: true
+                }
+            };
         },
         saveGoals(state, { payload }) {
             return {

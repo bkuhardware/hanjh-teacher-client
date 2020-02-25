@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
+import moment from 'moment';
+import classNames from 'classnames';
 import withRouter from 'umi/withRouter';
 import Link from 'umi/link'
 import router from 'umi/router';
 import { connect } from 'dva';
-import { Row, Col, Layout, Menu, Skeleton, Icon, Button, Tooltip, Spin, Drawer } from 'antd';
+import { Row, Col, Layout, Menu, Skeleton, Icon, Button, Tooltip, Spin, Drawer, Avatar } from 'antd';
 import Footer from '@/components/Footer';
 import ScrollLayout from '@/components/ScrollLayout';
 import Scrollbars from 'react-custom-scrollbars';
@@ -202,6 +204,7 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
     const {
         courseInfo,
         commitHistory,
+        historyHasMore,
         loading,
         areasMenu,
         historyLoading,
@@ -240,6 +243,17 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
         }
     };
     const handleCloseHistory = () => setDrawerVisible(false);
+    const handleMoreHistory = () => {};
+    const loadMore = (
+        !historyInitLoading && !historyLoading && commitHistory && historyHasMore ? (
+            <div className={styles.loadMore}>
+                <span onClick={handleMoreHistory}>More history</span>
+            </div>
+        ) : null
+    );
+    const handleViewHistoryItem = item => {
+
+    };
     return (
         <Layout className={styles.editLayout}>
             <Header
@@ -269,6 +283,9 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
                 onClose={handleCloseHistory}
                 width={360}
                 className={styles.historyDrawer}
+                bodyStyle={{
+                    padding: '0'
+                }}
             >
                 <Scrollbars
                     autoHeight
@@ -281,8 +298,26 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
                             </div>
                         </div>
                     ) : (
-                        <div className={styles.history}>
-
+                        <div className={styles.historyList}>
+                            {_.map(commitHistory, history => (
+                                <div
+                                    key={history._id + _.uniqueId('history_')}
+                                    onClick={() => handleViewHistoryItem(history)}
+                                    className={history.seen ? styles.history : classNames(styles.history, styles.unseen)}
+                                >
+                                    <Tooltip
+                                        placement="left"
+                                        overlayStyle={{ maxWidth: '1000px' }}
+                                        title={`${history.user.name}, at ${moment(history.createdAt).format('HH:mm, D MMM')}`}
+                                    >
+                                        <Avatar src={history.user.avatar} alt="user-avatar" size={32} />
+                                        <span className={styles.content}>
+                                            {history.content}
+                                        </span>
+                                    </Tooltip>
+                                </div>
+                            ))}
+                            {loadMore}
                         </div>
                     )}
                 </Scrollbars>
@@ -294,7 +329,8 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
 export default withRouter(connect(
     ({ settings, loading, course }) => ({
         courseInfo: course.info,
-        commitHistory: course.history,
+        commitHistory: course.history.list,
+        historyHasMore: course.history.hasMore,
         loading: !!loading.effects['course/fetchInfo'],
         historyInitLoading: !!loading.effects['course/fetchHistory'],
         historyLoading: !!loading.effects['course/moreHistory'],
