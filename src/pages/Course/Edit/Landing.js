@@ -99,19 +99,14 @@ const Landing = ({ form, match, dispatch, ...props }) => {
             const image = new Image();
             image.src = fileReader.result;
             image.onload = () => {
-                const height = image.naturalHeight;
-                const width = image.naturalWidth;
-                if (height >= 422 && width >= 750) {
-                    setOriginImg(fileReader.result);
-                    setCropVisible(true);
-                    setCropCallback({
-                        callback: croppedAvatar => {
-                            setAvatar(croppedAvatar);
-                            setFileList(fileList);
-                        }
-                    });
-                }
-                else message.error('Your image has invalid dimensions! Must has min 750x422 pixels!');
+                setOriginImg(fileReader.result);
+                setCropVisible(true);
+                setCropCallback({
+                    callback: croppedAvatar => {
+                        setAvatar(croppedAvatar);
+                        setFileList(fileList);
+                    }
+                });
                 setUploadLoading(false);
             }
         };
@@ -370,7 +365,14 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                     ) : (
                         <Row className={styles.avatarContainer}>
                             <Col span={10} className={styles.avatar}>
-                                <img alt="course-avatar" className={styles.img} src={avatar || landing.avatar || defaultCourseAvatar} />
+                                {avatar || landing.avatar ? (
+                                    <img alt="course-avatar" className={styles.img} src={avatar || landing.avatar} />
+                                ) : (
+                                    <div className={styles.avaImg}>
+                                        <Icon type="container" theme="filled" className={styles.icon} />
+                                        <div className={styles.text}>Course avatar</div>
+                                    </div>
+                                )}
                             </Col>
                             <Col span={14} className={styles.upload}>
                                 <div className={styles.inlineDiv}>
@@ -410,23 +412,21 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                 width={900}
                 maskClosable={false}
                 visible={cropVisible}
-                footer={null}
+                onOk={handleCrop}
                 onCancel={handleCloseCropModal}
+                okText="Crop"
                 bodyStyle={{
-                    padding: '0',
-                    paddingBottom: 25
+                    padding: '0'
                 }}
+                
             >
                 <Cropper
                     ref={cropper}
                     src={originImg}
                     style={{ height: 450, width: '100%' }}
                     aspectRatio={750 / 422}
-                    cropBoxResizable={false}
+                    background={false}
                 />
-                <div className={styles.btn}>
-                    <Button type="primary" icon="scissor" onClick={handleCrop}>Crop</Button>
-                </div>
             </Modal>
         </div>
     )

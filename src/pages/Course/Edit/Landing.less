@@ -62,12 +62,24 @@
                     overflow: hidden;
                     background-color: white;
                     position: relative;
-                    img {
+                    .avaImg, .img {
                         width: 100%;
                         position: absolute;
                         top: 50%;
                         left: 50%;
                         transform: translate(-50%, -50%);
+                    }
+                    .avaImg {
+                        text-align: center;
+                        color: #1e1e1e;
+                        .icon {
+                            
+                            font-size: 4.8em;
+                        }
+                        .text {
+                            margin-top: 20px;
+                            font-size: 1.5em;
+                        }
                     }
                 }
                 .upload {
@@ -99,6 +111,9 @@
             text-align: center;
         }
     }
+    :global(.ant-modal-footer) {
+        background-color: rgba(20, 20, 20, 0.5);
+    }
     .cropContainer {
         position: relative;
         width: 100%;
@@ -107,9 +122,5 @@
     .media {
         max-width: none;
         max-height: none;
-    }
-    .btn {
-        margin-top: 25px;
-        text-align: right;
     }
 }
