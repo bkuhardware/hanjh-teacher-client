@@ -4,7 +4,7 @@ import { Button, Tooltip, Icon } from 'antd';
 import { Editor, RichUtils } from 'draft-js';
 import styles from './SimpleEditor.less';
 
-const SimpleEditor = ({ placeholder, editorState, onChange, minCount }) => {
+const SimpleEditor = ({ placeholder, editorState, onChange, minCount, maxCount }) => {
     const editorRef = useRef(null);
     const handleFocus = () => editorRef.current.focus();
     const handleKeyCommand = command => {
@@ -30,6 +30,10 @@ const SimpleEditor = ({ placeholder, editorState, onChange, minCount }) => {
         const length = editorState.getCurrentContent().getPlainText('').length;
         remainWordsCount = length < minCount ? `(${minCount - length})` : <Icon type="check" />;
     }
+    else if (maxCount) {
+        const length = editorState.getCurrentContent().getPlainText('').length;
+        remainWordsCount = `${length}/${maxCount}`;
+    }
     return (
         <div className={styles.simpleEditor}>
             <div className={styles.buttons}>
@@ -39,7 +43,7 @@ const SimpleEditor = ({ placeholder, editorState, onChange, minCount }) => {
                 <Tooltip placement="top" title="Italic | Cmd+I">
                     <span className={inlineStyleBtnClass('ITALIC')} onMouseDown={handleInlineStyle('ITALIC')}><Icon type="italic" /></span>
                 </Tooltip>
-                {minCount && (
+                {(minCount  || maxCount) && (
                     <span className={styles.extra}>
                         {remainWordsCount}
                     </span>
