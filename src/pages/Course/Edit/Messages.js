@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
 import { Form, Button } from 'antd';
-import { EditorState, convertFromHTML } from 'draft-js';
+import { EditorState, convertFromHTML, ContentState } from 'draft-js';
+import { usePrevious } from '@/utils/hooks';
 import Editor from '@/components/Editor/SimpleEditor';
 import styles from './Messages.less';
 
@@ -22,6 +23,34 @@ const Messages = ({ dispatch, match, ...props }) => {
         validateStatus: 'success',
         help: ''
     });
+    const previousMessages = usePrevious(messages);
+    useEffect(() => {
+        dispatch({
+            type: 'course/fetchMessages',
+            payload: courseId
+        });
+        return () => dispatch({ type: 'course/resetMessages' });
+    }, [courseId]);
+    useEffect(() => {
+        if (!previousMessages && messages) {
+            const welcomeContent = getContentStateFromHTML(messages.welcome);
+            const congratulationContent = getContentStateFromHTML(messages.congratulation);
+            setWelcome({
+                value: EditorState.createWithContent(welcomeContent),
+                validateStatus: 'success',
+                help: ''
+            });
+            setCongratulation({
+                value: EditorState.createWithContent(congratulationContent),
+                validateStatus: 'success',
+                help: ''
+            });
+        }
+    }, [courseId, messages]);
+    const getContentStateFromHTML = html => {
+        const blocksFromHTML = convertFromHTML(html);
+        return ContentState.createFromBlockArray(blocksFromHTML.contentBlocks, blocksFromHTML.entityMap);
+    };
     const handleChangeWelcome = editorState => {
         const length = editorState.getCurrentContent().getPlainText('').length;
         let status = {
@@ -56,6 +85,9 @@ const Messages = ({ dispatch, match, ...props }) => {
             ...status
         });
     };
+    const handleSave = () => {
+
+    };
     return (
         <div className={styles.messages}>
             <div className={styles.title}>
@@ -71,7 +103,7 @@ const Messages = ({ dispatch, match, ...props }) => {
                             maxCount={1000}
                         />
                     </Form.Item>
-                    <Form.Item label="Congratulation message" validateStatus={congratulation.validateStatus} help={welcome.help}>
+                    <Form.Item label="Congratulation message" validateStatus={congratulation.validateStatus} help={congratulation.help}>
                         <Editor
                             editorState={congratulation.value}
                             placeholder="Congratulation message"
@@ -80,7 +112,7 @@ const Messages = ({ dispatch, match, ...props }) => {
                         />
                     </Form.Item>
                     <Form.Item style={{ textAlign: 'right' }}>
-                        <Button type="primary" htmlType="button" icon={saveLoading ? "loading" : null}>
+                        <Button type="primary" htmlType="button" icon={saveLoading ? "loading" : null} onClick={handleSave}>
                             Save
                         </Button>
                     </Form.Item>

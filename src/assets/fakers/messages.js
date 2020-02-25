@@ -1,0 +1,4 @@
+export default {
+    welcome: 'He determined to drop his litigation with the monastry, and relinguish his claims to the wood-cuting and fishery rihgts at once. He was the more ready to do this becuase the rights had becom much less valuable, and he had indeed the vaguest idea where the wood and river in quedtion were.',
+    congratulation: '<div><p>To me not much.</p> I think app implies that it has functionality like a login system, creating and deleting, stuff like that. <p>To me not much.</p><p>I think app implies that it has functionality like a login system, creating and deleting, stuff like that</p><p>To me not much.</p><p>I think app implies that it has functionality like a login system, creating and deleting, stuff like that</p><p>To me not much.</p><p>I think app implies that it has functionality like a login system, creating and deleting, stuff like that</p></div>'
+}

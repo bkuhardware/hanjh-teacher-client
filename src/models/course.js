@@ -2,6 +2,7 @@ import { delay } from '@/utils/utils';
 import COURSE_INFO from '@/assets/fakers/courseInfo';
 import GOALS from '@/assets/fakers/goals';
 import LANDING from '@/assets/fakers/landing';
+import MESSAGES from '@/assets/fakers/messages';
 
 const FOO = [
     {
@@ -98,7 +99,8 @@ const initialState = {
         targetStudents: null
     },
     landing: null,
-    price: null
+    price: null,
+    messages: null
 };
 
 export default {
@@ -140,6 +142,16 @@ export default {
                 type: 'savePrice',
                 payload: value
             });
+        },
+        *fetchMessages({ payload: courseId }, { call, put }) {
+            yield delay(1200);
+            yield put({
+                type: 'saveMessages',
+                payload: MESSAGES
+            });
+        },
+        *changeMessages({ payload }, { call, put }) {
+
         },
         *validate({ payload }, { call, put }) {
             const {
@@ -207,6 +219,18 @@ export default {
                 ...state,
                 price: null
             };
-        }
+        },
+        saveMessages(state, { payload }) {
+            return {
+                ...state,
+                messages: payload
+            };
+        },
+        resetMessages(state) {
+            return {
+                ...state,
+                messages: null
+            };
+        },
     }
 };
