@@ -32,7 +32,7 @@ const SimpleEditor = ({ placeholder, editorState, onChange, minCount, maxCount }
     }
     else if (maxCount) {
         const length = editorState.getCurrentContent().getPlainText('').length;
-        remainWordsCount = `${length}/${maxCount}`;
+        remainWordsCount = length > maxCount ? <Icon type="exclamation-circle" /> : `${length}/${maxCount}`;
     }
     return (
         <div className={styles.simpleEditor}>
