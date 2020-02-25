@@ -156,8 +156,7 @@
     .historyList {
         padding: 24px 0;
         .history {
-            padding: 0 24px;
-            margin-bottom: 20px;
+            padding: 12px 24px;
             cursor: pointer;
             overflow: hidden;
             white-space: nowrap;
@@ -169,15 +168,21 @@
                 margin-left: 12px;
             }
         }
+        .unseen {
+            font-weight: bold;
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
     }
     .loadMore {
-        margin-top: 10px;
-        margin-bottom: 20px;
-        text-align: center;
         color: #fada5e;
         cursor: pointer;
         &:hover {
             text-decoration: underline;
         }
+    }
+    .historyLoading, .loadMore {
+        margin-top: 10px;
+        text-align: center;
     }
 }

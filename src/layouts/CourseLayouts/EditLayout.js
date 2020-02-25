@@ -243,7 +243,12 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
         }
     };
     const handleCloseHistory = () => setDrawerVisible(false);
-    const handleMoreHistory = () => {};
+    const handleMoreHistory = () => {
+        dispatch({
+            type: 'course/moreHistory',
+            payload: courseId
+        });
+    };
     const loadMore = (
         !historyInitLoading && !historyLoading && commitHistory && historyHasMore ? (
             <div className={styles.loadMore}>
@@ -289,7 +294,7 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
             >
                 <Scrollbars
                     autoHeight
-                    autoHeightMax={window.outerHeight - 64}
+                    autoHeightMax={window.innerHeight - 64}
                 >
                     {!commitHistory || historyInitLoading ? (
                         <div className={styles.loading}>
@@ -318,6 +323,11 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
                                 </div>
                             ))}
                             {loadMore}
+                            {historyLoading && (
+                                <div className={styles.historyLoading}>
+                                    <Spin indicator={<Icon type="loading" spin />} />
+                                </div>
+                            )}
                         </div>
                     )}
                 </Scrollbars>
