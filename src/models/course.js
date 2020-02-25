@@ -97,7 +97,8 @@ const initialState = {
         requirements: null,
         targetStudents: null
     },
-    landing: null
+    landing: null,
+    price: null
 };
 
 export default {
@@ -123,6 +124,21 @@ export default {
             yield put({
                 type: 'saveLanding',
                 payload: LANDING
+            });
+        },
+        *fetchPrice({ payload: courseId }, { call, put }) {
+            yield delay(800);
+            yield put({
+                type: 'savePrice',
+                payload: 'tier1'
+            });
+        },
+        *changePrice({ payload }, { call, put }) {
+            const { courseId, value } = payload;
+            yield delay(1200);
+            yield put({
+                type: 'savePrice',
+                payload: value
             });
         },
         *validate({ payload }, { call, put }) {
@@ -178,6 +194,18 @@ export default {
             return {
                 ...state,
                 landing: null
+            };
+        },
+        savePrice(state, { payload }) {
+            return {
+                ...state,
+                price: payload
+            };
+        },
+        resetPrice(state) {
+            return {
+                ...state,
+                price: null
             };
         }
     }

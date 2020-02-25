@@ -15,8 +15,23 @@ const Price = ({ dispatch, match, ...props }) => {
     const { getFieldDecorator } = form;
     const { courseId } = match.params;
     const [disabled, setDisabled] = useState(true);
+    useEffect(() => {
+        dispatch({
+            type: 'course/fetchPrice',
+            payload: courseId
+        });
+        return () => dispatch({ type: 'course/resetPrice' });
+    }, [courseId]);
     const handleSave = () => {
         setDisabled(true);
+        const currentPrice = form.getFieldValue('price');
+        dispatch({
+            type: 'course/changePrice',
+            payload: {
+                courseId,
+                value: currentPrice
+            }
+        });
     };
     return (
         <div className={styles.price}>
