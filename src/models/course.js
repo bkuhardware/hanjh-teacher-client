@@ -93,6 +93,7 @@ const FOO = [
 
 const initialState = {
     info: null,
+    history: null,
     goals: {
         whatLearn: null,
         requirements: null,

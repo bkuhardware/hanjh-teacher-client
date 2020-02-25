@@ -125,3 +125,32 @@
         }
     }
 }
+
+.historyDrawer {
+    height: 100vh;
+    :global {
+        .ant-drawer-header {
+            height: 64px;
+            background: #1e1e1e;
+            line-height: 64px;
+            .ant-drawer-title {
+                line-height: 32px;
+            }
+            .ant-drawer-close {
+                height: 64px;
+                line-height: 64px;
+            }
+        }
+    }
+    .loading {
+        height: calc(100vh - 64px);
+        position: relative;
+        & > div {
+            position: absolute;
+            text-align: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+}

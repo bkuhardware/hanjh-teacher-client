@@ -1,19 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import withRouter from 'umi/withRouter';
 import Link from 'umi/link'
 import router from 'umi/router';
 import { connect } from 'dva';
-import { Row, Col, Layout, Menu, Skeleton, Icon, Button, Tooltip, Spin } from 'antd';
+import { Row, Col, Layout, Menu, Skeleton, Icon, Button, Tooltip, Spin, Drawer } from 'antd';
 import Footer from '@/components/Footer';
 import ScrollLayout from '@/components/ScrollLayout';
+import Scrollbars from 'react-custom-scrollbars';
 import styles from './EditLayout.less';
 
 const { Sider: AntSider, Content, Header: AntHeader } = Layout;
 const { SubMenu } = Menu;
 const MenuItem = Menu.Item;
 
-const Header = ({ courseInfo, loading, handlePreview }) => {
+const Header = ({ courseInfo, loading, handlePreview, handleViewHistory }) => {
     const getPrivacy = value => {
         if (value === 'public') return 'Public';
         else if (value === 'private') return 'Private';
@@ -62,7 +63,7 @@ const Header = ({ courseInfo, loading, handlePreview }) => {
                             <Button type="primary" onClick={handlePreview} className={styles.preview}>
                                 Preview
                             </Button>
-                            <span className={styles.history}>
+                            <span className={styles.history} onClick={handleViewHistory}>
                                 <Tooltip title="History" placement="bottom">
                                     <Icon type="history" style={{ color: 'white', fontSize: '2em' }}/>
                                 </Tooltip>
@@ -197,10 +198,14 @@ const Sider = ({ courseId, syllabus, loading, selectedKeys }) => {
 };
 
 const EditLayout = ({ children, dispatch, match, location, ...props }) => {
+    const [drawerVisible, setDrawerVisible] = useState(false);
     const {
         courseInfo,
+        commitHistory,
         loading,
-        areasMenu
+        areasMenu,
+        historyLoading,
+        historyInitLoading
     } = props;
     const { courseId } = match.params;
     useEffect(() => {
@@ -208,9 +213,14 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
             type: 'course/fetchInfo',
             payload: courseId
         });
-        return () => dispatch({
-            type: 'course/resetInfo'
-        });
+        return () => {
+            dispatch({
+                type: 'course/resetInfo'
+            });
+            dispatch({
+                type: 'course/resetHistory'
+            });
+        };
     }, [courseId]);
     useEffect(() => {
         if (!areasMenu)
@@ -219,12 +229,23 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
             });
     }, []);
     const pathname = location.pathname;
-    const selectedKeys = [_.replace(pathname, `/course/${courseId}/edit`, '')]
+    const selectedKeys = [_.replace(pathname, `/course/${courseId}/edit`, '')];
+    const handleViewHistory = () => {
+        setDrawerVisible(true);
+        if (!commitHistory) {
+            dispatch({
+                type: 'course/fetchHistory',
+                payload: courseId
+            });
+        }
+    };
+    const handleCloseHistory = () => setDrawerVisible(false);
     return (
         <Layout className={styles.editLayout}>
             <Header
                 courseInfo={courseInfo}
                 loading={loading}
+                handleViewHistory={handleViewHistory}
             />
             <Layout className={styles.container}>
                 <Sider 
@@ -240,6 +261,32 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
                     <Footer />
                 </ScrollLayout>
             </Layout>
+            <Drawer
+                title="History"
+                placement="right"
+                closable={true}
+                visible={drawerVisible}
+                onClose={handleCloseHistory}
+                width={360}
+                className={styles.historyDrawer}
+            >
+                <Scrollbars
+                    autoHeight
+                    autoHeightMax={window.outerHeight - 64}
+                >
+                    {!commitHistory || historyInitLoading ? (
+                        <div className={styles.loading}>
+                            <div>
+                                <Spin indicator={<Icon type="loading" spin style={{ fontSize: '32px' }} />} />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className={styles.history}>
+
+                        </div>
+                    )}
+                </Scrollbars>
+            </Drawer>
         </Layout>
     );
 };
@@ -247,7 +294,10 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
 export default withRouter(connect(
     ({ settings, loading, course }) => ({
         courseInfo: course.info,
+        commitHistory: course.history,
         loading: !!loading.effects['course/fetchInfo'],
+        historyInitLoading: !!loading.effects['course/fetchHistory'],
+        historyLoading: !!loading.effects['course/moreHistory'],
         areasMenu: settings.areasMenu
     })
 )(EditLayout));

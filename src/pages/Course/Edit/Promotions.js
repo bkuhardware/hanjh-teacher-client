@@ -1,5 +1,5 @@
 export default () => {
     return (
-        <div>Goals</div>
+        <div>Sorry, this function is not available.</div>
     )
 }
