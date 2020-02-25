@@ -151,7 +151,13 @@ export default {
             });
         },
         *changeMessages({ payload }, { call, put }) {
-
+            const {
+                courseId,
+                welcome,
+                congratulation
+            } = payload;
+            yield delay(1500);
+            //
         },
         *validate({ payload }, { call, put }) {
             const {

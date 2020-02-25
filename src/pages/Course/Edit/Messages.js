@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
-import { Form, Button } from 'antd';
-import { EditorState, convertFromHTML, ContentState } from 'draft-js';
+import { Form, Button, Spin } from 'antd';
+import { EditorState, convertFromHTML, ContentState, message } from 'draft-js';
 import { usePrevious } from '@/utils/hooks';
 import Editor from '@/components/Editor/SimpleEditor';
+import { exportToHTML } from '@/utils/editor';
 import styles from './Messages.less';
 
 const Messages = ({ dispatch, match, ...props }) => {
@@ -86,7 +87,19 @@ const Messages = ({ dispatch, match, ...props }) => {
         });
     };
     const handleSave = () => {
-
+        if (welcome.validateStatus === 'error' || congratulation.validateStatus === 'error') {
+            return message.error('Invalid input! Please check again!');
+        }
+        const welcomeHTML = exportToHTML(welcome.value);
+        const congratulationHTML = exportToHTML(congratulation.value);
+        dispatch({
+            type: 'course/changeMessages',
+            payload: {
+                courseId,
+                welcome: welcomeHTML,
+                congratulation: congratulationHTML
+            }
+        });
     };
     return (
         <div className={styles.messages}>
@@ -96,20 +109,24 @@ const Messages = ({ dispatch, match, ...props }) => {
             <div className={styles.main}>
                 <Form>
                     <Form.Item label="Welcome message" validateStatus={welcome.validateStatus} help={welcome.help}>
-                        <Editor
-                            editorState={welcome.value}
-                            placeholder="Welcome message"
-                            onChange={handleChangeWelcome}
-                            maxCount={1000}
-                        />
+                        <Spin spinning={!messages || loading} tip="Fetching...">
+                            <Editor
+                                editorState={welcome.value}
+                                placeholder="Welcome message"
+                                onChange={handleChangeWelcome}
+                                maxCount={1000}
+                            />
+                        </Spin>
                     </Form.Item>
                     <Form.Item label="Congratulation message" validateStatus={congratulation.validateStatus} help={congratulation.help}>
-                        <Editor
-                            editorState={congratulation.value}
-                            placeholder="Congratulation message"
-                            onChange={handleChangeCongratulation}
-                            maxCount={1000}
-                        />
+                        <Spin spinning={!messages || loading} tip="Fetching...">
+                            <Editor
+                                editorState={congratulation.value}
+                                placeholder="Congratulation message"
+                                onChange={handleChangeCongratulation}
+                                maxCount={1000}
+                            />
+                        </Spin>
                     </Form.Item>
                     <Form.Item style={{ textAlign: 'right' }}>
                         <Button type="primary" htmlType="button" icon={saveLoading ? "loading" : null} onClick={handleSave}>
