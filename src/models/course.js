@@ -170,6 +170,21 @@ export default {
                 payload: GOALS
             });
         },
+        *changeWhatLearn({ payload }, { call, put }) {
+            const { courseId, change } = payload;
+            yield delay(1500);
+            //only call api, update by emit message, not by response.
+        },
+        *changeRequirements({ payload }, { call, put }) {
+            const { courseId, change } = payload;
+            yield delay(1400);
+            //only call api, update by emit message, not by response.
+        },
+        *changeTargetStudents({ payload }, { call, put }) {
+            const { courseId, change } = payload;
+            yield delay(1200);
+            //only call api, update by emit message, not by response.
+        },
         *fetchLanding({ payload: courseId }, { call, put }) {
             yield delay(1500);
             yield put({
