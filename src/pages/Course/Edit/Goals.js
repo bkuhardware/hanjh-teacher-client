@@ -78,7 +78,7 @@ const TargetItem = ({ item, inputValue, itemType, onChangeInput, onOk, onClose, 
     )
 };
 
-const Subject = ({ field, onSave, currentUser }) => {
+const Subject = ({ field, onSave, currentUser, loading }) => {
     const count = useRef(0);
     const [change, setChange] = useState({
         add: [],
@@ -213,6 +213,50 @@ const Subject = ({ field, onSave, currentUser }) => {
             itemId
         ]
     });
+    const handleSave = () => {
+        let changeArr = {
+            add: _.map(change.add, item => ({ ...item })),
+            update: {},
+            delete: [...change.delete]
+        };
+        _.forEach(_.keys(change.update), key => {
+            changeArr.update = {
+                ...changeArr.update,
+                [key]: { ...change.update[key] }
+            }
+        });
+        const keyDeleteInDelete = [];
+        _.forEach(changeArr.delete, key => {
+            const indexInAdd = _.findIndex(changeArr.add, ['_id', key]);
+            if (indexInAdd > -1) {
+                if (!!changeArr.update[key]) {
+                    delete changeArr.update[key];
+                }
+                keyDeleteInDelete.push(key);
+                changeArr.add = _.filter(changeArr.add, item => item._id !== key);
+            }
+            else {
+                if (!!changeArr.update[key]) {
+                    delete changeArr.update[key];
+                }
+            }
+        });
+        changeArr.delete = _.filter(changeArr.delete, key => _.indexOf(keyDeleteInDelete, key) === -1);
+        const newAddData = [];
+        _.forEach(changeArr.add, item => {
+            if (!!changeArr.update[item._id]) {
+                newAddData.push(changeArr.update[item._id]);
+                delete changeArr.update[item._id];
+            }
+            else newAddData.push(item);
+        });
+        changeArr.add = _.map(newAddData, item => item.content);
+        changeArr.update = _.map(_.toArray(changeArr.update), item => ({
+            _id: item._id,
+            content: item.content
+        }));
+        onSave(changeArr);
+    };
     let renderData;
     if (field) {
         renderData = _.map(field, item => ({ ...item }));
@@ -244,7 +288,7 @@ const Subject = ({ field, onSave, currentUser }) => {
                     onDelete={() => handleDelete(item._id)}
                 />
             ) : (
-                <div className={styles.itemLoading}>
+                <div className={styles.itemLoading} key={_.uniqueId('item_loading_')}>
                     <Spin indicator={<Icon type="loading" spin />} />
                 </div>
             ))}
@@ -254,7 +298,7 @@ const Subject = ({ field, onSave, currentUser }) => {
                 </div>
             )}
             <div className={styles.save}>
-                <Button type="primary" disabled={_.isEmpty(change.add) && _.isEmpty(change.delete) && _.isEmpty(change.update)} onClick={onSave}>Save</Button>
+                <Button icon={loading ? "loading" : null} type="primary" disabled={(_.isEmpty(change.add) && _.isEmpty(change.delete) && _.isEmpty(change.update)) || loading} onClick={handleSave}>Save</Button>
             </div>
         </React.Fragment>
     )
@@ -270,6 +314,9 @@ const Goals = ({ dispatch, match, ...props }) => {
             requirements
         },
         initLoading,
+        whatLearnLoading,
+        requirementsLoading,
+        targetStudentsLoading,
         user
     } = props;
     useEffect(() => {
@@ -281,9 +328,33 @@ const Goals = ({ dispatch, match, ...props }) => {
             type: 'course/resetGoals'
         });
     }, [courseId]);
-    const handleSaveWhatLearn = () => {};
-    const handleSaveRequirements = () => {};
-    const handleSaveTargetStudents = () => {};
+    const handleSaveWhatLearn = (change) => {
+        dispatch({
+            type: 'course/changeWhatLearn',
+            payload: {
+                courseId,
+                change
+            }
+        });
+    };
+    const handleSaveRequirements = (change) => {
+        dispatch({
+            type: 'course/changeRequirements',
+            payload: {
+                courseId,
+                change
+            }
+        });
+    };
+    const handleSaveTargetStudents = (change) => {
+        dispatch({
+            type: 'course/changeTargetStudents',
+            payload: {
+                courseId,
+                change
+            }
+        });
+    };
     const currentUser = _.pick(user, ['_id', 'name', 'avatar']);
     return (
         <div className={styles.goals}>
@@ -320,6 +391,7 @@ const Goals = ({ dispatch, match, ...props }) => {
                                 currentUser={currentUser}
                                 field={whatLearn}
                                 onSave={handleSaveWhatLearn}
+                                loading={whatLearnLoading}
                             />
                         </Panel>
                         <Panel key="requirements" header="Are there any course requirements or prerequisites?" className={styles.panel}>
@@ -327,6 +399,7 @@ const Goals = ({ dispatch, match, ...props }) => {
                                 currentUser={currentUser}
                                 field={requirements}
                                 onSave={handleSaveRequirements}
+                                loading={requirementsLoading}
                             />
                         </Panel>
                         <Panel key="target" header="Who are your target students?" className={styles.panel}>
@@ -334,6 +407,7 @@ const Goals = ({ dispatch, match, ...props }) => {
                                 currentUser={currentUser}
                                 field={targetStudents}
                                 onSave={handleSaveTargetStudents}
+                                loading={targetStudentsLoading}
                             />
                         </Panel>
                     </Collapse>
@@ -347,6 +421,9 @@ export default connect(
     ({ user, course, loading }) => ({
         goals: course.goals,
         initLoading: !!loading.effects['course/fetchGoals'],
+        whatLearnLoading: !!loading.effects['course/changeWhatLearn'],
+        requirementsLoading: !!loading.effects['course/changeRequirements'],
+        targetStudentsLoading: !!loading.effects['course/changeTargetStudents'],
         user: user
     })
 )(Goals);
