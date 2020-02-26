@@ -304,7 +304,11 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
                         </div>
                     ) : (
                         <div className={styles.historyList}>
-                            {_.map(commitHistory, history => (
+                            {_.isEmpty(commitHistory) ? (
+                                <div className={styles.empty}>
+                                    Empty history.
+                                </div>
+                            ) : _.map(commitHistory, history => (
                                 <div
                                     key={history._id + _.uniqueId('history_')}
                                     onClick={() => handleViewHistoryItem(history)}
@@ -328,6 +332,9 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
                                     <Spin indicator={<Icon type="loading" spin />} />
                                 </div>
                             )}
+                            <div className={styles.viewAll}>
+                                <Link to={`/course/${courseId}/edit/history`} onClick={() => setDrawerVisible(false)}>View all</Link>
+                            </div>
                         </div>
                     )}
                 </Scrollbars>

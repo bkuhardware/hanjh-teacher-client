@@ -155,6 +155,9 @@
     }
     .historyList {
         padding: 24px 0;
+        .empty {
+            text-align: center;
+        }
         .history {
             padding: 12px 24px;
             cursor: pointer;
@@ -173,16 +176,24 @@
             color: white;
             background: rgba(255, 255, 255, 0.05);
         }
-    }
-    .loadMore {
-        color: #fada5e;
-        cursor: pointer;
-        &:hover {
+        .loadMore {
+            color: #fada5e;
+            cursor: pointer;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+        .historyLoading, .loadMore, .viewAll {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .viewAll:hover {
             text-decoration: underline;
+            a { 
+                color: #fada5e;
+            }
         }
     }
-    .historyLoading, .loadMore {
-        margin-top: 10px;
-        text-align: center;
-    }
+    
+    
 }

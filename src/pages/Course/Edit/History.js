@@ -23,7 +23,10 @@ const History = ({ dispatch, match, ...props }) => {
         }
     }, [courseId]);
     const handleMoreHistory = () => {
-
+        dispatch({
+            type: 'course/moreHistory',
+            payload: courseId
+        });
     };
     const handleMarkAllAsRead = () => {
 
@@ -48,7 +51,6 @@ const History = ({ dispatch, match, ...props }) => {
             key: 'author',
             dataIndex: 'user',
             width: '30%',
-            align: 'center',
             render: user => (
                 <div className={styles.user}>
                     <Avatar alt="user-avatar" size={32} src={user.avatar} />
@@ -63,7 +65,6 @@ const History = ({ dispatch, match, ...props }) => {
             key: 'createdAt',
             dataIndex: 'createdAt',
             width: '15%',
-            align: 'center',
             render: createdAt => (
                 <TimeAgo date={createdAt} />
             )

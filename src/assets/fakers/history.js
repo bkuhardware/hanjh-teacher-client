@@ -14,14 +14,14 @@ export default [
     {
         _id: 'history_2',
         type: 1,
-        content: 'Trong Luan update a what will learn item.',
+        content: 'Trong Luan update a what will learn item, update a requirement item and add a target student item. Trong Luan update a what will learn item.',
         createdAt: 1567476499584,
         user: {
             _id: 'user_2',
-            name: 'Trong Luan',
+            name: 'Nguyen Trong Luan',
             avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-9/83558548_2290286491264377_331290296627232768_n.jpg?_nc_cat=107&_nc_oc=AQnpLi8nWGbC-08nBlYjhCuZyGVkcZMFHaqWTcBFbEZK1GzrkY73FWhSwonUwq-m0aE&_nc_ht=scontent.fsgn5-2.fna&oh=84246739e4ba3279ce49566f8f59bb01&oe=5EC49D12'
         },
-        seen: true
+        seen: false
     },
     {
         _id: 'history_3',

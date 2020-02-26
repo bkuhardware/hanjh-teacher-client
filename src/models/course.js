@@ -130,7 +130,7 @@ export default {
             });
         },
         *moreHistory({ payload: courseId }, { call, put, select }) {
-            yield delay(1200);
+            yield delay(5000);
             yield put({
                 type: 'pushHistory',
                 payload: {
