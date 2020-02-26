@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
-import { Form, Button, Spin } from 'antd';
+import { Form, Button, Spin, Alert, Icon } from 'antd';
 import { EditorState, convertFromHTML, ContentState, message } from 'draft-js';
 import { usePrevious } from '@/utils/hooks';
 import Editor from '@/components/Editor/SimpleEditor';
@@ -104,7 +104,12 @@ const Messages = ({ dispatch, match, ...props }) => {
     return (
         <div className={styles.messages}>
             <div className={styles.title}>
-                Write messages to your students (optional) that will be sent automatically when they join or complete your course to encourage students to engage with course content. If you do not wish to send a welcome or congratulations message, leave the text box blank.
+                <Alert
+                    message="Write messages to your students (optional) that will be sent automatically when they join or complete your course to encourage students to engage with course content. If you do not wish to send a welcome or congratulations message, leave the text box blank."
+                    type="warning"
+                    showIcon
+                    icon={<Icon type="info-circle" theme="filled" style={{ color: '#fada5e' }} />}
+                />
             </div>
             <div className={styles.main}>
                 <Form>

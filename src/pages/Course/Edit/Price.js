@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect }  from 'dva';
-import { Select, Button, Form, Row, Col } from 'antd';
+import { Select, Button, Form, Row, Col, Alert, Icon } from 'antd';
 import styles from './Price.less';
 
 const { Option } = Select;
@@ -36,7 +36,12 @@ const Price = ({ dispatch, match, ...props }) => {
     return (
         <div className={styles.price}>
             <div className={styles.text}>
-                Please select the price tier for your course below and click 'Save'. The list price that students will see in other currencies is calculated using the price tier matrix, based on the tier that it corresponds to.
+                <Alert
+                    message="Please select the price tier for your course below and click 'Save'. The list price that students will see in other currencies is calculated using the price tier matrix, based on the tier that it corresponds to."
+                    type="warning"
+                    showIcon
+                    icon={<Icon type="info-circle" theme="filled" style={{ color: '#fada5e' }} />}
+                />
             </div>
             <div className={styles.main}>
                 <Form className={styles.form}>
