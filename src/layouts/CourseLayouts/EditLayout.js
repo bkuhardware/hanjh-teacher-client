@@ -6,7 +6,7 @@ import withRouter from 'umi/withRouter';
 import Link from 'umi/link'
 import router from 'umi/router';
 import { connect } from 'dva';
-import { Row, Col, Layout, Menu, Skeleton, Icon, Button, Tooltip, Spin, Drawer, Avatar } from 'antd';
+import { Row, Col, Layout, Menu, Skeleton, Icon, Button, Tooltip, Spin, Drawer, Avatar, Badge } from 'antd';
 import Footer from '@/components/Footer';
 import ScrollLayout from '@/components/ScrollLayout';
 import Scrollbars from 'react-custom-scrollbars';
@@ -67,7 +67,9 @@ const Header = ({ courseInfo, loading, handlePreview, handleViewHistory }) => {
                             </Button>
                             <span className={styles.history} onClick={handleViewHistory}>
                                 <Tooltip title="History" placement="bottom">
-                                    <Icon type="history" style={{ color: 'white', fontSize: '2em' }}/>
+                                    <Badge count={courseInfo.noOfUnseen} dot>
+                                        <Icon type="history" style={{ color: 'white', fontSize: '2em' }}/>
+                                    </Badge>
                                 </Tooltip>
                             </span>
                             <span className={styles.toManage}>
@@ -295,7 +297,15 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
                 </ScrollLayout>
             </Layout>
             <Drawer
-                title="Change history"
+                title={(
+                    <span className={styles.drawerTitle}>
+                        <span className={styles.text}>Change history</span>
+                        <Badge
+                            count={(courseInfo && courseInfo.noOfUnseen) || 0}
+                            style={{ marginLeft: '15px', color: 'white' }}
+                        />
+                    </span>
+                )}
                 placement="right"
                 closable={true}
                 visible={drawerVisible}
@@ -365,6 +375,6 @@ export default withRouter(connect(
         loading: !!loading.effects['course/fetchInfo'],
         historyInitLoading: !!loading.effects['course/fetchHistory'],
         historyLoading: !!loading.effects['course/moreHistory'],
-        areasMenu: settings.areasMenu
+        areasMenu: settings.areasMenu,
     })
 )(EditLayout));

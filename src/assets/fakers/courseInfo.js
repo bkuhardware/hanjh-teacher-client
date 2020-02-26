@@ -2,6 +2,7 @@ export default {
     _id: 1,
     name: 'Build Web Apps with Vue JS 2 & Firebase',
     privacy: 'private',
+    noOfUnseen: 18,
     syllabus: [
         {
             _id: 'chapter-1',

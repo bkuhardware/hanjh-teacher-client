@@ -97,7 +97,7 @@ const initialState = {
     info: null,
     history: {
         list: null,
-        hasMore: true,
+        hasMore: true
     },
     goals: {
         whatLearn: null,
@@ -140,13 +140,28 @@ export default {
                 }
             });
         },
-        *seenHistory({ payload: historyId }, { call, put }) {
+        *seenHistory({ payload: historyId }, { call, put, select }) {
+            //const { info: { noOfUnseen } } = yield select(state => state.course);
             yield put({
                 type: 'seenHistoryItem',
                 payload: historyId
             });
+            yield put({
+                type: 'decreNoOfUnseen'
+            });
             yield delay(1200);
             //call api with historyId
+        },
+        *allSeenHistory({ payload: courseId }, { call, put }) {
+            yield delay(1200);
+            //if ok --> put, else do nothing,
+            //if ok -> get noOfUnseen
+            yield put({
+                type: 'allSeenHistoryItems',
+                payload: {
+                    noOfUnseen: 0
+                }
+            });
         },
         *fetchGoals({ payload: courseId }, { call, put }) {
             yield delay(2000);
@@ -249,6 +264,32 @@ export default {
                 history: {
                     ...state.history,
                     list: [...historyData]
+                }
+            };
+        },
+        allSeenHistoryItems(state, { payload }) {
+            const { noOfUnseen } = payload;
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    noOfUnseen
+                },
+                history: {
+                    ...state.history,
+                    list: _.map(state.history.list, history => ({
+                        ...history,
+                        seen: true
+                    }))
+                }
+            }
+        },
+        decreNoOfUnseen(state) {
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    noOfUnseen: state.info.noOfUnseen - 1
                 }
             };
         },

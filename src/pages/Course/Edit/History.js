@@ -11,6 +11,7 @@ const History = ({ dispatch, match, ...props }) => {
     const {
         initLoading,
         loading,
+        allSeenLoading,
         commitHistory,
         hasMore
     } = props;
@@ -30,7 +31,10 @@ const History = ({ dispatch, match, ...props }) => {
         });
     };
     const handleMarkAllAsRead = () => {
-
+        dispatch({
+            type: 'course/allSeenHistory',
+            payload: courseId
+        });
     };
     const handleViewHistoryItem = item => {
         if (item.type === 1) {
@@ -100,7 +104,7 @@ const History = ({ dispatch, match, ...props }) => {
                 rowKey={item => item._id + _.uniqueId('history_')}
                 rowClassName={item => item.seen ? styles.history : classNames(styles.unseen, styles.history)}
                 columns={columns}
-                loading={initLoading || !commitHistory}
+                loading={initLoading || !commitHistory || allSeenLoading}
                 pagination={false}
                 size="middle"
                 bordered={false}
@@ -122,6 +126,7 @@ export default connect(
     ({ course, loading }) => ({
         initLoading: !!loading.effects['course/fetchHistory'],
         loading: !!loading.effects['course/moreHistory'],
+        allSeenLoading: !!loading.effects['course/allSeenHistory'],
         commitHistory: course.history.list,
         hasMore: course.history.hasMore
     })
