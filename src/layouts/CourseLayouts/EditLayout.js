@@ -281,7 +281,7 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
                 </ScrollLayout>
             </Layout>
             <Drawer
-                title="History"
+                title="Change history"
                 placement="right"
                 closable={true}
                 visible={drawerVisible}

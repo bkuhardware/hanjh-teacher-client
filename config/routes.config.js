@@ -48,6 +48,11 @@ export default [
                 component: '../layouts/CourseLayouts/EditLayout',
                 routes: [
                     {
+                        path: '/course/:courseId/edit/history',
+                        title: 'route.course.edit.history',
+                        component: './Course/Edit/History'
+                    },
+                    {
                         path: '/course/:courseId/edit/goals',
                         title: 'route.course.edit.goals',
                         component: './Course/Edit/Goals'
