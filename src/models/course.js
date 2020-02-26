@@ -1,4 +1,5 @@
 import { delay } from '@/utils/utils';
+import _ from 'lodash';
 import COURSE_INFO from '@/assets/fakers/courseInfo';
 import GOALS from '@/assets/fakers/goals';
 import LANDING from '@/assets/fakers/landing';
@@ -139,6 +140,14 @@ export default {
                 }
             });
         },
+        *seenHistory({ payload: historyId }, { call, put }) {
+            yield put({
+                type: 'seenHistoryItem',
+                payload: historyId
+            });
+            yield delay(1200);
+            //call api with historyId
+        },
         *fetchGoals({ payload: courseId }, { call, put }) {
             yield delay(2000);
             yield put({
@@ -228,6 +237,18 @@ export default {
                 history: {
                     list: [...state.history.list, ...data],
                     hasMore
+                }
+            };
+        },
+        seenHistoryItem(state, { payload: historyId }) {
+            const historyData = [...state.history.list];
+            const index = _.findIndex(historyData, ['_id', historyId]);
+            if (index > -1) historyData[index].seen = true;
+            return {
+                ...state,
+                history: {
+                    ...state.history,
+                    list: [...historyData]
                 }
             };
         },

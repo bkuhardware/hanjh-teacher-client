@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
+import router from 'umi/router';
 import { connect } from 'dva';
 import { Table, Avatar, Button, Spin, Icon } from 'antd';
 import TimeAgo from 'react-timeago';
@@ -31,6 +32,22 @@ const History = ({ dispatch, match, ...props }) => {
     const handleMarkAllAsRead = () => {
 
     };
+    const handleViewHistoryItem = item => {
+        if (item.type === 1) {
+            //target your student
+            router.push(`/course/${courseId}/edit/goals`);
+        }
+        else if (item.type === 2) {
+            //syllabus
+            router.push(`/course/${courseId}/edit/syllabus`);
+        }
+        if (!item.seen) {
+            dispatch({
+                type: 'course/seenHistory',
+                payload: item._id
+            });
+        }
+    }
     const loadMore = (
         !initLoading && !loading && commitHistory && hasMore ? (
             <div className={styles.loadMore}>
@@ -87,6 +104,9 @@ const History = ({ dispatch, match, ...props }) => {
                 pagination={false}
                 size="middle"
                 bordered={false}
+                onRow={item => ({
+                    onClick: () => handleViewHistoryItem(item)
+                })}
             />
             {loadMore}
             {loading && (

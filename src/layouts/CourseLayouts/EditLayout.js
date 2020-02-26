@@ -257,7 +257,21 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
         ) : null
     );
     const handleViewHistoryItem = item => {
-
+        if (item.type === 1) {
+            //target your student
+            router.push(`/course/${courseId}/edit/goals`);
+        }
+        else if (item.type === 2) {
+            //syllabus
+            router.push(`/course/${courseId}/edit/syllabus`);
+        }
+        setDrawerVisible(false);
+        if (!item.seen) {
+            dispatch({
+                type: 'course/seenHistory',
+                payload: item._id
+            });
+        }
     };
     return (
         <Layout className={styles.editLayout}>
