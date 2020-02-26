@@ -6,7 +6,7 @@ import withRouter from 'umi/withRouter';
 import Link from 'umi/link'
 import router from 'umi/router';
 import { connect } from 'dva';
-import { Row, Col, Layout, Menu, Skeleton, Icon, Button, Tooltip, Spin, Drawer, Avatar, Badge } from 'antd';
+import { Row, Col, Layout, Menu, Skeleton, Icon, Button, Tooltip, Spin, Drawer, Avatar, Badge, Checkbox } from 'antd';
 import Footer from '@/components/Footer';
 import ScrollLayout from '@/components/ScrollLayout';
 import Scrollbars from 'react-custom-scrollbars';
@@ -85,7 +85,7 @@ const Header = ({ courseInfo, loading, handlePreview, handleViewHistory }) => {
     );
 };
 
-const Sider = ({ courseId, syllabus, loading, selectedKeys }) => {
+const Sider = ({ courseId, syllabus, completeStatus, loading, selectedKeys }) => {
     return (
         <AntSider
             className={styles.sider}
@@ -113,9 +113,12 @@ const Sider = ({ courseId, syllabus, loading, selectedKeys }) => {
                         popupClassName={styles.subMenuPopup}
                     >
                         <MenuItem key="/goals">
-                            <Link to={`/course/${courseId}/edit/goals`}>
-                                Target your students
-                            </Link>
+                            <div className={styles.haveStatus}>
+                                <Link to={`/course/${courseId}/edit/goals`}>
+                                    Target your students
+                                </Link>
+                                <Checkbox checked={completeStatus.goals} className={styles.status} />
+                            </div>
                         </MenuItem>
                         <MenuItem key="/course-structure">
                             <Link to={`/course/${courseId}/edit/course-structure`}>
@@ -144,9 +147,12 @@ const Sider = ({ courseId, syllabus, loading, selectedKeys }) => {
                             </Link>
                         </MenuItem>
                         <MenuItem key="/syllabus">
-                            <Link to={`/course/${courseId}/edit/syllabus`}>
-                                Syllabus
-                            </Link>
+                            <div className={styles.haveStatus}>
+                                <Link to={`/course/${courseId}/edit/syllabus`}>
+                                    Syllabus
+                                </Link>
+                                <Checkbox checked={completeStatus.syllabus} className={styles.status} />
+                            </div>
                         </MenuItem>
                         {_.map(syllabus, chapter => (
                             <SubMenu
@@ -175,24 +181,36 @@ const Sider = ({ courseId, syllabus, loading, selectedKeys }) => {
                         popupClassName={styles.subMenuPopup}
                     >
                         <MenuItem key="/landing">
-                            <Link to={`/course/${courseId}/edit/landing`}>
-                                Landing page
-                            </Link>
+                            <div className={styles.haveStatus}>
+                                <Link to={`/course/${courseId}/edit/landing`}>
+                                    Landing page
+                                </Link>
+                                <Checkbox checked={completeStatus.landing} className={styles.status} />
+                            </div>
                         </MenuItem>
                         <MenuItem key="/price">
-                            <Link to={`/course/${courseId}/edit/price`}>
-                                Price
-                            </Link>
+                            <div className={styles.haveStatus}>
+                                <Link to={`/course/${courseId}/edit/price`}>
+                                    Price
+                                </Link>
+                                <Checkbox checked={completeStatus.price} className={styles.status} />
+                            </div>
                         </MenuItem>
                         <MenuItem key="/promotions">
-                            <Link to={`/course/${courseId}/edit/promotions`}>
-                                Promotions
-                            </Link>
+                            <div className={styles.haveStatus}>
+                                <Link to={`/course/${courseId}/edit/promotions`}>
+                                    Promotions
+                                </Link>
+                                <Checkbox checked={completeStatus.promotions} className={styles.status} />
+                            </div>
                         </MenuItem>
                         <MenuItem key="/messages">
-                            <Link to={`/course/${courseId}/edit/messages`}>
-                                Messages
-                            </Link>
+                            <div className={styles.haveStatus}>
+                                <Link to={`/course/${courseId}/edit/messages`}>
+                                    Messages
+                                </Link>
+                                <Checkbox checked={completeStatus.messages} className={styles.status} />
+                            </div>
                         </MenuItem>
                     </SubMenu>
                 </Menu>
@@ -288,6 +306,7 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
                     courseId={courseId}
                     syllabus={courseInfo && courseInfo.syllabus}
                     loading={loading}
+                    completeStatus={courseInfo && courseInfo.completeStatus}
                 />
                 <ScrollLayout>
                     <Content className={styles.main}>

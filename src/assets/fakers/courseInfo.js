@@ -3,6 +3,14 @@ export default {
     name: 'Build Web Apps with Vue JS 2 & Firebase',
     privacy: 'private',
     noOfUnseen: 18,
+    completeStatus: {
+        goals: true,
+        syllabus: false,
+        landing: false,
+        price: false,
+        promotions: true,
+        messages: false
+    },
     syllabus: [
         {
             _id: 'chapter-1',

@@ -83,6 +83,24 @@
             padding-bottom: 60px;
             padding-top: 10px;
             background: inherit;
+            .haveStatus {
+                position: relative;
+                a {
+                    width: 162px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: block;
+                    color: inherit;
+                }
+                
+                .status {
+                    position: absolute;
+                    top: 50%;
+                    right: 0;
+                    transform: translate(0%, -50%);
+                }
+            }
             :global {
                 .ant-menu-sub {
                     background: rgb(30, 30, 30);
