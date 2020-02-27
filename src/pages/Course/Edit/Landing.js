@@ -35,7 +35,9 @@ const Landing = ({ form, match, dispatch, ...props }) => {
     const {
         areasMenu,
         landing,
-        loading
+        loading,
+        basicLoading,
+        avatarLoading
     } = props;
     const previousLanding = usePrevious(landing);
     useEffect(() => {
@@ -74,7 +76,33 @@ const Landing = ({ form, match, dispatch, ...props }) => {
     };
     const handleSubmitBasicInfo = e => {
         e.preventDefault();
-
+        const errors = form.getFieldsError();
+        if (_.some(errors, err => err)) return message.error('Your input is invalid! Please check again!');
+        const {
+            title,
+            subTitle,
+            language,
+            level,
+            area,
+            category
+        } = form.getFieldsValue();
+        const descriptionHTML = exportToHTML(description);
+        const topicsData = _.map(topics, topic => topic._id);
+        dispatch({
+            type: 'course/changeBasicInfo',
+            payload: {
+                courseId,
+                title,
+                subTitle,
+                language,
+                level,
+                area,
+                category,
+                description: descriptionHTML,
+                topics: topicsData,
+                primaryTopic
+            }
+        });
     };
     const handleCloseCropModal = () => {
         setCropVisible(false);
@@ -117,7 +145,19 @@ const Landing = ({ form, match, dispatch, ...props }) => {
         setAvatar(null);
         setFileList([]);
     };
-    const handleSetAvatar = () => {};
+    const handleSetAvatar = () => {
+        dispatch({
+            type: 'course/changeAvatar',
+            payload: {
+                courseId,
+                file: avatar,
+                callback: () => {
+                    setAvatar(null);
+                    setFileList([]);
+                }
+            }
+        });
+    };
     const avatarProps = {
         accept: 'image/*',
         name: 'avatarfile',
@@ -346,7 +386,7 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                             </div>
                         </FormItem>
                         <FormItem className={styles.btnCont}>
-                            <Button htmlType="submit" type="primary" className={styles.submitBtn}>
+                            <Button htmlType="submit" type="primary" className={styles.submitBtn} icon={basicLoading ? "loading" : null} disabled={loading || basicLoading}>
                                 Save
                             </Button>
                         </FormItem>
@@ -387,7 +427,7 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                                                 </Button>
                                             ) : (
                                                 <Button className={styles.upBtn} onClick={handleSetAvatar} type="primary">
-                                                    <Icon type="check" /> Set avatar
+                                                    <Icon type={avatarLoading ? "loading" : "check"} /> Set avatar
                                                 </Button>
                                             )}
                                         </Upload>
@@ -436,6 +476,8 @@ export default Form.create()(connect(
     ({ settings, course, loading }) => ({
         areasMenu: settings.areasMenu,
         landing: course.landing,
-        loading: !!loading.effects['course/fetchLanding']
+        loading: !!loading.effects['course/fetchLanding'],
+        basicLoading: !!loading.effects['course/changeBasicInfo'],
+        avatarLoading: !!loading.effects['course/changeAvatar']
     })
 )(Landing));

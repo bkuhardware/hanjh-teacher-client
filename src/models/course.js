@@ -192,6 +192,44 @@ export default {
                 payload: LANDING
             });
         },
+        *changeBasicInfo({ payload }, { call, put }) {
+            yield delay(1600);
+            //call api with params in payload;
+            yield put({
+                type: 'pushLanding',
+                payload: { ...payload }
+            });
+            //get Landing complete status in response. yield put for update status
+            yield put({
+                type: 'saveCompleteStatus',
+                payload: {
+                    type: 'landing',
+                    status: true
+                }
+            });
+        },
+        *changeAvatar({ payload }, { call, put }) {
+            const { file, callback } = payload;
+            //call cloud api for upload avatar
+            yield delay(1000);
+            //after upload, get image url, call next api for change avatar for course
+            //get response with object with avatar field: url of avatar. and complete status
+            yield delay(1200);
+            yield put({
+                type: 'pushLanding',
+                payload: {
+                    avatar: file
+                }
+            });
+            yield put({
+                type: 'saveCompleteStatus',
+                payload: {
+                    type: 'landing',
+                    status: false
+                }
+            });
+            if (callback) callback();
+        },
         *fetchPrice({ payload: courseId }, { call, put }) {
             yield delay(800);
             yield put({
@@ -205,6 +243,13 @@ export default {
             yield put({
                 type: 'savePrice',
                 payload: value
+            });
+            yield put({
+                type: 'saveCompleteStatus',
+                payload: {
+                    type: 'price',
+                    status: true
+                }
             });
         },
         *fetchMessages({ payload: courseId }, { call, put }) {
@@ -221,7 +266,20 @@ export default {
                 congratulation
             } = payload;
             yield delay(1500);
-            //
+            yield put({
+                type: 'saveMessages',
+                payload: {
+                    welcome,
+                    congratulation
+                }
+            });
+            yield put({
+                type: 'saveCompleteStatus',
+                payload: {
+                    type: 'messages',
+                    status: true
+                }
+            });
         },
         *validate({ payload }, { call, put }) {
             const {
@@ -243,6 +301,19 @@ export default {
                 ...state,
                 info: { ...payload }
             }
+        },
+        saveCompleteStatus(state, { payload }) {
+            const { type, status } = payload;
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    completeStatus: {
+                        ...state.info.completeStatus,
+                        [type]: status
+                    }
+                }
+            };
         },
         resetInfo(state) {
             return {
@@ -337,6 +408,15 @@ export default {
             return {
                 ...state,
                 landing: { ...payload }
+            };
+        },
+        pushLanding(state, { payload }) {
+            return {
+                ...state,
+                landing: {
+                    ...state.landing,
+                    ...payload
+                }
             };
         },
         resetLanding(state) {
