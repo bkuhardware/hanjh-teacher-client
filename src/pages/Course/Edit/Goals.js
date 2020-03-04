@@ -8,7 +8,10 @@ import styles from './Goals.less';
 const { Panel } = Collapse;
 const ButtonGroup = Button.Group;
 
-const TargetItem = ({ item, inputValue, itemType, onChangeInput, onOk, onClose, onEdit, onDelete, onNewOk, onNewClose }) => {
+const TargetItem = ({ item, onOk, onDelete, onNewOk, onNewClose, userId }) => {
+    const [value, setValue] = useState(item.content);
+    const [itemType, setItemType] = useState('text');
+    const [extraVisible, setExtraVisible] = useState(false);
     const handleDelete = () => {
         Modal.confirm({
             content: 'Are you sure?',
@@ -17,16 +20,20 @@ const TargetItem = ({ item, inputValue, itemType, onChangeInput, onOk, onClose, 
             onOk: onDelete
         })
     };
-    const handleOk = () => {
-        onOk({
-            _id: item._id,
-            content: inputValue,
-            updatedAt: Date.now(),
-            editable: true
-        });
+    const handleEdit = () => setItemType('input');
+    const handleChangeValue = e => {
+        const val = e.target.value;
+        setValue(val);
     };
-    const handleNewOk = () => onNewOk(inputValue);
-    const [extraVisible, setExtraVisible] = useState(false);
+    const handleClose = () => {
+        setItemType('text');
+        setValue(item.content);
+    };
+    const handleNewOk = () => onNewOk(value);
+    const handleOk = () => {
+        onOk(value);
+        setItemType('text');
+    };
     if (itemType === 'text') {
         return (
             <Row
@@ -42,20 +49,20 @@ const TargetItem = ({ item, inputValue, itemType, onChangeInput, onOk, onClose, 
                         title={(
                             <span>
                                 <Avatar shape="circle" size={32} alt="Avatar" src={item.owner.avatar} style={{ marginRight: '8px' }}/>
-                                <span style={{ lineHeight: '32px' }}>{`${item.owner.name} at ${moment(item.updatedAt).format('HH:mm, D MMM')}`}</span>
+                                <span style={{ lineHeight: '32px' }}>{`${item.owner._id !== userId ? item.owner.name : 'You'} at ${moment(item.updatedAt).format('HH:mm, D MMM')}`}</span>
                             </span>
                         )}
                     >
                         <span className={styles.icon}>
-                            <Icon type={item.isAdded ? "plus-circle" : "check-circle"} theme="filled" style={{ color: item.isAdded ? "#fada5e" : "#fafafa" }} />
+                            <Icon type="plus-circle" theme="filled" style={{ color: "#fafafa" }} />
                         </span>
                         <div style={{ marginLeft: '16px' }}>{item.content}</div>
                     </Tooltip>
                 </Col>
                 <Col span={2} className={styles.extra}>
-                    {item.editable && extraVisible && (
+                    {extraVisible && (
                         <ButtonGroup>
-                            <Button icon="edit" onClick={onEdit}/>
+                            <Button icon="edit" onClick={handleEdit}/>
                             <Button icon="rest" onClick={handleDelete} />
                         </ButtonGroup>
                     )}
@@ -66,12 +73,12 @@ const TargetItem = ({ item, inputValue, itemType, onChangeInput, onOk, onClose, 
     return (
         <Row className={styles.inputTargetItem} gutter={16}>
             <Col span={22} className={styles.input}>
-                <Input placeholder="Answer..." value={inputValue} onChange={onChangeInput} />
+                <Input placeholder="Answer..." value={value} onChange={handleChangeValue} />
             </Col>
             <Col span={2} className={styles.extra}>
                 <ButtonGroup>
-                    <Button icon="check" disabled={item.content === inputValue} onClick={item._id === 'new_item' ? handleNewOk : handleOk} />
-                    <Button icon="close" onClick={item._id === 'new_item' ? onNewClose : onClose} />
+                    <Button icon="check" disabled={item.content === value} onClick={item._id === 'new_item' ? handleNewOk : handleOk} />
+                    <Button icon="close" onClick={item._id === 'new_item' ? onNewClose : handleClose} />
                 </ButtonGroup>
             </Col>
         </Row>
@@ -86,44 +93,7 @@ const Subject = ({ field, onSave, currentUser, loading }) => {
         delete: []
     });
     const [newItem, setNewItem] = useState(null);
-    const [metaItem, setMetaItem] = useState({
-        'new_item': {
-            type: 'input',
-            currentValue: ''
-        }
-    }); 
-    useEffect(() => {
-        let metaItemData = { ...metaItem };
-        _.forEach(field || [], fieldItem => {
-            if (
-                !metaItemData[fieldItem._id]
-                || (
-                    metaItemData[fieldItem._id].type === 'text'
-                    && _.isEmpty(change.update[fieldItem._id])
-                )
-            ) {
-                metaItemData = {
-                    ...metaItemData,
-                    [fieldItem._id] :{
-                        type: 'text',
-                        currentValue: fieldItem.content
-                    }
-                }
-            }
-        });
-        setMetaItem({ ...metaItemData });
-    }, [field]);
-
-    const handleChangeInput = (e, itemId) => {
-        const val = e.target.value;
-        setMetaItem({
-            ...metaItem,
-            [itemId]: {
-                ...metaItem[itemId],
-                currentValue: val
-            }
-        })
-    };
+    const [fieldData, setFieldData] = useState([ ...field ]);
     const handleNewAnswer = () => {
         setNewItem({
             _id: 'new_item',
@@ -131,81 +101,12 @@ const Subject = ({ field, onSave, currentUser, loading }) => {
         });
     };
     const handleOk = (data, itemId) => {
-        message.success('Change!');
-        setChange({
-            ...change,
-            update: {
-                ...change.update,
-                [itemId]: {
-                    ...data,
-                    owner: currentUser
-                }
-            }
-        });
-        setMetaItem({
-            ...metaItem,
-            [itemId]: {
-                ...metaItem[itemId],
-                type: 'text'
-            }
-        });
-    };
-    const handleClose = (content, itemId) => {
-        setMetaItem({
-            ...metaItem,
-            [itemId]: {
-                ...metaItem[itemId],
-                type: 'text',
-                currentValue: content
-            }
-        });
     };
     const handleNewOk = content => {
-        const countValue = count.current;
-        setNewItem(null);
-        setChange({
-            ...change,
-            add: [
-                ...change.add,
-                {
-                    _id: `new_complete_item_${countValue}`,
-                    owner: currentUser,
-                    content: content,
-                    editable: true,
-                    updatedAt: Date.now()
-                }
-            ]
-        });
-        setMetaItem({
-            ...metaItem,
-            [`new_complete_item_${countValue}`]: {
-                type: 'text',
-                currentValue: content
-            },
-            'new_item': {
-                type: 'input',
-                currentValue: ''
-            }
-        });
-        count.current += 1;
+        
     };
     const handleNewClose = () => {
-        setNewItem(null);
-        setMetaItem({
-            ...metaItem,
-            'new_item': {
-                type: 'input',
-                currentValue: ''
-            }
-        });
     };
-    const handleEdit = itemId => setMetaItem({
-        ...metaItem,
-        [itemId]: {
-            ...metaItem[itemId],
-            type: 'input'
-        }
-    });
     const handleDelete = itemId => setChange({
         ...change,
         delete: [
@@ -214,83 +115,23 @@ const Subject = ({ field, onSave, currentUser, loading }) => {
         ]
     });
     const handleSave = () => {
-        let changeArr = {
-            add: _.map(change.add, item => ({ ...item })),
-            update: {},
-            delete: [...change.delete]
-        };
-        _.forEach(_.keys(change.update), key => {
-            changeArr.update = {
-                ...changeArr.update,
-                [key]: { ...change.update[key] }
-            }
-        });
-        const keyDeleteInDelete = [];
-        _.forEach(changeArr.delete, key => {
-            const indexInAdd = _.findIndex(changeArr.add, ['_id', key]);
-            if (indexInAdd > -1) {
-                if (!!changeArr.update[key]) {
-                    delete changeArr.update[key];
-                }
-                keyDeleteInDelete.push(key);
-                changeArr.add = _.filter(changeArr.add, item => item._id !== key);
-            }
-            else {
-                if (!!changeArr.update[key]) {
-                    delete changeArr.update[key];
-                }
-            }
-        });
-        changeArr.delete = _.filter(changeArr.delete, key => _.indexOf(keyDeleteInDelete, key) === -1);
-        const newAddData = [];
-        _.forEach(changeArr.add, item => {
-            if (!!changeArr.update[item._id]) {
-                newAddData.push(changeArr.update[item._id]);
-                delete changeArr.update[item._id];
-            }
-            else newAddData.push(item);
-        });
-        changeArr.add = _.map(newAddData, item => item.content);
-        changeArr.update = _.map(_.toArray(changeArr.update), item => ({
-            _id: item._id,
-            content: item.content
-        }));
-        onSave(changeArr);
     };
-    let renderData;
-    if (field) {
-        renderData = _.map(field, item => ({ ...item }));
-        _.forEach(change.add, item => {
-            renderData.push(item);
-        });
-        if (newItem) renderData.push(newItem);
-        _.remove(renderData, item => _.indexOf(change.delete, item._id) > -1);
-        _.forEach(_.keys(change.update), key => {
-            const index = _.findIndex(renderData, item => item._id === key);
-            if (index > -1 && renderData[index])
-                renderData[index] = { ...change.update[key] };        
-        });
-    }
+    let renderData = [...fieldData];
+    if (newItem) 
+        renderData = [...renderData, newItem];
+
     return (
         <React.Fragment>
-            {_.map(renderData, item => !!metaItem[item._id] ? (
+            {_.map(renderData, item => (
                 <TargetItem
                     item={item}
                     key={item._id}
-                    inputValue={metaItem[item._id].currentValue}
-                    itemType={metaItem[item._id].type}
-                    onChangeInput={e => handleChangeInput(e, item._id)}
-                    onOk={data => handleOk(data, item._id)}
-                    onClose={() => handleClose(item.content, item._id)}
+                    onOk={content => handleOk(content, item._id)}
                     onNewOk={handleNewOk}
                     onNewClose={handleNewClose}
-                    onEdit={() => handleEdit(item._id)}
                     onDelete={() => handleDelete(item._id)}
+                    userId={currentUser._id}
                 />
-            ) : (
-                <div className={styles.itemLoading} key={_.uniqueId('item_loading_')}>
-                    <Spin indicator={<Icon type="loading" spin />} />
-                </div>
             ))}
             {!newItem && (
                 <div className={styles.add}>
