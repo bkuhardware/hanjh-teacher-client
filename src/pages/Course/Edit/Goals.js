@@ -10,7 +10,7 @@ const ButtonGroup = Button.Group;
 
 const TargetItem = ({ item, onOk, onDelete, onNewOk, onNewClose, userId }) => {
     const [value, setValue] = useState(item.content);
-    const [itemType, setItemType] = useState('text');
+    const [itemType, setItemType] = useState(item._id === 'new_item' ? 'input' : 'text');
     const [extraVisible, setExtraVisible] = useState(false);
     const handleDelete = () => {
         Modal.confirm({
@@ -86,9 +86,9 @@ const TargetItem = ({ item, onOk, onDelete, onNewOk, onNewClose, userId }) => {
 };
 
 const Subject = ({ field, onSave, currentUser, loading }) => {
-    const count = useRef(0);
+    const countRef = useRef(0);
     const [change, setChange] = useState({
-        add: [],
+        add: {},
         update: {},
         delete: []
     });
@@ -100,21 +100,93 @@ const Subject = ({ field, onSave, currentUser, loading }) => {
             content: ''
         });
     };
-    const handleOk = (data, itemId) => {
+    const handleOk = (content, itemId) => {
+        //change -update
+        const newFieldData = _.map(fieldData, item => ({ ...item }));
+        const index = _.findIndex(newFieldData, ['_id', itemId]);
+        newFieldData[index] = {
+            ...newFieldData[index],
+            content: content,
+            owner: { ...currentUser },
+            updatedAt: moment()
+        };
+        setFieldData([...newFieldData]);
+        if (_.startsWith(itemId, 'new_item_')) {
+            setChange({
+                ...change,
+                add: {
+                    ...change.add,
+                    [itemId]: content
+                }
+            });
+        }
+        else {
+            setChange({
+                ...change,
+                update: {
+                    ...change.update,
+                    [itemId]: content
+                }
+            });
+        }
     };
     const handleNewOk = content => {
-        
+        const count = countRef.current;
+        //change - add
+        setChange({
+            ...change,
+            add: {
+                ...change.add,
+                [`new_item_${count}`]: content
+            }
+        })
+        setFieldData([
+            ...fieldData,
+            {
+                _id: `new_item_${count}`,
+                content: content,
+                owner: { ...currentUser },
+                updatedAt: moment()
+            }
+        ]);
+        handleNewClose();
+        countRef.current++;
     };
     const handleNewClose = () => {
+        setNewItem(null);
     };
-    const handleDelete = itemId => setChange({
-        ...change,
-        delete: [
-            ...change.delete,
-            itemId
-        ]
-    });
+    const handleDelete = itemId => {
+        setFieldData(_.filter(fieldData, item => item._id !== itemId));
+        //change -delete
+        if (!!change.add[itemId]) {
+            const newAddData = { ...change.add };
+            delete newAddData[itemId];
+            setChange({
+                ...change,
+                add: { ...newAddData }
+            });
+        }
+        else if (!!change.update[itemId]) {
+            const newUpdateData = { ...change.update };
+            delete newUpdateData[itemId];
+            setChange({
+                ...change,
+                update: { ...newUpdateData },
+                delete: [
+                    ...change.delete,
+                    itemId
+                ]
+            });
+        }
+        else {
+            setChange({
+                ...change,
+                delete: [...change.delete, itemId]
+            });
+        }
+    };
     const handleSave = () => {
+        console.log(change);
     };
     let renderData = [...fieldData];
     if (newItem) 
