@@ -93,7 +93,10 @@ const Subject = ({ field, onSave, currentUser, loading }) => {
         delete: []
     });
     const [newItem, setNewItem] = useState(null);
-    const [fieldData, setFieldData] = useState([ ...field ]);
+    const [fieldData, setFieldData] = useState([]);
+    useEffect(() => {
+        setFieldData([...field]);
+    }, [field]);
     const handleNewAnswer = () => {
         setNewItem({
             _id: 'new_item',
@@ -186,8 +189,13 @@ const Subject = ({ field, onSave, currentUser, loading }) => {
         }
     };
     const handleSave = () => {
-        console.log(change);
-    };
+        onSave(change);
+        setChange({
+            add: {},
+            delete: [],
+            update: {}
+        });
+    }
     let renderData = [...fieldData];
     if (newItem) 
         renderData = [...renderData, newItem];

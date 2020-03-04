@@ -173,17 +173,40 @@ export default {
         *changeWhatLearn({ payload }, { call, put }) {
             const { courseId, change } = payload;
             yield delay(1500);
-            //only call api, update by emit message, not by response.
+            //full data returned in response;
+            yield put({
+                type: 'updateGoals',
+                payload: {
+                    type: 'whatLearn',
+                    data: FOO
+                }
+            });
         },
         *changeRequirements({ payload }, { call, put }) {
             const { courseId, change } = payload;
             yield delay(1400);
-            //only call api, update by emit message, not by response.
+            //full data returned in response;
+            yield put({
+                type: 'updateGoals',
+                payload: {
+                    type: 'requirements',
+                    data: FOO
+                }
+            });
+
         },
         *changeTargetStudents({ payload }, { call, put }) {
             const { courseId, change } = payload;
             yield delay(1200);
-            //only call api, update by emit message, not by response.
+            //full data returned in response;
+            yield put({
+                type: 'updateGoals',
+                payload: {
+                    type: 'targetStudents',
+                    data: FOO
+                }
+            });
+
         },
         *fetchLanding({ payload: courseId }, { call, put }) {
             yield delay(1500);
@@ -392,6 +415,16 @@ export default {
             return {
                 ...state,
                 goals: { ...payload }
+            };
+        },
+        updateGoals(state, { payload }) {
+            const { type, data } = payload;
+            return {
+                ...state,
+                goals: {
+                    ...state.goals,
+                    [type]: [...data]
+                }
             };
         },
         resetGoals(state) {
