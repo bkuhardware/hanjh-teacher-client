@@ -259,6 +259,33 @@ export default {
             if (callback) callback();
             //update courseInfo.syllabus, update syllabus complete status.
         },
+        *updateChapter({ payload }, { call, put }) {
+            const { courseId, chapterId, title, description, callback } = payload;
+            yield delay(1500);
+            //call api, response return update chapter data, with owner...,
+            yield put({
+                type: 'changeChapter',
+                payload: {
+                    _id: chapterId,
+                    title,
+                    description,
+                    owner: {
+                        _id: 1,
+                        name: 'Faker',
+                        avatar: 'https://scontent.fsgn3-1.fna.fbcdn.net/v/t1.0-9/85144026_2793484880746288_1142991351239933952_n.jpg?_nc_cat=109&_nc_sid=85a577&_nc_oc=AQlJDP9T9y1poO8QvEkIk9Jki0k2WnVKcEU4d6tENErUiejEoAEo2s4Yk99frVwI_yA&_nc_ht=scontent.fsgn3-1.fna&oh=e6b00df474760cd111c9c2f00f7b7358&oe=5E99D0E9'
+                    },
+                    updatedAt: Date.now()
+                }
+            });
+            yield put({
+                type: 'changeChapterInCourseInfo',
+                payload: {
+                    _id: chapterId,
+                    title
+                }
+            });
+            if (callback) callback();
+        },
         *addLecture({ payload }, { call, put }) {
             const {
                 courseId,
@@ -449,6 +476,22 @@ export default {
                 }
             };
         },
+        changeChapterInCourseInfo(state, { payload }) {
+            const { _id: chapterId } = payload;
+            const syllabusData = _.cloneDeep(state.info.syllabus);
+            const index = _.findIndex(syllabusData, ['_id', chapterId]);
+            syllabusData[index] = {
+                ...syllabusData[index],
+                ...payload
+            };
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    syllabus: [...syllabusData]
+                }
+            };
+        },
         pushLectureInCourseInfo(state, { payload }) {
             const { chapterId, lecture } = payload;
             const syllabusData = _.cloneDeep(state.info.syllabus);
@@ -580,6 +623,19 @@ export default {
                     ...state.syllabus,
                     chapter
                 ]
+            };
+        },
+        changeChapter(state, { payload }) {
+            const { _id: chapterId } = payload;
+            const syllabusData = _.cloneDeep(state.syllabus);
+            const index = _.findIndex(syllabusData, ['_id', chapterId]);
+            syllabusData[index] = {
+                ...syllabusData[index],
+                ...payload
+            };
+            return {
+                ...state,
+                syllabus: [...syllabusData]
             };
         },
         pushLecture(state, { payload }) {

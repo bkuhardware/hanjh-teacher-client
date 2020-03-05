@@ -337,7 +337,18 @@ const Syllabus = ({ dispatch, match, ...props }) => {
             setEditChapterDescription(val);
         }
     };
-    const handleUpdateChapter = () => {};
+    const handleUpdateChapter = () => {
+        dispatch({
+            type: 'course/updateChapter',
+            payload: {
+                courseId,
+                title: editChapterTitle.value,
+                description: editChapterDescription,
+                chapterId: editChapterId,
+                callback: () => handleCancelUpdateChapter()
+            }
+        });
+    };
     const handleCancelUpdateChapter = () => {
         setEditChapterId(null);
         setEditChapterDescription('');
