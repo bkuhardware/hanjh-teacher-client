@@ -1,13 +1,75 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
+import classNames from 'classnames';
 import { connect } from 'dva';
-import { FolderViewOutlined, YoutubeFilled, ReadOutlined } from '@ant-design/icons';
-import { List, Collapse, Icon, Dropdown, Menu, Button, Spin, Avatar, Tooltip } from 'antd';
+import { FolderViewOutlined, YoutubeFilled, ReadOutlined, MoreOutlined } from '@ant-design/icons';
+import { List, Collapse, Icon, Dropdown, Menu, Button, Spin, Avatar, Tooltip, Popover } from 'antd';
 import styles from './Syllabus.less';
 
 const { Panel } = Collapse;
+const ButtonGroup = Button.Group;
 
+const Lecture = ({ lecture, editLectureId, currentUser }) => {
+    const [visible, setVisible] = useState(false);
+    const handleMouseEnter = () => setVisible(true);
+    const handleMouseLeave = () => setVisible(false);
+    return (
+        <List.Item
+            className={styles.lecture}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            extra={(
+                editLectureId !== lecture._id ? (
+                    <div className={styles.extra}>
+                        <span className={styles.user} style={{ visibility: visible ? 'visible' : 'hidden' }}>
+                            <Avatar shape="circle" size={32} alt="Avatar" src={lecture.owner.avatar} style={{ marginRight: '8px' }}/>
+                            <span style={{ lineHeight: '32px' }}>{`${lecture.owner._id !== currentUser._id ? lecture.owner.name : 'You'} at ${moment(lecture.updatedAt).format('HH:mm, D MMM')}`}</span>
+                        </span>
+                        <span className={styles.length} />
+                        <Popover
+                            placement="top"
+                            content={(
+                                <ButtonGroup>
+                                    <Button icon="edit" type="primary" onClick={e => e.stopPropagation()}/>
+                                    <Button icon="rest" type="primary"/>
+                                </ButtonGroup>
+                            )}
+                            popupClassName={styles.chapterPopover}
+                            trigger="click"
+                            // arrowPointAtCenter
+                            // popupAlign={{ offset: [40, -10] }}
+                        >
+                            <span className={styles.icon} onClick={e => e.stopPropagation()}>
+                                <MoreOutlined />
+                            </span>
+                        </Popover>
+                    </div>
+                ) : null
+            )}
+        >
+            {editLectureId === lecture._id ? (
+                <div />
+            ) : (
+                <List.Item.Meta
+                    avatar={(
+                        <Avatar
+                            size={16}
+                            icon={lecture.type === 0 ? <YoutubeFilled /> : <ReadOutlined />}
+                            style={{
+                                background: lecture.type === 1 ? "white" : '#fada5e',
+                                color: 'black',
+                                position: 'relative',
+                                top: '3px'
+                            }}
+                        />
+                    )}
+                    title={<span className={styles.lectureName}>{lecture.title}</span>}
+                />
+            )}
+        </List.Item>
+    )
+}
 const Syllabus = ({ dispatch, match, ...props }) => {
     const { courseId } = match;
     const {
@@ -15,7 +77,7 @@ const Syllabus = ({ dispatch, match, ...props }) => {
         syllabus,
         loading
     } = props;
-    const [syllabusData, setSyllabusData] = useState(null);
+    const [editLectureId, setEditLectureId] = useState(null);
     useEffect(() => {
         dispatch({
             type: 'course/fetchSyllabus',
@@ -25,21 +87,19 @@ const Syllabus = ({ dispatch, match, ...props }) => {
             type: 'course/resetSyllabus'
         });
     }, []);
-    useEffect(() => {
-        if (syllabus) {
-            //...getDerivedStatesFromProps.
-            setSyllabusData([...syllabus]);
-        }
-    }, [syllabus]);
     let defaultActiveKeys = [];
-    if (syllabusData) defaultActiveKeys = _.map(syllabusData, chapter => chapter._id);
+    let countLecturesAll;
+    if (syllabus) {
+        defaultActiveKeys = _.map(syllabus, chapter => chapter._id);
+        countLecturesAll = _.map(syllabus, chapter => chapter.lectures.length);
+    }
     return (
         <div className={styles.syllabus}>
             <div className={styles.btn}>
                 <Button type="primary"><FolderViewOutlined />Preview</Button>
             </div>
             <div className={styles.main}>
-                {!syllabusData || !syllabus || loading ? (
+                {!syllabus || !syllabus || loading ? (
                     <div className={styles.loading}>
                         <Spin indicator={<Icon type="loading" style={{ fontSize: '44px' }} />} />
                         <div className={styles.text}>Fetching syllabus...</div>
@@ -49,7 +109,7 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                         <Collapse
                             defaultActiveKey={defaultActiveKeys}
                         >
-                            {_.map(syllabusData, (chapter, i) => (
+                            {_.map(syllabus, (chapter, index) => (
                                 <Panel
                                     key={chapter._id}
                                     header={(
@@ -64,12 +124,32 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                                 </span>
                                             )}
                                         >
-                                            {`Chapter ${i + 1}: ${chapter.title}`}
+                                            {`Chapter ${index + 1}: ${chapter.title}`}
                                         </Tooltip>
                                     )}
                                     extra={(
                                         <div className={styles.chapterExtra}>
-
+                                            <span className={styles.noOfLectures}>
+                                                {`${countLecturesAll[index]} ${countLecturesAll[index] > 1 ? 'lectures' : 'lecture'}`}
+                                            </span>
+                                            <span className={styles.length} />
+                                            <Popover
+                                                placement="top"
+                                                content={(
+                                                    <ButtonGroup>
+                                                        <Button icon="edit" type="primary" onClick={e => e.stopPropagation()}/>
+                                                        <Button icon="rest" type="primary"/>
+                                                    </ButtonGroup>
+                                                )}
+                                                popupClassName={styles.chapterPopover}
+                                                trigger="click"
+                                                // arrowPointAtCenter
+                                                // popupAlign={{ offset: [40, -10] }}
+                                            >
+                                                <span className={styles.icon} onClick={e => e.stopPropagation()}>
+                                                    <MoreOutlined />
+                                                </span>
+                                            </Popover>
                                         </div>
                                     )}
                                 >
@@ -79,41 +159,7 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                         rowKey={item => `${chapter._id}_${item._id}`}
                                         dataSource={chapter.lectures}
                                         renderItem={lecture => (
-                                            <List.Item
-                                                className={styles.lecture}
-                                                extra={(
-                                                    <div className={styles.extra}>
-
-                                                    </div>
-                                                )}
-                                            >
-                                                <Tooltip
-                                                    placement="left"
-                                                    overlayStyle={{ maxWidth: '1000px' }}
-                                                    title={(
-                                                        <span>
-                                                            <Avatar shape="circle" size={32} alt="Avatar" src={lecture.owner.avatar} style={{ marginRight: '8px' }}/>
-                                                            <span style={{ lineHeight: '32px' }}>{`${lecture.owner._id !== user._id ? lecture.owner.name : 'You'} at ${moment(lecture.updatedAt).format('HH:mm, D MMM')}`}</span>
-                                                        </span>
-                                                    )}
-                                                >
-                                                    <List.Item.Meta
-                                                        avatar={(
-                                                            <Avatar
-                                                                size={16}
-                                                                icon={lecture.type === 0 ? <YoutubeFilled /> : <ReadOutlined />}
-                                                                style={{
-                                                                    background: lecture.type === 1 ? "white" : '#fada5e',
-                                                                    color: 'black',
-                                                                    position: 'relative',
-                                                                    top: '3px'
-                                                                }}
-                                                            />
-                                                        )}
-                                                        title={<span className={styles.lectureName}>{lecture.title}</span>}
-                                                    />
-                                                </Tooltip>
-                                            </List.Item>
+                                            <Lecture lecture={lecture} editLectureId={editLectureId} currentUser={user} />
                                         )}
                                     />
                                 </Panel>

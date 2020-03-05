@@ -13,10 +13,63 @@
             }
         }
         .chapters {
+            .chapterExtra {
+                .length {
+                    display: inline-block;
+                    width: 100px;
+                }
+                .icon {
+                    i {
+                        color: white;
+                        font-size: 0.9em;
+                        cursor: pointer;
+                        font-weight: bold;
+                        &:hover {
+                            opacity: 0.7;
+                        }
+                    }
+                }
+            }
             .chapter {
-                width: 95%;
+                width: 96%;
                 margin-left: auto;
+                .lecture {
+                    cursor: pointer;
+                    &:hover {
+                        color: white;
+                        .lectureName {
+                            color: white;
+                        }
+                    }
+                    .extra {
+                        .length {
+                            width: 100px;
+                            display: inline-block;
+                        }
+                        .icon {
+                            i {
+                                color: white;
+                                font-size: 0.9em;
+                                cursor: pointer;
+                                font-weight: bold;
+                                &:hover {
+                                    opacity: 0.7;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
+}
+.chapterPopover {
+    :global(.ant-popover-inner-content) {
+        padding: 0;
+    }
+    :global(.ant-popover-arrow) {
+        border-color: white !important;
+    }
+    z-index: 200;
+    width: auto;
 }
