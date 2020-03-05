@@ -4,7 +4,7 @@ import moment from 'moment';
 import classNames from 'classnames';
 import { connect } from 'dva';
 import { FolderViewOutlined, YoutubeFilled, ReadOutlined, MoreOutlined } from '@ant-design/icons';
-import { Row, Col, List, Collapse, Icon, Dropdown, Menu, Button, Spin, Avatar, Tooltip, Popover, Form, Input } from 'antd';
+import { Row, Col, List, Collapse, Icon, Dropdown, Menu, Button, Spin, Avatar, Tooltip, Popover, Form, Input, Empty } from 'antd';
 import styles from './Syllabus.less';
 
 const { Panel } = Collapse;
@@ -217,6 +217,17 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                         itemLayout="horizontal"
                                         rowKey={item => `${chapter._id}_${item._id}`}
                                         dataSource={chapter.lectures}
+                                        locale={{
+                                            emptyText: (
+                                                <Empty
+                                                    image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+                                                    imageStyle={{
+                                                        height: 60,
+                                                    }}
+                                                    description="This chapter has 0 lecture."
+                                                />
+                                            )
+                                        }}
                                         renderItem={lecture => (
                                             <Lecture lecture={lecture} editLectureId={editLectureId} currentUser={user} />
                                         )}

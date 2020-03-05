@@ -8,7 +8,7 @@ import HISTORY from '@/assets/fakers/history';
 import SYLLABUS from '@/assets/fakers/syllabus';
 
 const NEW_CHAPTER = {
-    _id: 'chapter-1',
+    _id: 'chapter-3',
     title: 'Introduction',
     owner: {
         //last owner
@@ -231,13 +231,17 @@ export default {
             });
         },
         *addChapter({ payload }, { call, put }) {
-            const { courseId, title, description } = payload;
+            const { courseId, title, description, callback } = payload;
             yield delay(1500);
             //call api post new chapter to server, response return new chapter.
             yield put({
                 type: 'pushChapter',
-                payload: NEW_CHAPTER
-            })
+                payload: {
+                    ...NEW_CHAPTER,
+                    title: title
+                }
+            });
+            if (callback) callback();
         },
         *fetchLanding({ payload: courseId }, { call, put }) {
             yield delay(1500);
