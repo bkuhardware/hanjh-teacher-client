@@ -72,7 +72,7 @@ const Lecture = ({ lecture, editLectureId, currentUser }) => {
     )
 };
 
-const Chapter = ({ chapter, currentUser, numOfLectures, editChapterId, index }) => {
+const Chapter = ({ chapter, currentUser, onAddNewLecture }) => {
     const [editLectureId, setEditLectureId] = useState(null);
     const [newLecture, setNewLecture] = useState(false);
     const [newLectureTitle, setNewLectureTitle] = useState({
@@ -80,7 +80,7 @@ const Chapter = ({ chapter, currentUser, numOfLectures, editChapterId, index }) 
         validateStatus: 'success',
         help: ''
     });
-    const [newLectureType, setNewLectureType] = useState('video');
+    const [newLectureType, setNewLectureType] = useState(0);
     const [newLectureLoading, setNewLectureLoading] = useState(false);
     const handleChangeNewLectureTitle = e => {
         const val = e.target.value;
@@ -103,7 +103,11 @@ const Chapter = ({ chapter, currentUser, numOfLectures, editChapterId, index }) 
     };
     const handleNewLecture = () => setNewLecture(true);
     const handleAddNewLecture = () => {
-
+        setNewLectureLoading(true);
+        onAddNewLecture(newLectureTitle.value, newLectureType, () => {
+            setNewLectureLoading(false);
+            handleCancelAddNewLecture();
+        });
     };
     const handleCancelAddNewLecture = () => {
         setNewLectureTitle({
@@ -111,7 +115,7 @@ const Chapter = ({ chapter, currentUser, numOfLectures, editChapterId, index }) 
             help: '',
             validateStatus: 'success'
         });
-        setNewLectureType('video');
+        setNewLectureType(0);
         setNewLecture(false);
     };
     return (
@@ -159,8 +163,8 @@ const Chapter = ({ chapter, currentUser, numOfLectures, editChapterId, index }) 
                                     </FormItem>
                                     <FormItem label="Select lecture type" required>
                                         <div
-                                            className={newLectureType === 'video' ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
-                                            onClick={() => setNewLectureType('video')}
+                                            className={newLectureType === 0 ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
+                                            onClick={() => setNewLectureType(0)}
                                         >
                                             <div className={styles.inlineDiv}>
                                                 <PlayCircleFilled style={{ fontSize: '2.5em', position: 'relative', top: '6px' }}/>
@@ -170,8 +174,8 @@ const Chapter = ({ chapter, currentUser, numOfLectures, editChapterId, index }) 
                                             </div>
                                         </div>
                                         <div
-                                            className={newLectureType === 'article' ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
-                                            onClick={() => setNewLectureType('article')}
+                                            className={newLectureType === 1 ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
+                                            onClick={() => setNewLectureType(1)}
                                         >
                                             <div className={styles.inlineDiv}>
                                                 <ReadFilled style={{ fontSize: '2.5em', position: 'relative', top: '6px' }}/>
@@ -210,210 +214,223 @@ const Chapter = ({ chapter, currentUser, numOfLectures, editChapterId, index }) 
 };
 
 const Syllabus = ({ dispatch, match, ...props }) => {
-const { courseId } = match;
-const {
-    user,
-    syllabus,
-    loading,
-    chapterLoading,
-} = props;
-const [editChapterId, setEditChapterId] = useState(null);
-const [newChapter, setNewChapter] = useState(false);
-const [newChapterTitle, setNewChapterTitle] = useState({
-    help: '',
-    validateStatus: 'success',
-    value: ''
-});
-const [newChapterDescription, setNewChapterDescription] = useState('');
-useEffect(() => {
-    dispatch({
-        type: 'course/fetchSyllabus',
-        payload: courseId
-    });
-    return () => dispatch({
-        type: 'course/resetSyllabus'
-    });
-}, []);
-const handleNewChapter = () => setNewChapter(true);
-const handleChangeNewChapterTitle = e => {
-    const val = e.target.value;
-    if (val.length <= 80) {
-        if (val.length === 0) {
-            setNewChapterTitle({
-                value: val,
-                validateStatus: 'error',
-                help: 'Your chapter title must not be empty!'
-            });
-        }
-        else {
-            setNewChapterTitle({
-                value: val,
-                validateStatus: 'success',
-                help: ''
-            });
-        }
-    }
-};
-const handleChangeNewChapterDescription = e => {
-    const val = e.target.value;
-    if (val.length <= 200) {
-        setNewChapterDescription(val);
-    }
-};
-const handleAddNewChapter = () => {
-    dispatch({
-        type: 'course/addChapter',
-        payload: {
-            courseId,
-            title: newChapterTitle.value,
-            description: newChapterDescription,
-            callback: () => handleCancelAddNewChapter()
-        }
-    });
-};
-const handleCancelAddNewChapter = () => {
-    setNewChapterTitle({
-        value: '',
+    const { courseId } = match;
+    const {
+        user,
+        syllabus,
+        loading,
+        chapterLoading,
+    } = props;
+    const [editChapterId, setEditChapterId] = useState(null);
+    const [newChapter, setNewChapter] = useState(false);
+    const [newChapterTitle, setNewChapterTitle] = useState({
         help: '',
-        validateStatus: 'success'
+        validateStatus: 'success',
+        value: ''
     });
-    setNewChapterDescription('');
-    setNewChapter(false);
-};
-let defaultActiveKeys = [];
-let countLecturesAll;
-if (syllabus) {
-    defaultActiveKeys = _.map(syllabus, chapter => chapter._id);
-    countLecturesAll = _.map(syllabus, chapter => chapter.lectures.length);
-}
-return (
-    <div className={styles.syllabus}>
-        <div className={styles.btn}>
-            <Button type="primary"><FolderViewOutlined />Preview</Button>
-        </div>
-        <div className={styles.main}>
-            {!syllabus || !syllabus || loading ? (
-                <div className={styles.loading}>
-                    <Spin indicator={<Icon type="loading" style={{ fontSize: '44px' }} />} />
-                    <div className={styles.text}>Fetching syllabus...</div>
-                </div>
-            ) : (
-                <div className={styles.chapters}>
-                    <Collapse
-                        defaultActiveKey={defaultActiveKeys}
-                    >
-                        {_.map(syllabus, (chapter, index) => (
-                            <Panel
-                                key={chapter._id}
-                                header={(
-                                    <Tooltip
-                                        placement="left"
-                                        overlayStyle={{ maxWidth: '1000px' }}
-                                        title={(
-                                            editChapterId !== chapter._id ? (
-                                                <span>
-                                                    <Avatar shape="circle" size={32} alt="Avatar" src={chapter.owner.avatar} style={{ marginRight: '8px' }}/>
-                                                    <span style={{ lineHeight: '32px' }}>{`${chapter.owner._id !== user._id ? chapter.owner.name : 'You'} at ${moment(chapter.updatedAt).format('HH:mm, D MMM')}`}</span>
-                                                </span>
-                                            ) : (
-                                                <div />
-                                            )
-                                        )}
-                                    >
-                                        {`Chapter ${index + 1}: ${chapter.title}`}
-                                    </Tooltip>
-                                )}
-                                extra={editChapterId !== chapter._id && (
-                                    <div className={styles.chapterExtra}>
-                                        <span className={styles.noOfLectures}>
-                                            {`${countLecturesAll[index]} ${countLecturesAll[index] > 1 ? 'lectures' : 'lecture'}`}
-                                        </span>
-                                        <span className={styles.length} />
-                                        <Popover
-                                            placement="top"
-                                            content={(
-                                                <ButtonGroup>
-                                                    <Button icon="edit" type="primary" onClick={e => e.stopPropagation()}/>
-                                                    <Button icon="rest" type="primary"/>
-                                                </ButtonGroup>
-                                            )}
-                                            popupClassName={styles.chapterPopover}
-                                            trigger="click"
-                                            // arrowPointAtCenter
-                                            // popupAlign={{ offset: [40, -10] }}
-                                        >
-                                            <span className={styles.icon} onClick={e => e.stopPropagation()}>
-                                                <MoreOutlined />
-                                            </span>
-                                        </Popover>
-                                    </div>
-                                )}
-                            >
-                                <Chapter
-                                    chapter={chapter}
+    const [newChapterDescription, setNewChapterDescription] = useState('');
+    useEffect(() => {
+        dispatch({
+            type: 'course/fetchSyllabus',
+            payload: courseId
+        });
+        return () => dispatch({
+            type: 'course/resetSyllabus'
+        });
+    }, []);
+    const handleNewChapter = () => setNewChapter(true);
+    const handleChangeNewChapterTitle = e => {
+        const val = e.target.value;
+        if (val.length <= 80) {
+            if (val.length === 0) {
+                setNewChapterTitle({
+                    value: val,
+                    validateStatus: 'error',
+                    help: 'Your chapter title must not be empty!'
+                });
+            }
+            else {
+                setNewChapterTitle({
+                    value: val,
+                    validateStatus: 'success',
+                    help: ''
+                });
+            }
+        }
+    };
+    const handleChangeNewChapterDescription = e => {
+        const val = e.target.value;
+        if (val.length <= 200) {
+            setNewChapterDescription(val);
+        }
+    };
+    const handleAddNewChapter = () => {
+        dispatch({
+            type: 'course/addChapter',
+            payload: {
+                courseId,
+                title: newChapterTitle.value,
+                description: newChapterDescription,
+                callback: () => handleCancelAddNewChapter()
+            }
+        });
+    };
+    const handleCancelAddNewChapter = () => {
+        setNewChapterTitle({
+            value: '',
+            help: '',
+            validateStatus: 'success'
+        });
+        setNewChapterDescription('');
+        setNewChapter(false);
+    };
+    const handleAddNewLecture = chapterId => (title, type, callback) => {
+        dispatch({
+            type: 'course/addLecture',
+            payload: {
+                courseId,
+                chapterId,
+                title,
+                type,
+                callback
+            }
+        });
+    };
+    let defaultActiveKeys = [];
+    let countLecturesAll;
+    if (syllabus) {
+        defaultActiveKeys = _.map(syllabus, chapter => chapter._id);
+        countLecturesAll = _.map(syllabus, chapter => chapter.lectures.length);
+    }
+    return (
+        <div className={styles.syllabus}>
+            <div className={styles.btn}>
+                <Button type="primary"><FolderViewOutlined />Preview</Button>
+            </div>
+            <div className={styles.main}>
+                {!syllabus || !syllabus || loading ? (
+                    <div className={styles.loading}>
+                        <Spin indicator={<Icon type="loading" style={{ fontSize: '44px' }} />} />
+                        <div className={styles.text}>Fetching syllabus...</div>
+                    </div>
+                ) : (
+                    <div className={styles.chapters}>
+                        <Collapse
+                            defaultActiveKey={defaultActiveKeys}
+                        >
+                            {_.map(syllabus, (chapter, index) => (
+                                <Panel
                                     key={chapter._id}
-                                    currentUser={user}
+                                    header={(
+                                        <Tooltip
+                                            placement="left"
+                                            overlayStyle={{ maxWidth: '1000px' }}
+                                            title={(
+                                                editChapterId !== chapter._id ? (
+                                                    <span>
+                                                        <Avatar shape="circle" size={32} alt="Avatar" src={chapter.owner.avatar} style={{ marginRight: '8px' }}/>
+                                                        <span style={{ lineHeight: '32px' }}>{`${chapter.owner._id !== user._id ? chapter.owner.name : 'You'} at ${moment(chapter.updatedAt).format('HH:mm, D MMM')}`}</span>
+                                                    </span>
+                                                ) : (
+                                                    <div />
+                                                )
+                                            )}
+                                        >
+                                            {`Chapter ${index + 1}: ${chapter.title}`}
+                                        </Tooltip>
+                                    )}
+                                    extra={editChapterId !== chapter._id && (
+                                        <div className={styles.chapterExtra}>
+                                            <span className={styles.noOfLectures}>
+                                                {`${countLecturesAll[index]} ${countLecturesAll[index] > 1 ? 'lectures' : 'lecture'}`}
+                                            </span>
+                                            <span className={styles.length} />
+                                            <Popover
+                                                placement="top"
+                                                content={(
+                                                    <ButtonGroup>
+                                                        <Button icon="edit" type="primary" onClick={e => e.stopPropagation()}/>
+                                                        <Button icon="rest" type="primary"/>
+                                                    </ButtonGroup>
+                                                )}
+                                                popupClassName={styles.chapterPopover}
+                                                trigger="click"
+                                                // arrowPointAtCenter
+                                                // popupAlign={{ offset: [40, -10] }}
+                                            >
+                                                <span className={styles.icon} onClick={e => e.stopPropagation()}>
+                                                    <MoreOutlined />
+                                                </span>
+                                            </Popover>
+                                        </div>
+                                    )}
+                                >
+                                    <Chapter
+                                        chapter={chapter}
+                                        key={chapter._id}
+                                        currentUser={user}
+                                        onAddNewLecture={handleAddNewLecture(chapter._id)}
                                     />
                                 </Panel>
-                                
-                            ))}
-                        </Collapse>
-                        {newChapter ? (
-                            <div className={styles.newChapter}>
-                                <Spin spinning={chapterLoading}>
-                                    <div className={styles.title}>New chapter</div>
-                                    <Form>
-                                        <Row>
-                                            <Col span={18}>
-                                                <FormItem label="Chapter title" validateStatus={newChapterTitle.validateStatus} help={newChapterTitle.help} required>
-                                                    <Input
-                                                        type="text"
-                                                        size="large"
-                                                        value={newChapterTitle.value}
-                                                        onChange={handleChangeNewChapterTitle}
-                                                        addonAfter={`${newChapterTitle.value.length}/80`}
-                                                        placeholder="Title"
-                                                    />
-                                                </FormItem>
-                                                <FormItem label="What will students be able to do at the end of this section?">
-                                                    <Input
-                                                        type="text"
-                                                        size="large"
-                                                        value={newChapterDescription}
-                                                        onChange={handleChangeNewChapterDescription}
-                                                        addonAfter={`${newChapterDescription.length}/200`}
-                                                        placeholder="Description"
-                                                    />
-                                                </FormItem>
-                                            </Col>
-                                            <Col span={6} className={styles.btns}>
-                                                <div>
-                                                    <FormItem>
-                                                        <Button type="primary" htmlType="button" disabled={_.isEmpty(newChapterTitle.value)} onClick={handleAddNewChapter}>
-                                                            Save
-                                                        </Button>
+                                    
+                                ))}
+                            </Collapse>
+                            {newChapter ? (
+                                <div className={styles.newChapter}>
+                                    <Spin spinning={chapterLoading}>
+                                        <div className={styles.title}>New chapter</div>
+                                        <Form>
+                                            <Row>
+                                                <Col span={18}>
+                                                    <FormItem label="Chapter title" validateStatus={newChapterTitle.validateStatus} help={newChapterTitle.help} required>
+                                                        <Input
+                                                            type="text"
+                                                            size="large"
+                                                            value={newChapterTitle.value}
+                                                            onChange={handleChangeNewChapterTitle}
+                                                            addonAfter={`${newChapterTitle.value.length}/80`}
+                                                            placeholder="Title"
+                                                        />
                                                     </FormItem>
-                                                    <FormItem>
-                                                        <Button htmlType="button" onClick={handleCancelAddNewChapter}>
-                                                            Cancel
-                                                        </Button>
+                                                    <FormItem label="What will students be able to do at the end of this section?">
+                                                        <Input
+                                                            type="text"
+                                                            size="large"
+                                                            value={newChapterDescription}
+                                                            onChange={handleChangeNewChapterDescription}
+                                                            addonAfter={`${newChapterDescription.length}/200`}
+                                                            placeholder="Description"
+                                                        />
                                                     </FormItem>
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                    </Form>
-                                </Spin>
-                            </div>
-                        ) : (
-                            <div className={styles.add}>
-                                <Button type="dashed" icon="plus" onClick={handleNewChapter}>Add a chapter</Button>
-                            </div>
-                        )}
-                    </div>
-                )}
+                                                </Col>
+                                                <Col span={6} className={styles.btns}>
+                                                    <div>
+                                                        <FormItem>
+                                                            <Button type="primary" htmlType="button" disabled={_.isEmpty(newChapterTitle.value)} onClick={handleAddNewChapter}>
+                                                                Save
+                                                            </Button>
+                                                        </FormItem>
+                                                        <FormItem>
+                                                            <Button htmlType="button" onClick={handleCancelAddNewChapter}>
+                                                                Cancel
+                                                            </Button>
+                                                        </FormItem>
+                                                    </div>
+                                                </Col>
+                                            </Row>
+                                        </Form>
+                                    </Spin>
+                                </div>
+                            ) : (
+                                <div className={styles.add}>
+                                    <Button type="dashed" icon="plus" onClick={handleNewChapter}>Add a chapter</Button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
-    )
+        )
 };
 
 export default connect(

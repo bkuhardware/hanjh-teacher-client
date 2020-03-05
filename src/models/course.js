@@ -16,7 +16,7 @@ const NEW_CHAPTER = {
         name: 'Thuy Huyen',
         avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
     },
-    updatedAt: Date.now,
+    updatedAt: Date.now(),
     lectures: []
 };
 
@@ -252,11 +252,59 @@ export default {
                 type: 'saveCompleteStatus',
                 payload: {
                     type: 'syllabus',
-                    status: true
+                    status: false
                 }
             });
             if (callback) callback();
             //update courseInfo.syllabus, update syllabus complete status.
+        },
+        *addLecture({ payload }, { call, put }) {
+            const {
+                courseId,
+                chapterId,
+                title,
+                type,
+                callback
+            } = payload;
+            yield delay(1600);
+            //call api, response return new lecture, complete Status,
+            yield put({
+                type: 'pushLecture',
+                payload: {
+                    chapterId,
+                    lecture: {
+                        _id: _.uniqueId('lecture_'),
+                        title,
+                        type,
+                        owner: {
+                            //last owner
+                            _id: 2,
+                            name: 'Trong Luan',
+                            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-9/83558548_2290286491264377_331290296627232768_n.jpg?_nc_cat=107&_nc_oc=AQnpLi8nWGbC-08nBlYjhCuZyGVkcZMFHaqWTcBFbEZK1GzrkY73FWhSwonUwq-m0aE&_nc_ht=scontent.fsgn5-2.fna&oh=84246739e4ba3279ce49566f8f59bb01&oe=5EC49D12'
+                        },
+                        updatedAt: Date.now(),
+                    }
+                }
+            });
+            yield put({
+                type: 'pushLectureInCourseInfo',
+                payload: {
+                    lecture: {
+                        _id: _.uniqueId('lecture_'),
+                        title,
+                        type
+                    },
+                    chapterId
+                }
+            });
+            yield put({
+                type: 'saveCompleteStatus',
+                payload: {
+                    type: 'syllabus',
+                    status: true
+                }
+            });
+            if (callback) callback();
         },
         *fetchLanding({ payload: courseId }, { call, put }) {
             yield delay(1500);
@@ -400,6 +448,19 @@ export default {
                 }
             };
         },
+        pushLectureInCourseInfo(state, { payload }) {
+            const { chapterId, lecture } = payload;
+            const syllabusData = _.cloneDeep(state.info.syllabus);
+            const index = _.findIndex(syllabusData, ['_id', chapterId]);
+            syllabusData[index].lectures.push(lecture);
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    syllabus: [...syllabusData]
+                }
+            };
+        },
         resetInfo(state) {
             return {
                 ...state,
@@ -518,6 +579,16 @@ export default {
                     ...state.syllabus,
                     chapter
                 ]
+            };
+        },
+        pushLecture(state, { payload }) {
+            const { chapterId, lecture } = payload;
+            const syllabusData = _.cloneDeep(state.syllabus);
+            const index = _.findIndex(syllabusData, ['_id', chapterId]);
+            syllabusData[index].lectures.push(lecture);
+            return {
+                ...state,
+                syllabus: [...syllabusData]
             };
         },
         saveLanding(state, { payload }) {
