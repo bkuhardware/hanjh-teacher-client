@@ -5,6 +5,7 @@ import GOALS from '@/assets/fakers/goals';
 import LANDING from '@/assets/fakers/landing';
 import MESSAGES from '@/assets/fakers/messages';
 import HISTORY from '@/assets/fakers/history';
+import SYLLABUS from '@/assets/fakers/syllabus';
 
 const FOO = [
     {
@@ -104,6 +105,7 @@ const initialState = {
         requirements: null,
         targetStudents: null
     },
+    syllabus: null,
     landing: null,
     price: null,
     messages: null
@@ -207,6 +209,13 @@ export default {
                 }
             });
 
+        },
+        *fetchSyllabus({ payload: courseId }, { call, put }) {
+            yield delay(1300);
+            yield put({
+                type: 'saveSyllabus',
+                payload: SYLLABUS
+            });
         },
         *fetchLanding({ payload: courseId }, { call, put }) {
             yield delay(1500);
@@ -436,6 +445,18 @@ export default {
                     targetStudents: null
                 }
             };
+        },
+        saveSyllabus(state, { payload }) {
+            return {
+                ...state,
+                syllabus: [...payload]
+            };
+        },
+        resetSyllabus(state) {
+            return {
+                ...state,
+                syllabus: null
+            }
         },
         saveLanding(state, { payload }) {
             return {

@@ -359,7 +359,7 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
                                 >
                                     <Tooltip
                                         placement="left"
-                                        overlayStyle={{ maxWidth: '1000px' }}
+                                        overlayStyle={{ maxWidth: '1000px', zIndex: 9999999999 }}
                                         title={`${history.user.name}, at ${moment(history.createdAt).format('HH:mm, D MMM')}`}
                                     >
                                         <Avatar src={history.user.avatar} alt="user-avatar" size={32} />
