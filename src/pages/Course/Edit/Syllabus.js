@@ -11,7 +11,7 @@ const { Panel } = Collapse;
 const ButtonGroup = Button.Group;
 const FormItem = Form.Item;
 
-const Lecture = ({ lecture, editLectureId, currentUser }) => {
+const StaticLecture = ({ lecture, currentUser, onEditLecture }) => {
     const [visible, setVisible] = useState(false);
     const handleMouseEnter = () => setVisible(true);
     const handleMouseLeave = () => setVisible(false);
@@ -21,59 +21,130 @@ const Lecture = ({ lecture, editLectureId, currentUser }) => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             extra={(
-                editLectureId !== lecture._id ? (
-                    <div className={styles.extra}>
-                        <span className={styles.user} style={{ visibility: visible ? 'visible' : 'hidden' }}>
-                            <Avatar shape="circle" size={32} alt="Avatar" src={lecture.owner.avatar} style={{ marginRight: '8px' }}/>
-                            <span style={{ lineHeight: '32px' }}>{`${lecture.owner._id !== currentUser._id ? lecture.owner.name : 'You'} at ${moment(lecture.updatedAt).format('HH:mm, D MMM')}`}</span>
+                <div className={styles.extra}>
+                    <span className={styles.user} style={{ visibility: visible ? 'visible' : 'hidden' }}>
+                        <Avatar shape="circle" size={32} alt="Avatar" src={lecture.owner.avatar} style={{ marginRight: '8px' }}/>
+                        <span style={{ lineHeight: '32px' }}>{`${lecture.owner._id !== currentUser._id ? lecture.owner.name : 'You'} at ${moment(lecture.updatedAt).format('HH:mm, D MMM')}`}</span>
+                    </span>
+                    <span className={styles.length} />
+                    <Popover
+                        placement="top"
+                        content={(
+                            <ButtonGroup>
+                                <Button icon="edit" type="primary" onClick={() => onEditLecture(lecture)}/>
+                                <Button icon="rest" type="primary"/>
+                            </ButtonGroup>
+                        )}
+                        popupClassName={styles.chapterPopover}
+                        trigger="click"
+                        // arrowPointAtCenter
+                        // popupAlign={{ offset: [40, -10] }}
+                    >
+                        <span className={styles.icon}>
+                            <MoreOutlined />
                         </span>
-                        <span className={styles.length} />
-                        <Popover
-                            placement="top"
-                            content={(
-                                <ButtonGroup>
-                                    <Button icon="edit" type="primary"/>
-                                    <Button icon="rest" type="primary"/>
-                                </ButtonGroup>
-                            )}
-                            popupClassName={styles.chapterPopover}
-                            trigger="click"
-                            // arrowPointAtCenter
-                            // popupAlign={{ offset: [40, -10] }}
-                        >
-                            <span className={styles.icon}>
-                                <MoreOutlined />
-                            </span>
-                        </Popover>
-                    </div>
-                ) : null
+                    </Popover>
+                </div>
             )}
         >
-            {editLectureId === lecture._id ? (
-                <div />
-            ) : (
-                <List.Item.Meta
-                    avatar={(
-                        <Avatar
-                            size={16}
-                            icon={lecture.type === 0 ? <YoutubeFilled /> : <ReadOutlined />}
-                            style={{
-                                background: lecture.type === 1 ? "white" : '#fada5e',
-                                color: 'black',
-                                position: 'relative',
-                                top: '3px'
-                            }}
-                        />
-                    )}
-                    title={<span className={styles.lectureName}>{lecture.title}</span>}
-                />
-            )}
+            <List.Item.Meta
+                avatar={(
+                    <Avatar
+                        size={16}
+                        icon={lecture.type === 0 ? <YoutubeFilled /> : <ReadOutlined />}
+                        style={{
+                            background: lecture.type === 1 ? "white" : '#fada5e',
+                            color: 'black',
+                            position: 'relative',
+                            top: '3px'
+                        }}
+                    />
+                )}
+                title={<span className={styles.lectureName}>{lecture.title}</span>}
+            />
         </List.Item>
+    );
+};
+
+const Lecture = ({
+    lecture,
+    editLectureId,
+    editLectureTitle,
+    editLectureType,
+    editLectureLoading,
+    currentUser,
+    onEditLecture,
+    onUpdateLecture,
+    onCancelUpdateLecture,
+    onEditLectureTitleChange,
+    onEditLectureTypeChange
+}) => {
+    
+    return editLectureId === lecture._id ? (
+        <div className={styles.updateLecture}>
+            <Spin spinning={editLectureLoading}>
+                <Form>
+                    <Row>
+                        <Col span={18}>
+                            <FormItem label="Lecture title" validateStatus={editLectureTitle.validateStatus} help={editLectureTitle.help} required>
+                                <Input
+                                    type="text"
+                                    size="large"
+                                    value={editLectureTitle.value}
+                                    onChange={onEditLectureTitleChange}
+                                    addonAfter={`${editLectureTitle.value.length}/80`}
+                                    placeholder="Title"
+                                />
+                            </FormItem>
+                            <FormItem label="Select lecture type" required>
+                                <div
+                                    className={editLectureType === 0 ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
+                                    onClick={() => onEditLectureTypeChange(0)}
+                                >
+                                    <div className={styles.inlineDiv}>
+                                        <PlayCircleFilled style={{ fontSize: '2.5em', position: 'relative', top: '6px' }}/>
+                                    </div>
+                                    <div className={styles.overlay}>
+                                        <div className={styles.text}>Video</div>
+                                    </div>
+                                </div>
+                                <div
+                                    className={editLectureType === 1 ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
+                                    onClick={() => onEditLectureTypeChange(1)}
+                                >
+                                    <div className={styles.inlineDiv}>
+                                        <ReadFilled style={{ fontSize: '2.5em', position: 'relative', top: '6px' }}/>
+                                    </div>
+                                    <div className={styles.overlay}>
+                                        <div className={styles.text}>Article</div>
+                                    </div>
+                                </div>
+                            </FormItem>
+                        </Col>
+                        <Col span={6} className={styles.btns}>
+                            <div>
+                                <FormItem>
+                                    <Button type="primary" htmlType="button" disabled={_.isEmpty(editLectureTitle.value) || (editLectureTitle.value === lecture.title && editLectureType === lecture.type)} onClick={onUpdateLecture}>
+                                        Save
+                                    </Button>
+                                </FormItem>
+                                <FormItem>
+                                    <Button htmlType="button" onClick={onCancelUpdateLecture}>
+                                        Cancel
+                                    </Button>
+                                </FormItem>
+                            </div>
+                        </Col>
+                    </Row>
+                </Form>
+            </Spin>
+        </div>
+    ) : (
+        <StaticLecture lecture={lecture} currentUser={currentUser} onEditLecture={onEditLecture} />
     )
 };
 
 const Chapter = ({ chapter, currentUser, onAddNewLecture }) => {
-    const [editLectureId, setEditLectureId] = useState(null);
     const [newLecture, setNewLecture] = useState(false);
     const [newLectureTitle, setNewLectureTitle] = useState({
         value: '',
@@ -82,6 +153,14 @@ const Chapter = ({ chapter, currentUser, onAddNewLecture }) => {
     });
     const [newLectureType, setNewLectureType] = useState(0);
     const [newLectureLoading, setNewLectureLoading] = useState(false);
+    const [editLectureId, setEditLectureId] = useState(null);
+    const [editLectureType, setEditLectureType] = useState(null);
+    const [editLectureTitle, setEditLectureTitle] = useState({
+        value: '',
+        validateStatus: 'success',
+        help: ''
+    });
+    const [editLectureLoading, setEditLectureLoading] = useState(false);
     const handleChangeNewLectureTitle = e => {
         const val = e.target.value;
         if (val.length <= 80) {
@@ -118,6 +197,45 @@ const Chapter = ({ chapter, currentUser, onAddNewLecture }) => {
         setNewLectureType(0);
         setNewLecture(false);
     };
+    const handleEditLecture = lecture => {
+        setEditLectureId(lecture._id);
+        setEditLectureTitle({
+            value: lecture.title,
+            help: '',
+            validateStatus: 'success'
+        });
+        setEditLectureType(lecture.type);
+    };
+    const handleEditLectureTitleChange = e => {
+        const val = e.target.value;
+        if (val.length <= 80) {
+            if (val.length === 0) {
+                setEditLectureTitle({
+                    value: val,
+                    validateStatus: 'error',
+                    help: 'Your lecture title must not be empty!'
+                });
+            }
+            else {
+                setEditLectureTitle({
+                    value: val,
+                    validateStatus: 'success',
+                    help: ''
+                });
+            }
+        }
+    };
+    const handleEditLectureTypeChange = type => setEditLectureType(type);
+    const handleUpdateLecture = () => {};
+    const handleCancelUpdateLecture = () => {
+        setEditLectureId(null);
+        setEditLectureTitle({
+            value: '',
+            help: '',
+            validateStatus: 'success'
+        });
+        setEditLectureType('');
+    };
     return (
         <React.Fragment>
             <List
@@ -140,8 +258,15 @@ const Chapter = ({ chapter, currentUser, onAddNewLecture }) => {
                     <Lecture
                         lecture={lecture}
                         editLectureId={editLectureId}
+                        editLectureTitle={editLectureTitle}
+                        editLectureType={editLectureType}
+                        editLectureLoading={editLectureLoading}
                         currentUser={currentUser}
-                        
+                        onEditLecture={handleEditLecture}
+                        onEditLectureTitleChange={handleEditLectureTitleChange}
+                        onEditLectureTypeChange={handleEditLectureTypeChange}
+                        onUpdateLecture={handleUpdateLecture}
+                        onCancelUpdateLecture={handleCancelUpdateLecture}
                     />
                 )}
             />

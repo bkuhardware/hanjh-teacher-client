@@ -113,7 +113,7 @@ export default [
             },
             {
                 _id: 'lecture-8',
-                type: 0,
+                type: 1,
                 title: 'The Vue instance',
                 owner: {
                     //last owner
