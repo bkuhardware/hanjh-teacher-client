@@ -238,14 +238,15 @@ export default {
                 type: 'pushChapter',
                 payload: {
                     ...NEW_CHAPTER,
-                    title: title
+                    title: title,
+                    description
                 }
             });
             yield put({
                 type: 'pushChapterInCourseInfo',
                 payload: {
                     ..._.pick(NEW_CHAPTER, ['_id', 'lectures']),
-                    title: title
+                    title: title,
                 }
             });
             yield put({

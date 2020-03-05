@@ -220,8 +220,15 @@ const Syllabus = ({ dispatch, match, ...props }) => {
         syllabus,
         loading,
         chapterLoading,
+        updateChapterLoading
     } = props;
     const [editChapterId, setEditChapterId] = useState(null);
+    const [editChapterTitle, setEditChapterTitle] = useState({
+        value: '',
+        validateStatus: 'success',
+        help: ''
+    });
+    const [editChapterDescription, setEditChapterDescription] = useState('');
     const [newChapter, setNewChapter] = useState(false);
     const [newChapterTitle, setNewChapterTitle] = useState({
         help: '',
@@ -296,6 +303,50 @@ const Syllabus = ({ dispatch, match, ...props }) => {
             }
         });
     };
+    const handleEditChapter = chapter => {
+        setEditChapterId(chapter._id);
+        setEditChapterTitle({
+            value: chapter.title,
+            validateStatus: 'success',
+            help: ''
+        });
+        setEditChapterDescription(chapter.description);
+    };
+    const handleChangeChapterTitle = e => {
+        const val = e.target.value;
+        if (val.length <= 80) {
+            if (val.length === 0) {
+                setEditChapterTitle({
+                    value: val,
+                    validateStatus: 'error',
+                    help: 'Your chapter title must not be empty!'
+                });
+            }
+            else {
+                setEditChapterTitle({
+                    value: val,
+                    validateStatus: 'success',
+                    help: ''
+                });
+            }
+        }
+    };
+    const handleChangeChapterDescription = e => {
+        const val = e.target.value;
+        if (val.length <= 200) {
+            setEditChapterDescription(val);
+        }
+    };
+    const handleUpdateChapter = () => {};
+    const handleCancelUpdateChapter = () => {
+        setEditChapterId(null);
+        setEditChapterDescription('');
+        setEditChapterTitle({
+            value: '',
+            validateStatus: 'success',
+            help: ''
+        });
+    };
     let defaultActiveKeys = [];
     let countLecturesAll;
     if (syllabus) {
@@ -321,7 +372,8 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                             {_.map(syllabus, (chapter, index) => (
                                 <Panel
                                     key={chapter._id}
-                                    header={(
+                                    disabled={editChapterId === chapter._id}
+                                    header={editChapterId !== chapter._id ? (
                                         <Tooltip
                                             placement="left"
                                             overlayStyle={{ maxWidth: '1000px' }}
@@ -338,6 +390,51 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                         >
                                             {`Chapter ${index + 1}: ${chapter.title}`}
                                         </Tooltip>
+                                    ) : (
+                                        <div className={styles.updateChapter}>
+                                            <Spin spinning={updateChapterLoading}>
+                                                <Form>
+                                                    <Row>
+                                                        <Col span={18}>
+                                                            <FormItem label="Chapter title" validateStatus={editChapterTitle.validateStatus} help={editChapterTitle.help} required>
+                                                                <Input
+                                                                    type="text"
+                                                                    size="large"
+                                                                    value={editChapterTitle.value}
+                                                                    onChange={handleChangeChapterTitle}
+                                                                    addonAfter={`${editChapterTitle.value.length}/80`}
+                                                                    placeholder="Title"
+                                                                />
+                                                            </FormItem>
+                                                            <FormItem label="What will students be able to do at the end of this section?">
+                                                                <Input
+                                                                    type="text"
+                                                                    size="large"
+                                                                    value={editChapterDescription}
+                                                                    onChange={handleChangeChapterDescription}
+                                                                    addonAfter={`${editChapterDescription.length}/200`}
+                                                                    placeholder="Description"
+                                                                />
+                                                            </FormItem>
+                                                        </Col>
+                                                        <Col span={6} className={styles.btns}>
+                                                            <div>
+                                                                <FormItem>
+                                                                    <Button type="primary" htmlType="button" disabled={(editChapterDescription === chapter.description && editChapterTitle.value === chapter.title) || _.isEmpty(editChapterTitle.value)} onClick={handleUpdateChapter}>
+                                                                        Save
+                                                                    </Button>
+                                                                </FormItem>
+                                                                <FormItem>
+                                                                    <Button htmlType="button" onClick={handleCancelUpdateChapter}>
+                                                                        Cancel
+                                                                    </Button>
+                                                                </FormItem>
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
+                                                </Form>
+                                            </Spin>
+                                        </div>
                                     )}
                                     extra={editChapterId !== chapter._id && (
                                         <div className={styles.chapterExtra}>
@@ -349,7 +446,14 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                                 placement="top"
                                                 content={(
                                                     <ButtonGroup>
-                                                        <Button icon="edit" type="primary" onClick={e => e.stopPropagation()}/>
+                                                        <Button
+                                                            icon="edit"
+                                                            type="primary"
+                                                            onClick={e => {
+                                                                e.stopPropagation();
+                                                                handleEditChapter(chapter);
+                                                            }}
+                                                        />
                                                         <Button icon="rest" type="primary"/>
                                                     </ButtonGroup>
                                                 )}
@@ -438,6 +542,7 @@ export default connect(
         user: user,
         syllabus: course.syllabus,
         loading: !!loading.effects['course/fetchSyllabus'],
-        chapterLoading: !!loading.effects['course/addChapter']
+        chapterLoading: !!loading.effects['course/addChapter'],
+        updateChapterLoading: !!loading.effects['course/updateChapter']
     })
 )(Syllabus)
