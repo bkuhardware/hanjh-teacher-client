@@ -4,11 +4,12 @@ import moment from 'moment';
 import classNames from 'classnames';
 import { connect } from 'dva';
 import { FolderViewOutlined, YoutubeFilled, ReadOutlined, MoreOutlined } from '@ant-design/icons';
-import { List, Collapse, Icon, Dropdown, Menu, Button, Spin, Avatar, Tooltip, Popover } from 'antd';
+import { Row, Col, List, Collapse, Icon, Dropdown, Menu, Button, Spin, Avatar, Tooltip, Popover, Form, Input } from 'antd';
 import styles from './Syllabus.less';
 
 const { Panel } = Collapse;
 const ButtonGroup = Button.Group;
+const FormItem = Form.Item;
 
 const Lecture = ({ lecture, editLectureId, currentUser }) => {
     const [visible, setVisible] = useState(false);
@@ -31,7 +32,7 @@ const Lecture = ({ lecture, editLectureId, currentUser }) => {
                             placement="top"
                             content={(
                                 <ButtonGroup>
-                                    <Button icon="edit" type="primary" onClick={e => e.stopPropagation()}/>
+                                    <Button icon="edit" type="primary"/>
                                     <Button icon="rest" type="primary"/>
                                 </ButtonGroup>
                             )}
@@ -40,7 +41,7 @@ const Lecture = ({ lecture, editLectureId, currentUser }) => {
                             // arrowPointAtCenter
                             // popupAlign={{ offset: [40, -10] }}
                         >
-                            <span className={styles.icon} onClick={e => e.stopPropagation()}>
+                            <span className={styles.icon}>
                                 <MoreOutlined />
                             </span>
                         </Popover>
@@ -75,9 +76,18 @@ const Syllabus = ({ dispatch, match, ...props }) => {
     const {
         user,
         syllabus,
-        loading
+        loading,
+        chapterLoading,
     } = props;
     const [editLectureId, setEditLectureId] = useState(null);
+    const [editChapterId, setEditChapterId] = useState(null);
+    const [newChapter, setNewChapter] = useState(false);
+    const [newChapterTitle, setNewChapterTitle] = useState({
+        help: '',
+        validateStatus: 'success',
+        value: ''
+    });
+    const [newChapterDescription, setNewChapterDescription] = useState('');
     useEffect(() => {
         dispatch({
             type: 'course/fetchSyllabus',
@@ -87,6 +97,52 @@ const Syllabus = ({ dispatch, match, ...props }) => {
             type: 'course/resetSyllabus'
         });
     }, []);
+    const handleNewChapter = () => setNewChapter(true);
+    const handleChangeNewChapterTitle = e => {
+        const val = e.target.value;
+        if (val.length <= 80) {
+            if (val.length === 0) {
+                setNewChapterTitle({
+                    value: val,
+                    validateStatus: 'error',
+                    help: 'Your chapter title must not be empty!'
+                });
+            }
+            else {
+                setNewChapterTitle({
+                    value: val,
+                    validateStatus: 'success',
+                    help: ''
+                });
+            }
+        }
+    };
+    const handleChangeNewChapterDescription = e => {
+        const val = e.target.value;
+        if (val.length <= 200) {
+            setNewChapterDescription(val);
+        }
+    };
+    const handleAddNewChapter = () => {
+        dispatch({
+            type: 'course/addChapter',
+            payload: {
+                courseId,
+                title: newChapterTitle.value,
+                description: newChapterDescription,
+                callback: () => handleCancelAddNewChapter()
+            }
+        });
+    };
+    const handleCancelAddNewChapter = () => {
+        setNewChapterTitle({
+            value: '',
+            help: '',
+            validateStatus: 'success'
+        });
+        setNewChapterDescription('');
+        setNewChapter(false);
+    };
     let defaultActiveKeys = [];
     let countLecturesAll;
     if (syllabus) {
@@ -115,19 +171,22 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                     header={(
                                         <Tooltip
                                             placement="left"
-                                            mouseEnterDelay={1}
                                             overlayStyle={{ maxWidth: '1000px' }}
                                             title={(
-                                                <span>
-                                                    <Avatar shape="circle" size={32} alt="Avatar" src={chapter.owner.avatar} style={{ marginRight: '8px' }}/>
-                                                    <span style={{ lineHeight: '32px' }}>{`${chapter.owner._id !== user._id ? chapter.owner.name : 'You'} at ${moment(chapter.updatedAt).format('HH:mm, D MMM')}`}</span>
-                                                </span>
+                                                editChapterId !== chapter._id ? (
+                                                    <span>
+                                                        <Avatar shape="circle" size={32} alt="Avatar" src={chapter.owner.avatar} style={{ marginRight: '8px' }}/>
+                                                        <span style={{ lineHeight: '32px' }}>{`${chapter.owner._id !== user._id ? chapter.owner.name : 'You'} at ${moment(chapter.updatedAt).format('HH:mm, D MMM')}`}</span>
+                                                    </span>
+                                                ) : (
+                                                    <div />
+                                                )
                                             )}
                                         >
                                             {`Chapter ${index + 1}: ${chapter.title}`}
                                         </Tooltip>
                                     )}
-                                    extra={(
+                                    extra={editChapterId !== chapter._id && (
                                         <div className={styles.chapterExtra}>
                                             <span className={styles.noOfLectures}>
                                                 {`${countLecturesAll[index]} ${countLecturesAll[index] > 1 ? 'lectures' : 'lecture'}`}
@@ -165,7 +224,57 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                 </Panel>
                             ))}
                         </Collapse>
-
+                        {newChapter ? (
+                            <div className={styles.newChapter}>
+                                <Spin spinning={chapterLoading}>
+                                    <div className={styles.title}>New chapter</div>
+                                    <Form>
+                                        <Row>
+                                            <Col span={18}>
+                                                <FormItem label="Chapter title" validateStatus={newChapterTitle.validateStatus} help={newChapterTitle.help} required>
+                                                    <Input
+                                                        type="text"
+                                                        size="large"
+                                                        value={newChapterTitle.value}
+                                                        onChange={handleChangeNewChapterTitle}
+                                                        addonAfter={`${newChapterTitle.value.length}/80`}
+                                                        placeholder="Title"
+                                                    />
+                                                </FormItem>
+                                                <FormItem label="What will students be able to do at the end of this section?">
+                                                    <Input
+                                                        type="text"
+                                                        size="large"
+                                                        value={newChapterDescription}
+                                                        onChange={handleChangeNewChapterDescription}
+                                                        addonAfter={`${newChapterDescription.length}/200`}
+                                                        placeholder="Description"
+                                                    />
+                                                </FormItem>
+                                            </Col>
+                                            <Col span={6} className={styles.btns}>
+                                                <div>
+                                                    <FormItem>
+                                                        <Button type="primary" htmlType="button" disabled={_.isEmpty(newChapterTitle.value)} onClick={handleAddNewChapter}>
+                                                            Save
+                                                        </Button>
+                                                    </FormItem>
+                                                    <FormItem>
+                                                        <Button htmlType="button" onClick={handleCancelAddNewChapter}>
+                                                            Cancel
+                                                        </Button>
+                                                    </FormItem>
+                                                </div>
+                                            </Col>
+                                        </Row>
+                                    </Form>
+                                </Spin>
+                            </div>
+                        ) : (
+                            <div className={styles.add}>
+                                <Button type="dashed" icon="plus" onClick={handleNewChapter}>Add a chapter</Button>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -177,6 +286,7 @@ export default connect(
     ({ user, loading, course }) => ({
         user: user,
         syllabus: course.syllabus,
-        loading: !!loading.effects['course/fetchSyllabus']
+        loading: !!loading.effects['course/fetchSyllabus'],
+        chapterLoading: !!loading.effects['course/addChapter']
     })
 )(Syllabus)

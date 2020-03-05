@@ -65,7 +65,7 @@ export default [
             {
                 _id: 'lecture-4',
                 type: 0,
-                title: 'What is VueJS? And how to create simple VueJS app',
+                title: 'What is VueJS? And how to create simple VueJS app. What is VueJS? And how to create simple VueJS app. What is VueJS? And how to create simple VueJS app. What is VueJS? And how to create simple VueJS app',
                 owner: {
                     //last owner
                     _id: 2,
@@ -78,7 +78,7 @@ export default [
             {
                 _id: 'lecture-5',
                 type: 0,
-                title: 'The Vue instance',
+                title: 'The Vue instance. What is VueJS? And how to create simple VueJS appWhat is VueJS? And how to create simple VueJS appWhat is VueJS? And how to create simple VueJS app',
                 owner: {
                     //last owner
                     _id: 2,

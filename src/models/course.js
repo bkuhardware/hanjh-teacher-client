@@ -7,6 +7,19 @@ import MESSAGES from '@/assets/fakers/messages';
 import HISTORY from '@/assets/fakers/history';
 import SYLLABUS from '@/assets/fakers/syllabus';
 
+const NEW_CHAPTER = {
+    _id: 'chapter-1',
+    title: 'Introduction',
+    owner: {
+        //last owner
+        _id: 1,
+        name: 'Thuy Huyen',
+        avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
+    },
+    updatedAt: Date.now,
+    lectures: []
+};
+
 const FOO = [
     {
         _id: 'what_learn_1',
@@ -216,6 +229,15 @@ export default {
                 type: 'saveSyllabus',
                 payload: SYLLABUS
             });
+        },
+        *addChapter({ payload }, { call, put }) {
+            const { courseId, title, description } = payload;
+            yield delay(1500);
+            //call api post new chapter to server, response return new chapter.
+            yield put({
+                type: 'pushChapter',
+                payload: NEW_CHAPTER
+            })
         },
         *fetchLanding({ payload: courseId }, { call, put }) {
             yield delay(1500);
@@ -457,6 +479,15 @@ export default {
                 ...state,
                 syllabus: null
             }
+        },
+        pushChapter(state, { payload: chapter }) {
+            return {
+                ...state,
+                syllabus: [
+                    ...state.syllabus,
+                    chapter
+                ]
+            };
         },
         saveLanding(state, { payload }) {
             return {

@@ -42,6 +42,9 @@
                         }
                     }
                     .extra {
+                        .user {
+                            padding-left: 12px;
+                        }
                         .length {
                             width: 100px;
                             display: inline-block;
@@ -56,6 +59,37 @@
                                     opacity: 0.7;
                                 }
                             }
+                        }
+                    }
+                }
+            }
+            .add, .newChapter {
+                margin-top: 35px;
+            }
+            .newChapter {
+                border-radius: 4px;
+                border: 0.5px dashed rgba(255, 255, 255, 0.2);
+                background: rgba(30, 30, 30, 0.4);
+                padding: 12px 16px;
+                .title {
+                    margin-bottom: 35px;
+                    font-size: 1.5em;
+                    color: white;
+                    font-weight: bold;
+                    text-align: center;
+                    margin-top: 15px;
+                }
+                .btns {
+                    text-align: center;
+                    height: 210px;
+                    position: relative;
+                    & > div {
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        button {
+                            width: 100px;
                         }
                     }
                 }
