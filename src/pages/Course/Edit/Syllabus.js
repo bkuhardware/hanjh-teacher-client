@@ -81,6 +81,7 @@ const Syllabus = ({ dispatch, match, ...props }) => {
     } = props;
     const [editLectureId, setEditLectureId] = useState(null);
     const [editChapterId, setEditChapterId] = useState(null);
+    const [newCourse, setNewCourse] = useState({});
     const [newChapter, setNewChapter] = useState(false);
     const [newChapterTitle, setNewChapterTitle] = useState({
         help: '',
@@ -97,6 +98,10 @@ const Syllabus = ({ dispatch, match, ...props }) => {
             type: 'course/resetSyllabus'
         });
     }, []);
+    const handleNewCourse = chapterId => setNewCourse({
+        ...newCourse,
+        [chapterId]: true
+    });
     const handleNewChapter = () => setNewChapter(true);
     const handleChangeNewChapterTitle = e => {
         const val = e.target.value;
@@ -232,6 +237,15 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                             <Lecture lecture={lecture} editLectureId={editLectureId} currentUser={user} />
                                         )}
                                     />
+                                    {newCourse[chapter._id] ? (
+                                        <div className={styles.newCourse}>
+
+                                        </div>
+                                    ) : (
+                                        <div className={styles.addCourse}>
+                                            <Button type="dashed" icon="plus" onClick={() => handleNewCourse(chapter._id)}>Add new course</Button>
+                                        </div>
+                                    )}
                                 </Panel>
                             ))}
                         </Collapse>

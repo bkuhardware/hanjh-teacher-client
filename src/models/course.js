@@ -8,7 +8,7 @@ import HISTORY from '@/assets/fakers/history';
 import SYLLABUS from '@/assets/fakers/syllabus';
 
 const NEW_CHAPTER = {
-    _id: 'chapter-3',
+    _id: 'chapter-X',
     title: 'Introduction',
     owner: {
         //last owner
@@ -233,7 +233,7 @@ export default {
         *addChapter({ payload }, { call, put }) {
             const { courseId, title, description, callback } = payload;
             yield delay(1500);
-            //call api post new chapter to server, response return new chapter.
+            //call api post new chapter to server, response return new chapter, complete status.
             yield put({
                 type: 'pushChapter',
                 payload: {
@@ -241,7 +241,22 @@ export default {
                     title: title
                 }
             });
+            yield put({
+                type: 'pushChapterInCourseInfo',
+                payload: {
+                    ..._.pick(NEW_CHAPTER, ['_id', 'lectures']),
+                    title: title
+                }
+            });
+            yield put({
+                type: 'saveCompleteStatus',
+                payload: {
+                    type: 'syllabus',
+                    status: true
+                }
+            });
             if (callback) callback();
+            //update courseInfo.syllabus, update syllabus complete status.
         },
         *fetchLanding({ payload: courseId }, { call, put }) {
             yield delay(1500);
@@ -370,6 +385,18 @@ export default {
                         ...state.info.completeStatus,
                         [type]: status
                     }
+                }
+            };
+        },
+        pushChapterInCourseInfo(state, { payload: chapter }) {
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    syllabus: [
+                        ...state.info.syllabus,
+                        chapter
+                    ]
                 }
             };
         },
