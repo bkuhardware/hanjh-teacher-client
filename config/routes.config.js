@@ -78,9 +78,14 @@ export default [
                         component: './Course/Edit/Syllabus'
                     },
                     {
-                        path: '/course/:courseId/edit/lecture/:lectureId',
+                        path: '/course/:courseId/edit/lecture/video/:lectureId',
                         title: 'route.course.edit.lecture',
-                        component: './Course/Edit/Lecture'
+                        component: './Course/Edit/VideoLecture'
+                    },
+                    {
+                        path: '/course/:courseId/edit/lecture/article/:lectureId',
+                        title: 'route.course.edit.lecture',
+                        component: './Course/Edit/ArticleLecture'
                     },
                     {
                         path: '/course/:courseId/edit/landing',
@@ -101,6 +106,41 @@ export default [
                         path: '/course/:courseId/edit/messages',
                         title: 'route.course.edit.messages',
                         component: './Course/Edit/Messages'
+                    },
+                    {
+                        component: '404'
+                    }
+                ]
+            },
+            {
+                path: '/course/:courseId/manage',
+                title: 'route.course.manage',
+                component: '../layouts/CourseLayouts/ManageLayout',
+                routes: [
+                    {
+                        path: '/course/:courseId/manage/forum',
+                        title: 'route.course.manage.forum',
+                        component: './Course/Manage/Forum'
+                    },
+                    {
+                        path: '/course/:courseId/manage/announcements',
+                        title: 'route.course.manage.announcements',
+                        component: './Course/Manage/Announcements'
+                    },
+                    {
+                        path: '/course/:courseId/manage/reviews',
+                        title: 'route.course.manage.reviews',
+                        component: './Course/Manage/Reviews'
+                    },
+                    {
+                        path: '/course/:courseId/manage/messenger',
+                        title: 'route.course.manage.messenger',
+                        componenet: './Course/Manage/Messenger'
+                    },
+                    {
+                        path: '/course/:courseId/manage/settings',
+                        title: 'route.course.manage.settings',
+                        component: './Course/Manage/Settings'
                     },
                     {
                         component: '404'
