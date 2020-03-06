@@ -286,6 +286,18 @@ export default {
             });
             if (callback) callback();
         },
+        *deleteChapter({ payload }, { call, put }) {
+            const { courseId, chapterId } = payload;
+            yield delay(1500);
+            yield put({
+                type: 'removeChapter',
+                payload: chapterId
+            });
+            yield put({
+                type: 'removeChapterInCourseInfo',
+                payload: chapterId
+            });
+        },
         *addLecture({ payload }, { call, put }) {
             const {
                 courseId,
@@ -533,6 +545,15 @@ export default {
                 }
             };
         },
+        removeChapterInCourseInfo(state, { payload: chapterId }) {
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    syllabus: _.filter(state.info.syllabus, chapter => chapter._id !== chapterId)
+                }
+            };
+        },
         pushLectureInCourseInfo(state, { payload }) {
             const { chapterId, lecture } = payload;
             const syllabusData = _.cloneDeep(state.info.syllabus);
@@ -694,6 +715,12 @@ export default {
             return {
                 ...state,
                 syllabus: [...syllabusData]
+            };
+        },
+        removeChapter(state, { payload: chapterId }) {
+            return {
+                ...state,
+                syllabus: _.filter(state.syllabus, chapter => chapter._id !== chapterId)
             };
         },
         pushLecture(state, { payload }) {

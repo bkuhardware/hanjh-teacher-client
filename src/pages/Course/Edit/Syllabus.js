@@ -4,7 +4,7 @@ import moment from 'moment';
 import classNames from 'classnames';
 import { connect } from 'dva';
 import { FolderViewOutlined, YoutubeFilled, ReadOutlined, MoreOutlined, ReadFilled, PlayCircleFilled } from '@ant-design/icons';
-import { Row, Col, List, Collapse, Icon, Dropdown, Menu, Button, Spin, Avatar, Tooltip, Popover, Form, Input, Empty } from 'antd';
+import { Row, Col, List, Collapse, Icon, Dropdown, Menu, Button, Spin, Avatar, Tooltip, Popover, Form, Input, Empty, Modal } from 'antd';
 import styles from './Syllabus.less';
 
 const { Panel } = Collapse;
@@ -375,7 +375,7 @@ const Syllabus = ({ dispatch, match, ...props }) => {
         return () => dispatch({
             type: 'course/resetSyllabus'
         });
-    }, []);
+    }, [courseId]);
     const handleNewChapter = () => setNewChapter(true);
     const handleChangeNewChapterTitle = e => {
         const val = e.target.value;
@@ -455,6 +455,20 @@ const Syllabus = ({ dispatch, match, ...props }) => {
             help: ''
         });
         setEditChapterDescription(chapter.description);
+    };
+    const handleDeleteChapter = chapter => {
+        Modal.confirm({
+            content: `Delete chapter ${chapter.title}? Are you sure?`,
+            okText: 'Delete',
+            cancelText: 'Cancel',
+            onOk: () => dispatch({
+                type: 'course/deleteChapter',
+                payload: {
+                    courseId,
+                    chapterId: chapter._id
+                }
+            })
+        });
     };
     const handleChangeChapterTitle = e => {
         const val = e.target.value;
@@ -609,7 +623,14 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                                                 handleEditChapter(chapter);
                                                             }}
                                                         />
-                                                        <Button icon="rest" type="primary"/>
+                                                        <Button
+                                                            icon="rest"
+                                                            type="primary"
+                                                            onClick={e => {
+                                                                e.stopPropagation();
+                                                                handleDeleteChapter(chapter);
+                                                            }}
+                                                        />
                                                     </ButtonGroup>
                                                 )}
                                                 popupClassName={styles.chapterPopover}
