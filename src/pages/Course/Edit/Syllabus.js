@@ -144,7 +144,7 @@ const Lecture = ({
     )
 };
 
-const Chapter = ({ chapter, currentUser, onAddNewLecture }) => {
+const Chapter = ({ chapter, currentUser, onAddNewLecture, onUpdateLecture }) => {
     const [newLecture, setNewLecture] = useState(false);
     const [newLectureTitle, setNewLectureTitle] = useState({
         value: '',
@@ -226,7 +226,13 @@ const Chapter = ({ chapter, currentUser, onAddNewLecture }) => {
         }
     };
     const handleEditLectureTypeChange = type => setEditLectureType(type);
-    const handleUpdateLecture = () => {};
+    const handleUpdateLecture = () => {
+        setEditLectureLoading(true);
+        onUpdateLecture(editLectureId, editLectureTitle.value, editLectureType, () => {
+            handleCancelUpdateLecture();
+            setEditLectureLoading(false);
+        });
+    };
     const handleCancelUpdateLecture = () => {
         setEditLectureId(null);
         setEditLectureTitle({
@@ -428,6 +434,19 @@ const Syllabus = ({ dispatch, match, ...props }) => {
             }
         });
     };
+    const handleUpdateLecture = chapterId => (lectureId, title, type, callback) => {
+        dispatch({
+            type: 'course/updateLecture',
+            payload: {
+                courseId,
+                chapterId,
+                lectureId,
+                title,
+                type,
+                callback
+            }
+        });
+    };
     const handleEditChapter = chapter => {
         setEditChapterId(chapter._id);
         setEditChapterTitle({
@@ -610,6 +629,7 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                         key={chapter._id}
                                         currentUser={user}
                                         onAddNewLecture={handleAddNewLecture(chapter._id)}
+                                        onUpdateLecture={handleUpdateLecture(chapter._id)}
                                     />
                                 </Panel>
                                     

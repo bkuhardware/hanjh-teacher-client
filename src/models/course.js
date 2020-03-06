@@ -334,6 +334,47 @@ export default {
             });
             if (callback) callback();
         },
+        *updateLecture({ payload }, { call, put }) {
+            const {
+                courseId,
+                chapterId,
+                lectureId,
+                title,
+                type,
+                callback
+            } = payload;
+            yield delay(1500);
+            //call api, response return updated lecture, chapterId
+            yield put({
+                type: 'changeLecture',
+                payload: {
+                    chapterId,
+                    lecture: {
+                        _id: lectureId,
+                        title,
+                        type,
+                        owner: {
+                            _id: 1,
+                            name: 'Tiger',
+                            avatar: 'https://scontent.fsgn3-1.fna.fbcdn.net/v/t1.0-9/85144026_2793484880746288_1142991351239933952_n.jpg?_nc_cat=109&_nc_sid=85a577&_nc_oc=AQlJDP9T9y1poO8QvEkIk9Jki0k2WnVKcEU4d6tENErUiejEoAEo2s4Yk99frVwI_yA&_nc_ht=scontent.fsgn3-1.fna&oh=e6b00df474760cd111c9c2f00f7b7358&oe=5E99D0E9'
+                        },
+                        updatedAt: Date.now()
+                    }
+                }
+            });
+            yield put({
+                type: 'changeLectureInCourseInfo',
+                payload: {
+                    chapterId,
+                    lecture: {
+                        _id: lectureId, 
+                        title,
+                        type
+                    }
+                }
+            });
+            if (callback) callback();
+        },
         *fetchLanding({ payload: courseId }, { call, put }) {
             yield delay(1500);
             yield put({
@@ -505,6 +546,23 @@ export default {
                 }
             };
         },
+        changeLectureInCourseInfo(state, { payload }) {
+            const { chapterId, lecture } = payload;
+            const syllabusData = _.cloneDeep(state.info.syllabus);
+            const index = _.findIndex(syllabusData, ['_id', chapterId]);
+            const lectureIndex = _.findIndex(syllabusData[index].lectures, ['_id', lecture._id]);
+            syllabusData[index].lectures[lectureIndex] = {
+                ...syllabusData[index].lectures[lectureIndex],
+                ...lecture
+            };
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    syllabus: [...syllabusData]
+                }
+            };
+        },
         resetInfo(state) {
             return {
                 ...state,
@@ -643,6 +701,20 @@ export default {
             const syllabusData = _.cloneDeep(state.syllabus);
             const index = _.findIndex(syllabusData, ['_id', chapterId]);
             syllabusData[index].lectures.push(lecture);
+            return {
+                ...state,
+                syllabus: [...syllabusData]
+            };
+        },
+        changeLecture(state, { payload }) {
+            const { chapterId, lecture } = payload;
+            const syllabusData = _.cloneDeep(state.syllabus);
+            const index = _.findIndex(syllabusData, ['_id', chapterId]);
+            const lectureIndex = _.findIndex(syllabusData[index].lectures, ['_id', lecture._id]);
+            syllabusData[index].lectures[lectureIndex] = {
+                ...syllabusData[index].lectures[lectureIndex],
+                ...lecture
+            };
             return {
                 ...state,
                 syllabus: [...syllabusData]
