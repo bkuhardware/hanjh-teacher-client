@@ -11,7 +11,7 @@ const { Panel } = Collapse;
 const ButtonGroup = Button.Group;
 const FormItem = Form.Item;
 
-const StaticLecture = ({ lecture, currentUser, onEditLecture }) => {
+const StaticLecture = ({ lecture, currentUser, onEditLecture, onDeleteLecture }) => {
     const [visible, setVisible] = useState(false);
     const handleMouseEnter = () => setVisible(true);
     const handleMouseLeave = () => setVisible(false);
@@ -32,7 +32,7 @@ const StaticLecture = ({ lecture, currentUser, onEditLecture }) => {
                         content={(
                             <ButtonGroup>
                                 <Button icon="edit" type="primary" onClick={() => onEditLecture(lecture)}/>
-                                <Button icon="rest" type="primary"/>
+                                <Button icon="rest" type="primary" onClick={() => onDeleteLecture(lecture)}/>
                             </ButtonGroup>
                         )}
                         popupClassName={styles.chapterPopover}
@@ -77,7 +77,8 @@ const Lecture = ({
     onUpdateLecture,
     onCancelUpdateLecture,
     onEditLectureTitleChange,
-    onEditLectureTypeChange
+    onEditLectureTypeChange,
+    onDeleteLecture
 }) => {
     
     return editLectureId === lecture._id ? (
@@ -140,11 +141,11 @@ const Lecture = ({
             </Spin>
         </div>
     ) : (
-        <StaticLecture lecture={lecture} currentUser={currentUser} onEditLecture={onEditLecture} />
+        <StaticLecture lecture={lecture} currentUser={currentUser} onEditLecture={onEditLecture} onDeleteLecture={onDeleteLecture} />
     )
 };
 
-const Chapter = ({ chapter, currentUser, onAddNewLecture, onUpdateLecture }) => {
+const Chapter = ({ chapter, currentUser, onAddNewLecture, onUpdateLecture, onDeleteLecture }) => {
     const [newLecture, setNewLecture] = useState(false);
     const [newLectureTitle, setNewLectureTitle] = useState({
         value: '',
@@ -273,6 +274,7 @@ const Chapter = ({ chapter, currentUser, onAddNewLecture, onUpdateLecture }) => 
                         onEditLectureTypeChange={handleEditLectureTypeChange}
                         onUpdateLecture={handleUpdateLecture}
                         onCancelUpdateLecture={handleCancelUpdateLecture}
+                        onDeleteLecture={onDeleteLecture}
                     />
                 )}
             />
@@ -368,6 +370,7 @@ const Syllabus = ({ dispatch, match, ...props }) => {
     });
     const [newChapterDescription, setNewChapterDescription] = useState('');
     useEffect(() => {
+        Modal.destroyAll();
         dispatch({
             type: 'course/fetchSyllabus',
             payload: courseId
@@ -516,6 +519,21 @@ const Syllabus = ({ dispatch, match, ...props }) => {
             help: ''
         });
     };
+    const handleDeleteLecture = chapterId => lecture => {
+        Modal.confirm({
+            content: `Delete lecture ${lecture.title}?`,
+            okText: 'Delete',
+            cancelText: 'Cancel',
+            onOk: () => dispatch({
+                type: 'course/deleteLecture',
+                payload: {
+                    courseId,
+                    chapterId,
+                    lectureId: lecture._id
+                }
+            })
+        });
+    };
     let defaultActiveKeys = [];
     let countLecturesAll;
     if (syllabus) {
@@ -546,6 +564,7 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                         <Tooltip
                                             placement="left"
                                             overlayStyle={{ maxWidth: '1000px' }}
+                                            popupAlign={{ offset: [-38, 0] }}
                                             title={(
                                                 editChapterId !== chapter._id ? (
                                                     <span>
@@ -651,6 +670,7 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                         currentUser={user}
                                         onAddNewLecture={handleAddNewLecture(chapter._id)}
                                         onUpdateLecture={handleUpdateLecture(chapter._id)}
+                                        onDeleteLecture={handleDeleteLecture(chapter._id)}
                                     />
                                 </Panel>
                                     

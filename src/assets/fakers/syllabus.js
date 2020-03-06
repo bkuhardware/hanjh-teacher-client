@@ -11,19 +11,19 @@ export default [
         updatedAt: 1567476499584,
         description: 'This is chapter 1',
         lectures: [
-            // {
-            //     _id: 'lecture-1',
-            //     type: 1,
-            //     title: 'Introduction',
-            //     owner: {
-            //         //last owner
-            //         _id: 1,
-            //         name: 'Thuy Huyen',
-            //         avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
-            //     },
-            //     updatedAt: 1567476499584,
+            {
+                _id: 'lecture-1',
+                type: 1,
+                title: 'Introduction',
+                owner: {
+                    //last owner
+                    _id: 1,
+                    name: 'Thuy Huyen',
+                    avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
+                },
+                updatedAt: 1567476499584,
                 
-            // },
+            },
             // {
             //     _id: 'lecture-2',
             //     type: 1,
