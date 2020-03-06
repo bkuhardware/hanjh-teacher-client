@@ -387,6 +387,24 @@ export default {
             });
             if (callback) callback();
         },
+        *deleteLecture({ payload }, { call, put }) {
+            const { courseId, chapterId, lectureId } = payload;
+            yield delay(1000);
+            yield put({
+                type: 'removeLecture',
+                payload: {
+                    chapterId,
+                    lectureId
+                }
+            });
+            yield put({
+                type: 'removeLectureInCourseInfo',
+                payload: {
+                    chapterId,
+                    lectureId
+                }
+            });
+        },
         *fetchLanding({ payload: courseId }, { call, put }) {
             yield delay(1500);
             yield put({
@@ -584,6 +602,19 @@ export default {
                 }
             };
         },
+        removeLectureInCourseInfo(state, { payload }) {
+            const { chapterId, lectureId } = payload;
+            const syllabusData = _.cloneDeep(state.info.syllabus);
+            const index = _.findIndex(syllabusData, ['_id', chapterId]);
+            syllabusData[index].lectures = _.filter(syllabusData[index].lectures, lecture => lecture._id !== lectureId);
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    syllabus: [...syllabusData]
+                }
+            };
+        },
         resetInfo(state) {
             return {
                 ...state,
@@ -742,6 +773,16 @@ export default {
                 ...syllabusData[index].lectures[lectureIndex],
                 ...lecture
             };
+            return {
+                ...state,
+                syllabus: [...syllabusData]
+            };
+        },
+        removeLecture(state, { payload }) {
+            const { chapterId, lectureId } = payload;
+            const syllabusData = _.cloneDeep(state.syllabus);
+            const index = _.findIndex(syllabusData, ['_id', chapterId]);
+            syllabusData[index].lectures = _.filter(syllabusData[index].lectures, lecture => lecture._id !== lectureId);
             return {
                 ...state,
                 syllabus: [...syllabusData]
