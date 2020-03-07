@@ -54,6 +54,9 @@ const Announcements = ({ match, dispatch, ...props }) => {
             type: 'manage/fetchAnnouncements',
             payload: courseId
         });
+        return () => dispatch({
+            type: 'manage/resetAnnouncements'
+        });
     }, [courseId]);
     const handleMoreAnnouncements = () => {
         dispatch({

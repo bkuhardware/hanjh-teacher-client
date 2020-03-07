@@ -5,6 +5,9 @@ import QUESTIONS from '@/assets/fakers/questions';
 import LECTURE_OPTIONS from '@/assets/fakers/syllabus';
 import THREAD from '@/assets/fakers/thread';
 import ANSWERS from '@/assets/fakers/answers';
+import ANNOUNCEMENTS from '@/assets/fakers/announcements';
+import OLD_ANNOUNCEMENTS from '@/assets/fakers/oldAnnouncements';
+import COMMENTS from '@/assets/fakers/answers';
 
 const initialState = {
     forum: {
@@ -222,6 +225,76 @@ export default {
                 payload: answerData
             });
         },
+        *fetchAnnouncements({ payload: courseId }, { call, put }) {
+            yield delay(1500);
+            yield put({
+                type: 'saveAnnouncements',
+                payload: {
+                    hasMore: true,
+                    data: ANNOUNCEMENTS
+                }
+            })
+        },
+        *moreAnnouncements({ payload: courseId }, { call, put, select }) {
+            const { announcements: { list } } = yield select(state => state.manage);
+            yield delay(1200);
+            yield put({
+                type: 'pushAnnouncements',
+                payload: {
+                    hasMore: false,
+                    data: OLD_ANNOUNCEMENTS
+                }
+            });
+        },
+        *moreComments({ payload: announcementId }, { call, put, select }) {
+            yield put({
+                type: 'saveCommentsLoading',
+                payload: {
+                    announcementId,
+                    value: true
+                }
+            });
+            const { announcements } = yield select(state => state.manage);
+            const comments = announcements.list[announcementId].comments;
+            //
+            yield delay(1200);
+            yield put({
+                type: 'pushComments',
+                payload: {
+                    announcementId,
+                    hasMore: false,
+                    data: COMMENTS
+                }
+            })
+            yield put({
+                type: 'saveCommentsLoading',
+                payload: {
+                    announcementId,
+                    value: false
+                }
+            });
+        },
+        *comment({ payload }, { call, put }) {
+            const { announcementId, content } = payload;
+            yield delay(1900);
+            yield put({
+                type: 'shiftComment',
+                payload: {
+                    data: {
+                        _id: 'new',
+                        user: {
+                            _id: 1,
+                            avatar: 'https://scontent.fdad1-1.fna.fbcdn.net/v/t1.0-9/52607910_2117264761701640_9035195513728663552_o.jpg?_nc_cat=102&_nc_ohc=_tJCZ8LLC10AX-zKJMI&_nc_ht=scontent.fdad1-1.fna&oh=52df2a0b6310de771d0888f065dc6837&oe=5EBD3DB8',
+                            name: 'My love',
+                            isInstructor: false
+                        },
+                        createdAt: 1578813445900,
+                        content
+                    },
+                    announcementId
+                }
+            });
+        },
     },
     reducers: {
         saveQuestions(state, { payload }) {
@@ -351,6 +424,94 @@ export default {
         },
         resetThread(state) {
             return { ...state, thread: null };
+        },
+        saveAnnouncements(state, { payload }) {
+            const { hasMore, data } = payload;
+            return {
+                ...state,
+                announcements: {
+                    hasMore,
+                    list: { ...data }
+                }
+            };
+        },
+        pushAnnouncements(state, { payload }) {
+            const { hasMore, data } = payload;
+            return {
+                ...state,
+                announcements: {
+                    hasMore,
+                    list: {
+                        ...state.announcements.list,
+                        ...data
+                    }
+                }
+            };
+        },
+        shiftComment(state, { payload }) {
+            const { data, announcementId } = payload;
+            console.log(announcementId);
+            return {
+                ...state,
+                announcements: {
+                    ...state.announcements,
+                    list: {
+                        ...state.announcements.list,
+                        [announcementId]: {
+                            ...state.announcements.list[announcementId],
+                            comments: [
+                                { ...data },
+                                ...state.announcements.list[announcementId].comments
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        pushComments(state, { payload }) {
+            const { hasMore, data, announcementId } = payload;
+            return {
+                ...state,
+                announcements: {
+                    ...state.announcements,
+                    list: {
+                        ...state.announcements.list,
+                        [announcementId]: {
+                            ...state.announcements.list[announcementId],
+                            moreComments: hasMore,
+                            comments: [
+                                ...state.announcements.list[announcementId].comments,
+                                ...data
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        saveCommentsLoading(state, { payload }) {
+            const { announcementId, value } = payload;
+            return {
+                ...state,
+                announcements: {
+                    ...state.announcements,
+                    list: {
+                        ...state.announcements.list,
+                        [announcementId]: {
+                            ...state.announcements.list[announcementId],
+                            commentsLoading: value
+                        }
+                    }
+                }
+            };
+        },
+        resetAnnouncements(state) {
+            return {
+                ...state,
+                announcements: {
+                    hasMore: true,
+                    list: null
+                }
+            };
         },
     }
 };
