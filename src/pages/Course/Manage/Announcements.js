@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
-import { Skeleton, Avatar, Row, Col, Input, List, Button, Divider, Icon, Spin } from 'antd';
+import { Skeleton, Avatar, Row, Col, Input, List, Button, Divider, Icon, Spin, message } from 'antd';
 import TimeAgo from 'react-timeago';
 import ViewMore from '@/components/ViewMore';
 import { avatarSrc } from '@/config/constants';
@@ -51,6 +51,7 @@ const Announcements = ({ match, dispatch, ...props }) => {
         initLoading,
         commentLoading,
         permissionLoading,
+        addAnnounceLoading,
         permission,
         hasMore
     } = props;
@@ -93,6 +94,19 @@ const Announcements = ({ match, dispatch, ...props }) => {
                 }
             });
         }
+    };
+    const handleSubmitAnnouncement = () => {
+        if (!content.getCurrentContent().hasText()) return message.error('You must enter announcement!');
+        const html = exportToHTML(content);
+        dispatch({
+            type: 'manage/addAnnouncement',
+            payload: {
+                courseId,
+                content: html,
+                callback: () => setContent(EditorState.createEmpty())
+            }
+        });
+        
     };
     const loadMore = (
         (!initLoading && !loading && announcements && hasMore) ? (
@@ -222,14 +236,16 @@ const Announcements = ({ match, dispatch, ...props }) => {
             ) : permission === 2 && (
                 <div className={styles.newAnnouncement}>
                     <div className={styles.editor}>
-                        <Editor
-                            editorState={content}
-                            placeholder="Add announcement..."
-                            onChange={editorState => setContent(editorState)}
-                        />
+                        <Spin spinning={addAnnounceLoading} tip="Submitting...">
+                            <Editor
+                                editorState={content}
+                                placeholder="Add announcement..."
+                                onChange={editorState => setContent(editorState)}
+                            />
+                        </Spin>
                     </div>
                     <div className={styles.btn}>
-                        <Button type="primary">Add announcement</Button>
+                        <Button type="primary" onClick={handleSubmitAnnouncement} disabled={addAnnounceLoading}>Add announcement</Button>
                     </div>
                 </div>
             )}
@@ -243,6 +259,7 @@ export default connect(
         initLoading: !!loading.effects['manage/fetchAnnouncements'],
         commentLoading: !!loading.effects['manage/comment'],
         loading: !!loading.effects['manage/moreAnnouncements'],
+        addAnnounceLoading: !!loading.effects['manage/addAnnouncement'],
         announcements: manage.announcements.list,
         hasMore: manage.announcements.hasMore,
         permission: manage.announcements.permission

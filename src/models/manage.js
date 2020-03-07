@@ -296,6 +296,28 @@ export default {
                 }
             });
         },
+        *addAnnouncement({ payload }, { call, put }) {
+            const { courseId, content, callback } = payload;
+            yield delay(1200);
+            //call api with courseId, content
+            yield put({
+                type: 'shiftAnnouncement',
+                payload: {
+                    _id: _.uniqueId('announce_'),
+                    user: {
+                        _id: 1,
+                        name: 'Ngoc Hanh Vuong',
+                        avatar: 'https://scontent.fdad2-1.fna.fbcdn.net/v/t1.0-0/p640x640/42792810_1917076911720427_2309321533291495424_o.jpg?_nc_cat=110&_nc_ohc=GAtqnLxcynIAX8VZhpo&_nc_ht=scontent.fdad2-1.fna&_nc_tp=1002&oh=67837b802b62d8b1fb6423a3dc393017&oe=5E9B0CF0'
+                    },
+                    createdAt: Date.now(),
+                    moreComments: false,
+                    commentsLoading: false,
+                    content,
+                    comments: []
+                }
+            });
+            if (callback) callback();
+        },
         *fetchPermission({ payload }, { call, put }) {
             const { courseId, type } = payload;
             //call api with courseId, type, response return permission value
@@ -528,6 +550,18 @@ export default {
                     }
                 }
             };
+        },
+        shiftAnnouncement(state, { payload: announce }) {
+            return {
+                ...state,
+                announcements: {
+                    ...state.announcements,
+                    list: {
+                        ...state.announcements.list,
+                        [announce._id]: announce
+                    }
+                }
+            }
         },
         resetAnnouncements(state) {
             return {
