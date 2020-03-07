@@ -1,0 +1,138 @@
+.thread {
+    .loading {
+        height: 400px;
+        position: relative;
+        .inlineDiv {
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+    .back {
+        margin-bottom: 35px;
+        & > span {
+            cursor: pointer;
+            &:hover {
+                opacity: 0.8;
+            }
+            i {
+                color: #fada5e;
+                font-size: 2.5em;
+                position: relative;
+                top: 7px;
+            }
+            .text {
+                font-size: 1.5em;
+                color: white;
+                margin-left: 24px;
+            }
+        }
+    }
+    .question, .answer {
+        .avatarCont {
+            text-align: center;
+            .avatar {
+                border: 3px solid white;
+            }
+        }
+        .right {
+            .content {
+                margin-top: 25px;
+            }
+        }
+        .votings {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 1.2em;
+            color: white;
+            .value {
+                margin-right: 8px;
+            }
+            i {
+                cursor: pointer;
+                &:hover {
+                    opacity: 0.8;
+                }
+            }
+        }
+    }
+    .question {
+        position: relative;
+        width: 100%;
+        .right {
+            .title {
+                font-size: 1.5em;
+                color: white;
+            }
+            .extra {
+                .name, .order {
+                    color: #fada5e;
+                    margin-right: 8px;
+                }
+            }
+        }
+    }
+    .answersLoading {
+        margin-top: 40px;
+        padding-left: 10%;
+        padding-right: 10%;
+    }
+    .answers {
+        padding-left: 10%;
+        padding-right: 10%;
+        padding-top: 40px;
+        .empty {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .answer {
+            .votings {
+                font-size: 1em;
+            }
+            .right {
+                .name {
+                    font-size: 1.1em;
+                    & > span {
+                        color: white;
+                    }
+                }
+            }
+        }
+        .loadMore {
+            margin-top: 25px;
+            text-align: center;
+        }
+        .yourAnswer {
+            margin-top: 50px;
+            position: relative;
+            .editor {
+                height: auto;
+                max-height: 220px;
+                overflow-y: auto;
+                &::-webkit-scrollbar {
+                    width: 0;
+                }
+            }
+        }
+    }
+    .beginAnswers {
+        .total {
+            text-align: left;
+        }
+        .follow {
+            text-align: right;
+            & > span {
+                cursor: pointer;
+                &:hover {
+                    opacity: 0.8;
+                }
+            }
+        }
+    }
+    .divider {
+        background-color: white;
+    }
+}
