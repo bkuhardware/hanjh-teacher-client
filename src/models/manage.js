@@ -26,6 +26,11 @@ const initialState = {
         hasMore: true,
         list: null,
         permission: null
+    },
+    reviews: {
+        hasMore: true,
+        featured: null,
+        list: null
     }
 };
 
