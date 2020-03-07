@@ -1,7 +1,10 @@
 import { delay } from '@/utils/utils';
 import _ from 'lodash';
+import router from 'umi/router';
 import QUESTIONS from '@/assets/fakers/questions';
 import LECTURE_OPTIONS from '@/assets/fakers/syllabus';
+import THREAD from '@/assets/fakers/thread';
+import ANSWERS from '@/assets/fakers/answers';
 
 const initialState = {
     forum: {
@@ -141,6 +144,80 @@ export default {
                 }
             });
         },
+        *fetchThread({ payload }, { call, put }) {
+            const { courseId, threadId } = payload;
+            //call api with threadId, courseId --> check for thread belong course
+            yield delay(1400);
+            const status = 0;
+            if (status === 0)
+                yield put({
+                    type: 'saveThread',
+                    payload: THREAD
+                });
+            else router.replace('/error/404');
+        },
+        *moreAnswers({ payload: threadId }, { call, put, select }) {
+            const { thread } = yield select(state => state.manage);
+            const {
+                answers
+            } = thread;
+            //more answers baseon threadId, answers
+            yield delay(1200);
+            yield put({
+                type: 'pushAnswers',
+                payload: {
+                    hasMore: false,
+                    data: ANSWERS
+                }
+            });
+        },
+        *toggleVote({ payload: threadId }, { call, put }) {
+            yield put({
+                type: 'toggleVoting'
+            });
+            yield delay(1000);
+            //call api
+        },
+        *toggleFollow({ payload: threadId }, { call, put }) {
+            yield put({
+                type: 'toggleFollowing',
+            });
+            yield delay(800);
+        },
+        *toggleAnswerVote({ payload: answerId }, { call, put }) {
+            yield put({
+                type: 'toggleAnswerVoting',
+                payload: answerId
+            });
+            yield delay(900);
+        },
+        *answer({ payload }, { call, put }) {
+            const { threadId, answer } = payload;
+            yield delay(1200);
+            //call api with threadId, answer --> response --> answer
+            const response = {
+                data: {
+                    _id: 'new_answer',
+                    user: {
+                        _id: 1,
+                        avatar: 'https://scontent.fdad1-1.fna.fbcdn.net/v/t1.0-9/51059227_2091470127614437_5419405170205261824_o.jpg?_nc_cat=106&_nc_ohc=LnSzD5KUUN4AX8EolVa&_nc_ht=scontent.fdad1-1.fna&oh=95b1eba87a97f6266a625c07caf68566&oe=5EAE6D56',
+                        name: 'HuYeFen Cute',
+                        isInstructor: true
+                    },
+                    createdAt: 1578818445997,
+                    content: answer,
+                    numOfVotings: 0,
+                    isVoted: false
+                }
+            };
+            const {
+                data: answerData
+            } = response;
+            yield put({
+                type: 'shiftAnswer',
+                payload: answerData
+            });
+        },
     },
     reducers: {
         saveQuestions(state, { payload }) {
@@ -203,6 +280,73 @@ export default {
                     }
                 }
             };
-        }
+        },
+        saveThread(state, { payload }) {
+            return {
+                ...state,
+                thread: { ...payload }
+            }
+        },
+        pushAnswers(state, { payload }) {
+            const { hasMore, data } = payload;
+            return {
+                ...state,
+                thread: {
+                    ...state.thread,
+                    moreAnswers: hasMore,
+                    answers: [
+                        ...state.thread.answers,
+                        ...data
+                    ]
+                }
+            };
+        },
+        shiftAnswer(state, { payload: answer }) {
+            return {
+                ...state,
+                thread: {
+                    ...state.thread,
+                    totalAnswers: state.thread.totalAnswers + 1,
+                    answers: [answer, ...state.thread.answers]
+                }
+            };
+        },
+        toggleVoting(state) {
+            const numOfVotings = state.thread.isVoted ? state.thread.numOfVotings - 1 : state.thread.numOfVotings + 1;
+            return {
+                ...state,
+                thread: {
+                    ...state.thread,
+                    numOfVotings,
+                    isVoted: !state.thread.isVoted
+                }
+            };
+        },
+        toggleFollowing(state) {
+            return {
+                ...state,
+                thread: {
+                    ...state.thread,
+                    isFollowed: !state.thread.isFollowed
+                }
+            };
+        },
+        toggleAnswerVoting(state, { payload: answerId }) {
+            const answersData = [...state.thread.answers];
+            const index = _.findIndex(answersData, ['_id', answerId]);
+            if (answersData[index].isVoted) answersData[index].numOfVotings -= 1;
+            else answersData[index].numOfVotings += 1;
+            answersData[index].isVoted = !answersData[index].isVoted;
+            return {
+                ...state,
+                thread: {
+                    ...state.thread,
+                    answers: [...answersData]
+                }
+            };
+        },
+        resetThread(state) {
+            return { ...state, thread: null };
+        },
     }
 };
