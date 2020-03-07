@@ -74,7 +74,7 @@ const Header = ({ courseInfo, loading, handlePreview, handleViewHistory }) => {
                             </span>
                             <span className={styles.toManage}>
                                 <Tooltip title="Go to manage" placement="bottom">
-                                    <Icon type="folder-open" theme="filled" style={{ color: 'white', fontSize: '2em' }}/>
+                                    <Icon type="folder-open" theme="filled" style={{ color: 'white', fontSize: '2em' }} onClick={() => router.push(`/course/${courseInfo._id}/manage/forum`)}/>
                                 </Tooltip>
                             </span>
                         </React.Fragment>
