@@ -91,7 +91,7 @@ const Thread = ({ match, dispatch, ...props }) => {
     return (
         <div className={styles.thread}>
             <div className={styles.back}>
-                <span onClick={() => router.push(`/manage/${match.params.courseId}/forum`)}>
+                <span onClick={() => router.push(`/course/${match.params.courseId}/manage/forum`)}>
                     <Icon type="arrow-left" />
                     <span className={styles.text}>Back to forum</span>
                 </span>
@@ -144,12 +144,12 @@ const Thread = ({ match, dispatch, ...props }) => {
                     ) : (
                         <React.Fragment>
                             {_.map(answersData, (answer, i) => (
-                                <React.Fragment key={answer._id + _.uniqueId('answer_')}>
+                                <React.Fragment key={answer._id}>
                                     {i > 0 && (<Divider dashed className={styles.divider} />)}
                                     {answer.loading ? (
                                         <Skeleton active avatar={{ size: 48, shape: 'circle' }} title={{ width: '25%' }} paragraph={{ rows: 2, width: ['60%', '96%']}}/>
                                     ) : (
-                                        <Row className={styles.answer} key={answer._id + _.uniqueId('answer_')}>
+                                        <Row className={styles.answer} key={answer._id}>
                                             <Col span={2} className={styles.avatarCont}>
                                                 <Avatar shape="circle" className={styles.avatar} src={answer.user.avatar} alt="user-avar" size={48} />
                                             </Col>
