@@ -79,7 +79,7 @@ const Sider = ({ selectedKeys, courseId }) => {
     return (
         <AntSider
             className={styles.sider}
-            width={270}
+            width={250}
         >
             <Menu
                 mode="inline"
