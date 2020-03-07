@@ -21,6 +21,8 @@ export default {
     'route.course.edit.messages': 'Tin nhắn',
     'route.course.manage': 'Quản trị',
     'route.course.manage.forum': 'Diễn đàn',
+    'route.course.manage.forum.allthreads': 'Tất cả câu hỏi',
+    'route.course.manage.forum.thread': 'Câu hỏi',
     'route.course.manage.announcements': 'Thông báo',
     'route.course.manage.reviews': 'Reviews',
     'route.course.manage.messenger': 'Nhắn tin',

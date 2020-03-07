@@ -120,7 +120,22 @@ export default [
                     {
                         path: '/course/:courseId/manage/forum',
                         title: 'route.course.manage.forum',
-                        component: './Course/Manage/Forum'
+                        component: '../layouts/ForumLayout',
+                        routes: [
+                            {
+                                path: '/course/:courseId/manage/forum',
+                                component: './Course/Manage/Forum/index',
+                                title: 'route.course.manage.forum.allthreads'
+                            },
+                            {
+                                path: '/course/:courseId/manage/forum/thread/:threadId',
+                                component: './Course/Manage/Forum/Thread',
+                                title: 'route.course.manage.forum.thread'
+                            },
+                            {
+                                component: '404'
+                            }
+                        ]
                     },
                     {
                         path: '/course/:courseId/manage/announcements',

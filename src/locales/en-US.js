@@ -21,6 +21,8 @@ export default {
   'route.course.edit.messages': 'Messages',
   'route.course.manage': 'Manage',
   'route.course.manage.forum': 'Forum',
+  'route.course.manage.forum.allthreads': 'All threads',
+  'route.course.manage.forum.thread': 'Thread',
   'route.course.manage.announcements': 'Announcements',
   'route.course.manage.reviews': 'Reviews',
   'route.course.manage.messenger': 'Messenger',
