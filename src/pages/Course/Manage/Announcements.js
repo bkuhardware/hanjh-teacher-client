@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
-import { Skeleton, Avatar, Row, Col, Input, List, Button, Divider, Icon, message } from 'antd';
+import { Skeleton, Avatar, Row, Col, Input, List, Button, Divider, Icon, Spin } from 'antd';
 import TimeAgo from 'react-timeago';
 import ViewMore from '@/components/ViewMore';
 import { avatarSrc } from '@/config/constants';
+import { EditorState } from 'draft-js';
+import Editor from '@/components/Editor/ImageEditor';
+import { exportToHTML } from '@/utils/editor';
 import styles from './Announcements.less';
 
 const LoadingAnnouncement = () => {
@@ -41,11 +44,14 @@ const CommentInput = ({ onPressEnter, disabled }) => {
 };
 
 const Announcements = ({ match, dispatch, ...props }) => {
+    const [content, setContent] = useState(EditorState.createEmpty());
     const {
         announcements,
         loading,
         initLoading,
         commentLoading,
+        permissionLoading,
+        permission,
         hasMore
     } = props;
     const { courseId } = match.params;
@@ -54,6 +60,13 @@ const Announcements = ({ match, dispatch, ...props }) => {
             type: 'manage/fetchAnnouncements',
             payload: courseId
         });
+        dispatch({
+            type: 'manage/fetchPermission',
+            payload: {
+                courseId,
+                type: 'announcements'
+            }
+        })
         return () => dispatch({
             type: 'manage/resetAnnouncements'
         });
@@ -202,16 +215,36 @@ const Announcements = ({ match, dispatch, ...props }) => {
                     {loadMore}
                 </React.Fragment>
             )}
+            {!permission || permissionLoading ? (
+                <div className={styles.permissionLoading}>
+                    <Spin indicator={<Icon type="loading" style={{ fontSize: '32px' }} />}/>
+                </div>
+            ) : permission === 2 && (
+                <div className={styles.newAnnouncement}>
+                    <div className={styles.editor}>
+                        <Editor
+                            editorState={content}
+                            placeholder="Add announcement..."
+                            onChange={editorState => setContent(editorState)}
+                        />
+                    </div>
+                    <div className={styles.btn}>
+                        <Button type="primary">Add announcement</Button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 };
 
 export default connect(
     ({ manage, loading }) => ({
+        permissionLoading: !!loading.effects['manage/fetchPermission'],
         initLoading: !!loading.effects['manage/fetchAnnouncements'],
         commentLoading: !!loading.effects['manage/comment'],
         loading: !!loading.effects['manage/moreAnnouncements'],
         announcements: manage.announcements.list,
-        hasMore: manage.announcements.hasMore
+        hasMore: manage.announcements.hasMore,
+        permission: manage.announcements.permission
     })
 )(Announcements);

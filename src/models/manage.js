@@ -24,7 +24,8 @@ const initialState = {
     thread: null,
     announcements: {
         hasMore: true,
-        list: null
+        list: null,
+        permission: null
     }
 };
 
@@ -295,8 +296,31 @@ export default {
                 }
             });
         },
+        *fetchPermission({ payload }, { call, put }) {
+            const { courseId, type } = payload;
+            //call api with courseId, type, response return permission value
+            const permission = 2;
+            yield delay(800);
+            yield put({
+                type: 'savePermission',
+                payload: {
+                    type: 'announcements',
+                    value: permission
+                }
+            })
+        }
     },
     reducers: {
+        savePermission(state, { payload }) {
+            const { type, value } = payload;
+            return {
+                ...state,
+                [type]: {
+                    ...state[type],
+                    permission: value
+                }
+            };
+        },
         saveQuestions(state, { payload }) {
             const { hasMore, total, data } = payload;
             return {
@@ -430,6 +454,7 @@ export default {
             return {
                 ...state,
                 announcements: {
+                    ...state.announcements,
                     hasMore,
                     list: { ...data }
                 }
@@ -440,6 +465,7 @@ export default {
             return {
                 ...state,
                 announcements: {
+                    ...state.announcements,
                     hasMore,
                     list: {
                         ...state.announcements.list,
@@ -450,7 +476,6 @@ export default {
         },
         shiftComment(state, { payload }) {
             const { data, announcementId } = payload;
-            console.log(announcementId);
             return {
                 ...state,
                 announcements: {
@@ -509,7 +534,8 @@ export default {
                 ...state,
                 announcements: {
                     hasMore: true,
-                    list: null
+                    list: null,
+                    permission: null
                 }
             };
         },
