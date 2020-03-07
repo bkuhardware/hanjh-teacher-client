@@ -4,7 +4,7 @@ export default {
         user: {
             _id: 1,
             name: 'Ngoc Hanh Vuong',
-            avatar: 'https://scontent.fdad2-1.fna.fbcdn.net/v/t1.0-0/p640x640/42792810_1917076911720427_2309321533291495424_o.jpg?_nc_cat=110&_nc_ohc=GAtqnLxcynIAX8VZhpo&_nc_ht=scontent.fdad2-1.fna&_nc_tp=1002&oh=67837b802b62d8b1fb6423a3dc393017&oe=5E9B0CF0'
+            avatar: ''
         },
         createdAt: 1578813445900,
         moreComments: true,
@@ -31,7 +31,7 @@ export default {
                 _id: 5,
                 user: {
                     _id: 1,
-                    avatar: 'https://scontent.fdad1-1.fna.fbcdn.net/v/t1.0-9/51059227_2091470127614437_5419405170205261824_o.jpg?_nc_cat=106&_nc_ohc=LnSzD5KUUN4AX8EolVa&_nc_ht=scontent.fdad1-1.fna&oh=95b1eba87a97f6266a625c07caf68566&oe=5EAE6D56',
+                    avatar: '',
                     name: 'Vương N.Hạnh',
                     isInstructor: false
                 },

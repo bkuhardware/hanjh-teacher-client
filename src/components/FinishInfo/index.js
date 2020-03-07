@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useReducer } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
-import { Steps, Button, Row, Col, Upload, Avatar, Icon, Form, Input, message } from 'antd';
+import { Steps, Button, Row, Col, Upload, Icon, Form, Input, message } from 'antd';
 import FinishLayout from '@/layouts/FinishLayout';
+import UserAvatar from '@/components/Avatar';
 import Editor from '@/components/Editor/SimpleEditor';
 import { EditorState } from 'draft-js';
-import { capitalText, checkEmail } from '@/utils/utils';
+import { checkEmail } from '@/utils/utils';
 import { exportToHTML } from '@/utils/editor';
 import styles from './index.less';
 
@@ -242,13 +243,15 @@ const FinishInfo = ({ dispatch, callback, ...props }) => {
             return (
                 <div className={styles.first}>
                     <div className={styles.preview}>
-                        {avatar || user.avatar ? (
-                            <Avatar size={130} className={styles.avatar} alt="avatar" src={avatar || user.avatar} />
-                        ) : (
-                            <Avatar size={133} alt="avatar" style={{ color: 'black', background: 'white', fontSize: '3em' }}>
-                                {capitalText(user.name)}
-                            </Avatar>
-                        )}
+                        <UserAvatar
+                            src={avatar || user.avatar}
+                            alt="avatar"
+                            size={130}
+                            textSize={133}
+                            borderWidth={3}
+                            text={user.name}
+                            style={{ color: 'black', background: 'white', fontSize: '3em' }}
+                        />
                     </div>
                     <div className={styles.upload}>
                         <Upload {...avatarProps}>

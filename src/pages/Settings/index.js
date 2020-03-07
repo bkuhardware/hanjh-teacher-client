@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
-import { Tabs, Form, Input, Upload, Avatar, Icon, Button, message } from 'antd';
+import { Tabs, Form, Input, Upload, Icon, Button, message } from 'antd';
+import UserAvatar from '@/components/Avatar';
 import { EditorState, ContentState, convertFromHTML } from 'draft-js';
 import Editor from '@/components/Editor/SimpleEditor';
 import Wrapper from '@/components/PageWrapper';
@@ -154,15 +155,15 @@ const Settings = ({ dispatch, form, ...props }) => {
                 <div className={styles.avatar}>
                     <div className={styles.inlineDiv}>
                         <div className={styles.main}>
-                            {user.avatar ? (
-                                <Avatar
-                                    size={150}
-                                    src={user.avatar}
-                                    alt="avatar"
-                                />
-                            ) : (
-                                <Avatar style={{ backgroundColor: '#fada5e', color: 'white', fontSize: '50px' }} size={150}>{capitalText(user.name)}</Avatar>
-                            )}
+                            <UserAvatar
+                                size={150}
+                                src={user.avatar}
+                                alt="avatar"
+                                style={{ backgroundColor: 'white', color: 'black', fontSize: '50px' }}
+                                textSize={150}
+                                text={user.name}
+                                borderWidth={6}
+                            />
                         </div>
                         <div className={styles.uploader}>
                             <Form layout="vertical" onSubmit={handleUploadAvatar}>

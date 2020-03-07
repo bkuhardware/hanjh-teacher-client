@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { Popover, List, Badge, Avatar, Icon, Empty, Spin as Loading } from 'antd';
+import UserAvatar from '@/components/Avatar';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Spin from '@/elements/spin/secondary';
 import { fromNow, truncate } from '@/utils/utils';
@@ -39,7 +40,17 @@ const Notifications = ({ dispatch, ...props }) => {
                         <div className={styles.notiItem} onClick={() => handleViewNotify(item)}>
                             <List.Item style={{ background: (item.seen ? 'inherit' : 'rgba(255, 255, 255, 0.05)')}}>
                                 <List.Item.Meta
-                                    avatar={<Avatar src={item.avatar} size={36} />}
+                                    avatar={(
+                                        <UserAvatar
+                                            size={36}
+                                            textSize={36}
+                                            style={{ background: 'white', color: 'black' }}
+                                            src={item.user.src}
+                                            text={item.user.name}
+                                            alt="user-avatar"
+                                            borderWidth={0}
+                                        />
+                                    )}
                                     title={<span>{truncate(item.content, 92)}</span>}
                                     description={<span style={{ fontSize: 13, color: 'gray'}}>{ fromNow(item.createdAt) }</span>}
                                 />

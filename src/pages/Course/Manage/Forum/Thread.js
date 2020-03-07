@@ -4,6 +4,7 @@ import router from 'umi/router';
 import { connect } from 'dva';
 import { EditorState } from 'draft-js';
 import { Skeleton, Divider, Row, Col, Avatar, Icon, message, Spin, Button } from 'antd';
+import UserAvatar from '@/components/Avatar';
 import Editor from '@/components/Editor/ImageEditor';
 import TimeAgo from 'react-timeago';
 import ViewMore from '@/components/ViewMore';
@@ -105,7 +106,15 @@ const Thread = ({ match, dispatch, ...props }) => {
             ) : (
                 <Row className={styles.question}>
                     <Col span={4} className={styles.avatarCont}>
-                        <Avatar shape="circle" className={styles.avatar} src={thread.user.avatar} alt="user-avar" size={100} />
+                        <UserAvatar
+                            src={thread.user.avatar}
+                            alt="user-avatar"
+                            size={100}
+                            textSize={103}
+                            borderWidth={3}
+                            text={thread.user.name}
+                            style={{ background: 'white', color: 'black', fontSize: '30px' }}
+                        />
                     </Col>
                     <Col span={20} className={styles.right}>
                         <div className={styles.title}>{thread.title}</div>
@@ -151,7 +160,15 @@ const Thread = ({ match, dispatch, ...props }) => {
                                     ) : (
                                         <Row className={styles.answer} key={answer._id}>
                                             <Col span={2} className={styles.avatarCont}>
-                                                <Avatar shape="circle" className={styles.avatar} src={answer.user.avatar} alt="user-avar" size={48} />
+                                                <UserAvatar
+                                                    src={answer.user.avatar}
+                                                    alt="user-avatar"
+                                                    size={48}
+                                                    textSize={51}
+                                                    borderWidth={3}
+                                                    text={answer.user.name}
+                                                    style={{ background: 'white', color: 'black' }}
+                                                />
                                             </Col>
                                             <Col span={22} className={styles.right}>
                                                 <div className={styles.name}>
