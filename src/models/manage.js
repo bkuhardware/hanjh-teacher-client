@@ -8,6 +8,7 @@ import ANSWERS from '@/assets/fakers/answers';
 import ANNOUNCEMENTS from '@/assets/fakers/announcements';
 import OLD_ANNOUNCEMENTS from '@/assets/fakers/oldAnnouncements';
 import COMMENTS from '@/assets/fakers/answers';
+import REVIEWS from '@/assets/fakers/reviews';
 
 const initialState = {
     forum: {
@@ -335,7 +336,17 @@ export default {
                     value: permission
                 }
             })
-        }
+        },
+        *fetchReviews({ payload: courseId }, { call, put }) {
+            yield delay(1500);
+            yield put({
+                type: 'saveReviews',
+                payload: {
+                    ...REVIEWS,
+                    hasMore: true
+                }
+            });
+        },
     },
     reducers: {
         savePermission(state, { payload }) {
@@ -578,5 +589,21 @@ export default {
                 }
             };
         },
+        saveReviews(state, { payload }) {
+            return {
+                ...state,
+                reviews: { ...payload }
+            };
+        },
+        resetReviews(state) {
+            return {
+                ...state,
+                reviews: {
+                    hasMore: true,
+                    list: null,
+                    featured: null
+                }
+            }
+        }
     }
 };
