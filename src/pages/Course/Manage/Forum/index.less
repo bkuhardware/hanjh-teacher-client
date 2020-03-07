@@ -87,8 +87,11 @@
     }
 }
 
-.forumTreeSelect, .newQuestionTreeSelect {
+.forumTreeSelect {
     &::-webkit-scrollbar {
         width: 0;
+    }
+    :global(.ant-select-tree-node-selected) {
+        color: black !important;
     }
 }

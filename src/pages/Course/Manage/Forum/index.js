@@ -145,7 +145,6 @@ const Forum = ({ location, match, dispatch, ...props }) => {
                                     onChange={handleQuestionTypes}
                                 >
                                     <Option value="following" label="Following">Questions I'm following</Option>
-                                    <Option value="asked" label="Asked">Questions I asked</Option>
                                     <Option value="noResponse" label="No response">Questions without response</Option>
                                 </Select>
                             </FormItem>
