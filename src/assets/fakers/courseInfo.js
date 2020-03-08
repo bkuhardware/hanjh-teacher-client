@@ -1,7 +1,7 @@
 export default {
     _id: 1,
     name: 'Build Web Apps with Vue JS 2 & Firebase',
-    privacy: 'private',
+    privacy: 'password',
     noOfUnseen: 18,
     completeStatus: {
         goals: true,

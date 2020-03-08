@@ -63,7 +63,7 @@ const TargetItem = ({ item, onOk, onDelete, onNewOk, onNewClose, userId }) => {
                     {extraVisible && (
                         <ButtonGroup>
                             <Button icon="edit" onClick={handleEdit}/>
-                            <Button icon="rest" onClick={handleDelete} />
+                            <Button icon="delete" onClick={handleDelete} />
                         </ButtonGroup>
                     )}
                 </Col>

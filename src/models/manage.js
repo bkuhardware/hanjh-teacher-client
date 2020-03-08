@@ -9,6 +9,7 @@ import ANNOUNCEMENTS from '@/assets/fakers/announcements';
 import OLD_ANNOUNCEMENTS from '@/assets/fakers/oldAnnouncements';
 import COMMENTS from '@/assets/fakers/answers';
 import REVIEWS from '@/assets/fakers/reviews';
+import MEMBERS from '@/assets/fakers/members';
 
 const initialState = {
     forum: {
@@ -43,6 +44,22 @@ export default {
     namespace: 'manage',
     state: initialState,
     effects: {
+        *fetchPermission({ payload }, { call, put }) {
+            const { courseId, type } = payload;
+            //call api with courseId, type, response return permission value
+            const permission = {
+                privacy: 1,
+                members: 2,
+            };
+            yield delay(800);
+            yield put({
+                type: 'savePermission',
+                payload: {
+                    type,
+                    value: permission
+                }
+            });
+        },
         *fetchQuestions({ payload: courseId }, { call, put }) {
             yield delay(2000);
             yield put({
@@ -328,19 +345,7 @@ export default {
             });
             if (callback) callback();
         },
-        *fetchPermission({ payload }, { call, put }) {
-            const { courseId, type } = payload;
-            //call api with courseId, type, response return permission value
-            const permission = 2;
-            yield delay(800);
-            yield put({
-                type: 'savePermission',
-                payload: {
-                    type: 'announcements',
-                    value: permission
-                }
-            })
-        },
+        
         *fetchReviews({ payload: courseId }, { call, put }) {
             yield delay(1500);
             yield put({
@@ -377,6 +382,13 @@ export default {
                 }
             });
             yield delay(1000);
+        },
+        *fetchMembers({ payload: courseId }, { call, put }) {
+            yield delay(1800);
+            yield put({
+                type: 'saveMembers',
+                payload: MEMBERS
+            });
         }
     },
     reducers: {
@@ -667,6 +679,24 @@ export default {
                     featured: null
                 }
             }
+        },
+        saveMembers(state, { payload }) {
+            return {
+                ...state,
+                settings: {
+                    ...state.settings,
+                    members: [...payload]
+                }
+            };
+        },
+        resetSettings(state) {
+            return {
+                ...state,
+                settings: {
+                    members: null,
+                    permission: null
+                }
+            };
         }
     }
 };

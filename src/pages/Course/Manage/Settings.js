@@ -23,20 +23,33 @@ const Settings = ({ dispatch, match, ...props }) => {
         loading,
         userId
     } = props;
-    // useEffect(() => {
-
-    // }, [courseId]);
+    useEffect(() => {
+        dispatch({
+            type: 'manage/fetchPermission',
+            payload: {
+                type: 'settings',
+                courseId,
+            }
+        });
+        dispatch({
+            type: 'manage/fetchMembers',
+            payload: courseId
+        });
+        return () => dispatch({ type: 'manage/resetSettings' });
+    }, [courseId]);
     useEffect(() => {
         if (courseInfo) setPrivacy(courseInfo.privacy);
     }, [courseInfo]);
-    const handleHoverMember = index => {
-
-    };
-    const handleUnhoverMember = index => {
-
-    };
+    useEffect(() => {
+        if (members) setMembersData([...members]);
+    }, [members]);
     const handleChangePermission = (index, type, value) => {
-
+        const newMembersData = _.cloneDeep(membersData);
+        newMembersData[index].permission = {
+            ...newMembersData[index].permission,
+            [type]: value
+        };
+        setMembersData([...newMembersData]);
     };
     const handleDeleteMember = () => {};
     const columns = [
@@ -67,8 +80,7 @@ const Settings = ({ dispatch, match, ...props }) => {
             width: '10%',
             render: () => (
                 <Checkbox
-                    defaultChecked={true}
-                    disabled={true}
+                    checked={true}
                 />
             )
         },
@@ -83,9 +95,9 @@ const Settings = ({ dispatch, match, ...props }) => {
                 if (permission && permission.members === 2 && userId !== memberId) disabled = false;
                 return (
                     <Checkbox
-                        defaultChecked={announcement}
-                        disabled={disabled}
-                        onChange={e => handleChangePermission(index, 'announcement', e.target.checked)}
+                        checked={announcement}
+                        // disabled={disabled}
+                        onChange={disabled ? () => {} : e => handleChangePermission(index, 'announcement', e.target.checked)}
                     />
                 )
             }
@@ -101,9 +113,9 @@ const Settings = ({ dispatch, match, ...props }) => {
                 if (permission && permission.members === 2 && userId !== memberId) disabled = false;
                 return (
                     <Checkbox
-                        defaultChecked={messenger}
-                        disabled={disabled}
-                        onChange={e => handleChangePermission(index, 'messenger', e.target.checked)}
+                        checked={messenger}
+                        // disabled={disabled}
+                        onChange={disabled ? () => {} : e => handleChangePermission(index, 'messenger', e.target.checked)}
                     />
                 )
             }
@@ -119,9 +131,9 @@ const Settings = ({ dispatch, match, ...props }) => {
                 if (permission && permission.members === 2 && userId !== memberId) disabled = false;
                 return (
                     <Checkbox
-                        defaultChecked={privacy}
-                        disabled={disabled}
-                        onChange={e => handleChangePermission(index, 'privacy', e.target.checked)}
+                        checked={privacy}
+                        // disabled={disabled}
+                        onChange={disabled ? () => {} : e => handleChangePermission(index, 'privacy', e.target.checked)}
                     />
                 )
             }
@@ -137,23 +149,22 @@ const Settings = ({ dispatch, match, ...props }) => {
                 if (permission && permission.members === 2 && userId !== memberId) disabled = false;
                 return (
                     <Checkbox
-                        defaultChecked={invite}
-                        disabled={disabled}
-                        onChange={e => handleChangePermission(index, 'invite', e.target.checked)}
+                        checked={invite}
+                        //disabled={disabled}
+                        onChange={disabled ? () => {} : e => handleChangePermission(index, 'invite', e.target.checked)}
                     />
                 )
             }
         },
         {
             title: '',
-            dataIndex: 'display',
             key: 'action',
             width: '10%',
             align: 'center',
-            render: (display, { _id: memberId }, index) => {
-                const visible = false;
+            render: (h, { _id: memberId }, index) => {
+                let visible = false;
                 if (permission && permission.members === 2 && userId !== memberId) visible = true;
-                return visible ? <Icon type="rest" theme="filled" className={styles.deleteBtn} onClick={() => handleDeleteMember(memberId, index)} /> : null
+                return visible ? <Icon type="delete" theme="filled" className={styles.deleteBtn} onClick={() => handleDeleteMember(memberId, index)} /> : null
             }
         }
     ]
@@ -189,8 +200,8 @@ const Settings = ({ dispatch, match, ...props }) => {
                         </div>
                         <div className={styles.select}>
                             <Select
-                                disabled={!courseInfo || infoLoading}
-                                loading={!courseInfo || infoLoading}
+                                disabled={!courseInfo || infoLoading || initLoading || !permission || permission.privacy === 0}
+                                loading={!courseInfo || infoLoading || initLoading || !permission}
                                 placeholder="Privacy"
                                 size="large"
                                 value={privacy}
@@ -203,7 +214,7 @@ const Settings = ({ dispatch, match, ...props }) => {
                                 <Option value="draft">Draft</Option>
                             </Select>
                         </div>
-                        {courseInfo && !infoLoading && privacy === 'password' && (
+                        {courseInfo && !infoLoading && privacy === 'password' && permission && permission.privacy === 1 && !initLoading && (
                             <div className={styles.password}>
                                 <Password size="large" placeholder="New password" value={password} onChange={e => setPassword(e.target.value)} />
                             </div>
@@ -253,7 +264,7 @@ const Settings = ({ dispatch, match, ...props }) => {
                             onChange={e => setEmail(e.target.value)}
                             enterButton="Add"
                             size="large"
-                            disabled={initLoading || !permission || permission.member === 0}
+                            disabled={initLoading || !permission || permission.members === 0}
                             style={{ width: '100%' }}
                         />
                     </div>
@@ -264,10 +275,7 @@ const Settings = ({ dispatch, match, ...props }) => {
                             rowKey={member => member._id}
                             pagination={false}
                             loading={initLoading || !permission || loading || !membersData}
-                            onRow={(member, index) => ({
-                                onMouseEnter: () => handleHoverMember(index),
-                                onMouseLeave: () => handleUnhoverMember(index)
-                            })}
+                            rowClassName={styles.memberRow}
                         />
                     </div>
                     <div className={styles.btn}>

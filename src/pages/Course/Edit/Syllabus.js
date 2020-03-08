@@ -32,7 +32,7 @@ const StaticLecture = ({ lecture, currentUser, onEditLecture, onDeleteLecture })
                         content={(
                             <ButtonGroup>
                                 <Button icon="edit" type="primary" onClick={() => onEditLecture(lecture)}/>
-                                <Button icon="rest" type="primary" onClick={() => onDeleteLecture(lecture)}/>
+                                <Button icon="delete" type="primary" onClick={() => onDeleteLecture(lecture)}/>
                             </ButtonGroup>
                         )}
                         popupClassName={styles.chapterPopover}
@@ -643,7 +643,7 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                                             }}
                                                         />
                                                         <Button
-                                                            icon="rest"
+                                                            icon="delete"
                                                             type="primary"
                                                             onClick={e => {
                                                                 e.stopPropagation();
