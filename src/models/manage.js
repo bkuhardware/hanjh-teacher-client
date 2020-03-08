@@ -32,6 +32,10 @@ const initialState = {
         hasMore: true,
         featured: null,
         list: null
+    },
+    settings: {
+        permission: null,
+        members: null
     }
 };
 

@@ -1,26 +1,32 @@
 .settings {
     width: 85%;
     margin: auto;
-    .actions {
+    .actions, .permission {
         & > .title {
             font-size: 1.8em;
             margin-bottom: 25px;
             color: @primary-color;
         }
+    }
+    .actions {
         .main {
-            border-radius: 10px;
+            border-radius: 12px;
             border: 0.5px dashed rgba(255, 255, 255, 0.3);
-            background: rgba(30, 30, 30, 0.6);
+            background: rgba(30, 30, 30, 0.5);
             .divider {
-                background: rgba(250, 218, 94, 0.8);
+                background: rgba(255, 255, 255, 0.2);
+            }
+            .privacy, .delete {
+                .title {
+                    margin-bottom: 32px;
+                    font-size: 1.2em;
+                    color: white;
+                }
             }
             .privacy {
                 padding: 42px 0px 24px 36px;
                 width: 40%;
-                .title {
-                    margin-bottom: 32px;
-                    font-size: 1.2em;
-                }
+                
                 .select, .password, .text {
                     margin-bottom: 24px;
                     width: 100%;
@@ -36,6 +42,24 @@
             }
             .delete {
                 padding: 16px 36px 42px;
+                .btn {
+                    margin-top: 24px;
+                }
+            }
+        }
+    }
+    .permission {
+        margin-top: 60px;
+        .main {
+            .newMember {
+                width: 60%;
+                margin-bottom: 25px;
+            }
+            .members {
+                margin-bottom: 24px;
+            }
+            .btn button {
+                min-width: 100px;
             }
         }
     }
