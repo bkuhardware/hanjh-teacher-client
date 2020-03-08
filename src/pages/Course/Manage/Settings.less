@@ -1,0 +1,42 @@
+.settings {
+    width: 85%;
+    margin: auto;
+    .actions {
+        & > .title {
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            color: @primary-color;
+        }
+        .main {
+            border-radius: 10px;
+            border: 0.5px dashed rgba(255, 255, 255, 0.3);
+            background: rgba(30, 30, 30, 0.6);
+            .divider {
+                background: rgba(250, 218, 94, 0.8);
+            }
+            .privacy {
+                padding: 42px 0px 24px 36px;
+                width: 40%;
+                .title {
+                    margin-bottom: 32px;
+                    font-size: 1.2em;
+                }
+                .select, .password, .text {
+                    margin-bottom: 24px;
+                    width: 100%;
+                }
+                .text {
+                    .loading {
+                        text-align: center;
+                    }
+                }
+                .btn button {
+                    min-width: 100px;
+                }
+            }
+            .delete {
+                padding: 16px 36px 42px;
+            }
+        }
+    }
+}

@@ -19,7 +19,8 @@ const MenuItem = Menu.Item;
 const Header = ({ courseInfo, loading, handlePreview, handleViewHistory }) => {
     const getPrivacy = value => {
         if (value === 'public') return 'Public';
-        else if (value === 'private') return 'Private';
+        else if (value === 'private') return 'Private - Invitation only';
+        else if (value === 'password') return 'Private - Password';
         return 'DRAFT';
     };
 

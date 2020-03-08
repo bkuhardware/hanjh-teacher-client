@@ -19,11 +19,14 @@ const Privacy = ({ value }) => {
             text = 'Public';
             break;
         case 'private':
-            text = 'Private';
+            text = 'Private (Invitation only)';
+            break;
+        case 'password':
+            text = 'Private (Password)';
             break;
         default:
             className = styles.draft
-            text = 'DRAFT (private)';
+            text = 'DRAFT';
     };
     return (<span className={className}>{text}</span>);
 };

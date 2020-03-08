@@ -14,7 +14,8 @@ const MenuItem = Menu.Item;
 const Header = ({ courseInfo, loading }) => {
     const getPrivacy = value => {
         if (value === 'public') return 'Public';
-        else if (value === 'private') return 'Private';
+        else if (value === 'private') return 'Private - Invitation only';
+        else if (value === 'password') return 'Private - Password';
         return 'DRAFT';
     };
 
@@ -59,7 +60,7 @@ const Header = ({ courseInfo, loading }) => {
                         <React.Fragment>
                             <span className={styles.setting}>
                                 <Tooltip title="Setting" placement="bottom">
-                                    <Icon type="setting" theme="filled" style={{ color: 'white', fontSize: '2em' }} />
+                                    <Icon type="setting" theme="filled" style={{ color: 'white', fontSize: '2em' }} onClick={() => router.push(`/course/${courseInfo._id}/manage/settings`)}/>
                                 </Tooltip>
                             </span>
                             <span className={styles.toEdit}>
