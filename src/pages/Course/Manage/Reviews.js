@@ -58,6 +58,7 @@ const FeaturedReview = ({ data: review, handleVoting }) => {
                     className={styles.like}
                     onClick={() => {
                         if (review.status !== 1) handleVoting('featured', review._id, 1, review.status);
+                        else handleVoting('featured', review._id, null, review.status);
                     }}
                 >
                     <Icon type="like" theme="filled" style={{ color: (review.status === 1) ? '#fada5e' : 'white' }}/>
@@ -66,6 +67,7 @@ const FeaturedReview = ({ data: review, handleVoting }) => {
                     className={styles.dislike}
                     onClick={() => {
                         if (review.status !== 0) handleVoting('featured', review._id, 0, review.status);
+                        else handleVoting('featured', review._id, null, review.status);
                     }}
                 >
                     <Icon type="dislike" theme="filled" style={{ color: (review.status === 0) ? '#fada5e' : 'white' }}/>
@@ -113,6 +115,7 @@ const Review = ({ data: review, handleVoting }) => {
                         className={styles.like}
                         onClick={() => {
                             if (review.status !== 1) handleVoting('default', review._id, 1, review.status);
+                            else handleVoting('default', review._id, null, review.status);
                         }}>
                             <Icon type="like" theme="filled" style={{ color: (review.status === 1) ? '#fada5e' : 'white' }}/>
                         </span>
@@ -120,6 +123,7 @@ const Review = ({ data: review, handleVoting }) => {
                         className={styles.dislike}
                         onClick={() => {
                             if (review.status !== 0) handleVoting('default', review._id, 0, review.status);
+                            else handleVoting('default', review._id, null, review.status);
                         }}
                     >
                         <Icon type="dislike" theme="filled" style={{ color: (review.status === 0) ? '#fada5e' : 'white' }}/>
@@ -146,8 +150,23 @@ const Reviews = ({ dispatch, match, ...props }) => {
         });
         return () => dispatch({ type: 'manage/resetReviews' });
     }, [courseId]);
-    const handleMoreReviews = () => {};
-    const handleVoting = () => {};
+    const handleMoreReviews = () => {
+        dispatch({
+            type: 'manage/moreReviews',
+            payload: courseId
+        });
+    };
+    const handleVoting = (type, reviewId, value, oldValue) => {
+        dispatch({
+            type: 'manage/voteReview',
+            payload: {
+                type,
+                reviewId,
+                value,
+                oldValue
+            }
+        });
+    };
     const loadMore = (
         hasMore && !initLoading && !loading && reviews && featuredReviews ? (
             <div className={styles.loadMore}>
@@ -208,7 +227,7 @@ const Reviews = ({ dispatch, match, ...props }) => {
                                     <>
                                         {count++ > 0 && (<Divider dashed className={styles.divider} />)}
                                         <List.Item style={{ borderBottom: 'none' }}>
-                                            <Skeleton loading={item.loading} active avatar={{ size: 80 }} paragraph={{ rows: 3, width: ['90%', '75%', '45%']}} title={{ width: '30%' }}>
+                                            <Skeleton loading={item.loading} active avatar={{ size: 60 }} paragraph={{ rows: 3, width: ['90%', '75%', '45%']}} title={{ width: '30%' }}>
                                                 <Review data={item} handleVoting={handleVoting} />
                                             </Skeleton>  
                                         </List.Item>

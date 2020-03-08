@@ -347,6 +347,33 @@ export default {
                 }
             });
         },
+        *moreReviews({ payload: courseId }, { call, put }) {
+            yield delay(1200);
+            yield put({
+                type: 'pushReviews',
+                payload: {
+                    hasMore: false,
+                    data: REVIEWS.list
+                }
+            });
+        },
+        *voteReview({ payload }, { call, put }) {
+            const {
+                type,
+                reviewId,
+                value,
+                oldValue
+            } = payload;
+            yield put({
+                type: 'saveReviewVote',
+                payload: {
+                    type,
+                    reviewId,
+                    value
+                }
+            });
+            yield delay(1000);
+        }
     },
     reducers: {
         savePermission(state, { payload }) {
@@ -594,6 +621,38 @@ export default {
                 ...state,
                 reviews: { ...payload }
             };
+        },
+        pushReviews(state, { payload }) {
+            const { hasMore, data } = payload;
+            return {
+                ...state,
+                reviews: {
+                    ...state.reviews,
+                    hasMore,
+                    list: [
+                        ...state.reviews.list,
+                        ...data
+                    ]
+                }
+            };
+        },
+        saveReviewVote(state, { payload }) {
+            const { 
+                type,
+                reviewId,
+                value
+            } = payload;
+            const attr = type === 'default' ? 'list' : 'featured';
+            const list = [...state.reviews[attr]];
+            const index = _.findIndex(list, ['_id', reviewId]);
+            list[index].status = value;
+            return {
+                ...state,
+                reviews: {
+                    ...state.reviews,
+                    [attr]: [...list]
+                }
+            }
         },
         resetReviews(state) {
             return {
