@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import { connect } from 'dva';
 import { FolderViewOutlined, YoutubeFilled, ReadOutlined, MoreOutlined, ReadFilled, PlayCircleFilled } from '@ant-design/icons';
 import { Row, Col, List, Collapse, Icon, Dropdown, Menu, Button, Spin, Avatar, Tooltip, Popover, Form, Input, Empty, Modal } from 'antd';
+import UserAvatar from '@/components/Avatar';
 import styles from './Syllabus.less';
 
 const { Panel } = Collapse;
@@ -23,7 +24,7 @@ const StaticLecture = ({ lecture, currentUser, onEditLecture, onDeleteLecture })
             extra={(
                 <div className={styles.extra}>
                     <span className={styles.user} style={{ visibility: visible ? 'visible' : 'hidden' }}>
-                        <Avatar shape="circle" size={32} alt="Avatar" src={lecture.owner.avatar} style={{ marginRight: '8px' }}/>
+                        <UserAvatar textSize={32} borderWidth={0} size={32} alt="Avatar" src={lecture.owner.avatar} text={lecture.owner.name} extraStyle={{ marginRight: '8px' }} style={{ background: '#fada5e', color: 'white' }}/>
                         <span style={{ lineHeight: '32px' }}>{`${lecture.owner._id !== currentUser._id ? lecture.owner.name : 'You'} at ${moment(lecture.updatedAt).format('HH:mm, D MMM')}`}</span>
                     </span>
                     <span className={styles.length} />
@@ -568,7 +569,7 @@ const Syllabus = ({ dispatch, match, ...props }) => {
                                             title={(
                                                 editChapterId !== chapter._id ? (
                                                     <span>
-                                                        <Avatar shape="circle" size={32} alt="Avatar" src={chapter.owner.avatar} style={{ marginRight: '8px' }}/>
+                                                        <UserAvatar borderWidth={0} textSize={32} size={32} alt="Avatar" src={chapter.owner.avatar} extraStyle={{ marginRight: '8px' }} style={{ background: '#fada5e', color: 'white' }} text={chapter.owner.name} />
                                                         <span style={{ lineHeight: '32px' }}>{`${chapter.owner._id !== user._id ? chapter.owner.name : 'You'} at ${moment(chapter.updatedAt).format('HH:mm, D MMM')}`}</span>
                                                     </span>
                                                 ) : (

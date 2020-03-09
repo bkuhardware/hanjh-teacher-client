@@ -7,6 +7,7 @@ import Link from 'umi/link'
 import router from 'umi/router';
 import { connect } from 'dva';
 import { Row, Col, Layout, Menu, Skeleton, Icon, Button, Tooltip, Spin, Drawer, Avatar, Badge, Checkbox } from 'antd';
+import UserAvatar from '@/components/Avatar';
 import Footer from '@/components/Footer';
 import ScrollLayout from '@/components/ScrollLayout';
 import Scrollbars from 'react-custom-scrollbars';
@@ -369,7 +370,7 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
                                         overlayStyle={{ maxWidth: '1000px', zIndex: 9999999999 }}
                                         title={`${history.user.name}, at ${moment(history.createdAt).format('HH:mm, D MMM')}`}
                                     >
-                                        <Avatar src={history.user.avatar} alt="user-avatar" size={32} />
+                                        <UserAvatar src={history.user.avatar} text={history.user.name} alt="user-avatar" textSize={32} borderWidth={0} size={32} style={{ background: '#fada5e', color: 'white' }}/>
                                         <span className={styles.content}>
                                             {history.content}
                                         </span>

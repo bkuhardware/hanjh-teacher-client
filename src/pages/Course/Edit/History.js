@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import router from 'umi/router';
 import { connect } from 'dva';
 import { Table, Avatar, Button, Spin, Icon } from 'antd';
+import UserAvatar from '@/components/Avatar';
 import TimeAgo from 'react-timeago';
 import styles from './History.less';
 
@@ -74,7 +75,7 @@ const History = ({ dispatch, match, ...props }) => {
             width: '30%',
             render: user => (
                 <div className={styles.user}>
-                    <Avatar alt="user-avatar" size={32} src={user.avatar} />
+                    <UserAvatar alt="user-avatar" textSize={32} borderWidth={0} size={32} src={user.avatar} text={user.name} style={{ background: '#fada5e', color: 'white' }} />
                     <span className={styles.name}>
                         {user.name}
                     </span>

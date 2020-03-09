@@ -7,7 +7,7 @@ export default [
         user: {
             _id: 'user_1',
             name: 'Huyen Dang',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
+            avatar: 'https://scontent.fvca1-1.fna.fbcdn.net/v/t1.0-9/p720x720/83990000_479642226063090_4275746647335501824_o.jpg?_nc_cat=105&_nc_sid=110474&_nc_oc=AQk-Robimtmt5cCno_-HXSTQMOo_730Rfq06rk83iajx8EQRlX3t_xW1ISBZSS-J_eI&_nc_ht=scontent.fvca1-1.fna&_nc_tp=6&oh=887eca69fa49811b0d83d788ebc46970&oe=5E991BE9'
         },
         seen: true
     },
@@ -19,7 +19,7 @@ export default [
         user: {
             _id: 'user_2',
             name: 'Nguyen Trong Luan',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-9/83558548_2290286491264377_331290296627232768_n.jpg?_nc_cat=107&_nc_oc=AQnpLi8nWGbC-08nBlYjhCuZyGVkcZMFHaqWTcBFbEZK1GzrkY73FWhSwonUwq-m0aE&_nc_ht=scontent.fsgn5-2.fna&oh=84246739e4ba3279ce49566f8f59bb01&oe=5EC49D12'
+            avatar: null
         },
         seen: false
     },
@@ -31,7 +31,7 @@ export default [
         user: {
             _id: 'user_1',
             name: 'Huyen Dang',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
+            avatar: 'https://scontent.fvca1-1.fna.fbcdn.net/v/t1.0-9/p720x720/83990000_479642226063090_4275746647335501824_o.jpg?_nc_cat=105&_nc_sid=110474&_nc_oc=AQk-Robimtmt5cCno_-HXSTQMOo_730Rfq06rk83iajx8EQRlX3t_xW1ISBZSS-J_eI&_nc_ht=scontent.fvca1-1.fna&_nc_tp=6&oh=887eca69fa49811b0d83d788ebc46970&oe=5E991BE9'
         },
         seen: false
     },
@@ -43,7 +43,7 @@ export default [
         user: {
             _id: 'user_1',
             name: 'Huyen Dang',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
+            avatar: 'https://scontent.fvca1-1.fna.fbcdn.net/v/t1.0-9/p720x720/83990000_479642226063090_4275746647335501824_o.jpg?_nc_cat=105&_nc_sid=110474&_nc_oc=AQk-Robimtmt5cCno_-HXSTQMOo_730Rfq06rk83iajx8EQRlX3t_xW1ISBZSS-J_eI&_nc_ht=scontent.fvca1-1.fna&_nc_tp=6&oh=887eca69fa49811b0d83d788ebc46970&oe=5E991BE9'
         },
         seen: false
     },
@@ -55,7 +55,7 @@ export default [
         user: {
             _id: 'user_2',
             name: 'Trong Luan',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-9/83558548_2290286491264377_331290296627232768_n.jpg?_nc_cat=107&_nc_oc=AQnpLi8nWGbC-08nBlYjhCuZyGVkcZMFHaqWTcBFbEZK1GzrkY73FWhSwonUwq-m0aE&_nc_ht=scontent.fsgn5-2.fna&oh=84246739e4ba3279ce49566f8f59bb01&oe=5EC49D12'
+            avatar: null
         },
         seen: true
     },
@@ -79,7 +79,7 @@ export default [
         user: {
             _id: 'user_1',
             name: 'Huyen Dang',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
+            avatar: 'https://scontent.fvca1-1.fna.fbcdn.net/v/t1.0-9/p720x720/83990000_479642226063090_4275746647335501824_o.jpg?_nc_cat=105&_nc_sid=110474&_nc_oc=AQk-Robimtmt5cCno_-HXSTQMOo_730Rfq06rk83iajx8EQRlX3t_xW1ISBZSS-J_eI&_nc_ht=scontent.fvca1-1.fna&_nc_tp=6&oh=887eca69fa49811b0d83d788ebc46970&oe=5E991BE9'
         },
         seen: true
     },
@@ -91,7 +91,7 @@ export default [
         user: {
             _id: 'user_1',
             name: 'Huyen Dang',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
+            avatar: 'https://scontent.fvca1-1.fna.fbcdn.net/v/t1.0-9/p720x720/83990000_479642226063090_4275746647335501824_o.jpg?_nc_cat=105&_nc_sid=110474&_nc_oc=AQk-Robimtmt5cCno_-HXSTQMOo_730Rfq06rk83iajx8EQRlX3t_xW1ISBZSS-J_eI&_nc_ht=scontent.fvca1-1.fna&_nc_tp=6&oh=887eca69fa49811b0d83d788ebc46970&oe=5E991BE9'
         },
         seen: true
     }
