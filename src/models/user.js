@@ -4,7 +4,7 @@ import storage from '@/utils/storage';
 import router from 'umi/router';
 
 const USER = {
-    _id: 1,
+    _id: 'user_1',
     token: 'foo-token',
     name: 'Thuy Huyen',
     avatar: "https://scontent.fsgn5-1.fna.fbcdn.net/v/t1.0-9/70005438_1611468775661921_503861777637834752_o.jpg?_nc_cat=101&_nc_sid=13bebb&_nc_oc=AQktln7NCl0pBtLXwz9EFKx-2k2mYglGrFh2JLK6NcHjMq9z011rrU9SROHlNTMVyWg&_nc_ht=scontent.fsgn5-1.fna&oh=30cbb1d86a1102457c64a64a1f354026&oe=5E802CD0",

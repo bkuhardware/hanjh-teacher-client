@@ -108,10 +108,14 @@ const Settings = ({ dispatch, match, ...props }) => {
     const handleAddMember = () => {
         if (!checkEmail(email)) return message.error('Your email is invalid!');
         dispatch({
-            type: 'manange/addMember',
+            type: 'manage/addMember',
             payload: {
                 courseId,
-                email
+                email,
+                callback: () => {
+                    message.success('Invite intructor success!');
+                    setEmail('');
+                }
             }
         });
     };
@@ -331,19 +335,21 @@ const Settings = ({ dispatch, match, ...props }) => {
                     Permission
                 </div>
                 <div className={styles.main}>
-                    <div className={styles.newMember}>
-                        <Search
-                            placeholder="Enter email to add new instructor"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            enterButton="Add"
-                            loading={addLoading}
-                            size="large"
-                            disabled={initLoading || !permission || permission.members === 0}
-                            style={{ width: '100%' }}
-                            onSearch={handleAddMember}
-                        />
-                    </div>
+                    {!initLoading && permission && permission.members > 0 && (
+                        <div className={styles.newMember}>
+                            <Search
+                                placeholder="Enter email to add new instructor"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                                enterButton="Add"
+                                loading={addLoading}
+                                disabled={addLoading}
+                                size="large"
+                                style={{ width: '100%' }}
+                                onSearch={handleAddMember}
+                            />
+                        </div>
+                    )}
                     <div className={styles.members}>
                         <Table
                             columns={columns}
@@ -382,6 +388,6 @@ export default connect(
         members: manage.settings.members,
         privacyLoading: !!loading.effects['manage/updatePrivacy'],
         membersLoading: !!loading.effects['manage/updateMembers'],
-        addLoading: !!loading.effects['manage/addMembers']
+        addLoading: !!loading.effects['manage/addMember']
     })
 )(Settings);

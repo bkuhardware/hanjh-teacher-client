@@ -522,6 +522,15 @@ export default {
                 info: { ...payload }
             }
         },
+        savePrivacy(state, { payload: value }) {
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    privacy: value
+                }
+            };
+        },
         saveCompleteStatus(state, { payload }) {
             const { type, status } = payload;
             return {

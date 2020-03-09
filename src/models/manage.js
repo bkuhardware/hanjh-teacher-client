@@ -389,6 +389,49 @@ export default {
                 type: 'saveMembers',
                 payload: MEMBERS
             });
+        },
+        *updatePrivacy({ payload }, { call, put }) {
+            const { 
+                courseId,
+                value,
+                password,
+                callback
+            } = payload;
+            //call api with courseId, value, password
+            if (password) {
+                yield delay(1200);
+                //call api with type = 'password', password
+            }
+            else yield delay(1500);     //call api with only type.
+            yield put({
+                type: 'course/savePrivacy',
+                payload: value
+            });
+            if (callback) callback();
+        },
+        *updateMembers({ payload }, { call, put }) {
+            const { courseId, data } = payload;
+            yield delay(1600);
+            //call api with courseId, data
+            const keys = _.keys(data);
+            const returnData = _.map(keys, key => ({
+                _id: key,
+                permission: { ...data[key] }
+            }));
+            yield put({
+                type: 'saveMembers',
+                payload: _.map(returnData, (member, i) => ({
+                    ...member,
+                    avatar: null,
+                    name: 'Dang Thuy Huyen',
+                    isOwner: i === 0
+                }))
+            });
+        },
+        *addMember({ payload }, { call, put }) {
+            const { courseId, email, callback } = payload;
+            yield delay(1200);
+            if (callback) callback();
         }
     },
     reducers: {
