@@ -21,6 +21,40 @@ const LoadingReview = () => {
     )
 };
 
+const Answer = ({ answer }) => {
+    return (
+        <div className={styles.answer}>
+            <div className={styles.user}>
+                <div className={styles.avatarCont}>
+                    <UserAvatar
+                        src={answer.user.avatar}
+                        size={48}
+                        textSize={48}
+                        alt="ava-user"
+                        text={answer.user.name}
+                        borderWidth={0}
+                        style={{ background: '#fada5e', color: 'white' }}
+                    />
+                </div>
+                <div className={styles.info}>
+                    <div className={styles.names}>
+                        <span className={styles.name}>{answer.user.name}</span>
+                        {answer.user.isInstructor && <span className={styles.instructor}>{`(Instructor)`}</span>}
+                    </div>
+                    <div className={styles.time}>
+                        <TimeAgo date={answer.createdAt} />
+                    </div>
+                </div>
+            </div>
+            <div className={styles.content}>
+                <ViewMore height={150}>
+                    <div dangerouslySetInnerHTML={{ __html: answer.content }}/>
+                </ViewMore>
+            </div>
+        </div>
+    )
+};
+
 const FeaturedReview = ({ data: review, handleVoting }) => {
     return (
         <div className={styles.featuredReview}>
@@ -129,6 +163,19 @@ const Review = ({ data: review, handleVoting }) => {
                         <Icon type="dislike" theme="filled" style={{ color: (review.status === 0) ? '#fada5e' : 'white' }}/>
                     </span>
                 </div>
+                {!_.isEmpty(review.answers) && (
+                    <div className={styles.answers}>
+                        <div className={styles.title}>Answers</div>
+                        <div className={styles.data}>
+                            {_.map(review.answers, (answer, i) => (
+                                <React.Fragment key={answer._id}>
+                                    {i > 0 && (<Divider dashed className={styles.divider} />)}
+                                    <Answer key={answer._id} answer={answer} />
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </Col>
         </Row>
     );
