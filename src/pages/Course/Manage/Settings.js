@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
-import { Table, Button, Checkbox, Select, Icon, Input, Row, Divider, Spin } from 'antd';
+import { Table, Button, Checkbox, Select, Icon, Input, Row, Divider, Spin, message } from 'antd';
 import UserAvatar from '@/components/Avatar';
+import { checkEmail } from '@/utils/utils';
 import styles from './Settings.less';
 
 const { Option } = Select;
@@ -21,7 +22,10 @@ const Settings = ({ dispatch, match, ...props }) => {
         permission,
         initLoading,
         loading,
-        userId
+        userId,
+        addLoading,
+        membersLoading,
+        privacyLoading
     } = props;
     useEffect(() => {
         dispatch({
@@ -51,13 +55,72 @@ const Settings = ({ dispatch, match, ...props }) => {
         };
         setMembersData([...newMembersData]);
     };
-    const handleDeleteMember = () => {};
+    const handleDeleteMember = index => {
+        const newMembersData = _.cloneDeep(membersData);
+        _.pullAt(newMembersData, [index]);
+        setMembersData([...newMembersData]);
+    };
+    const handleSavePrivacy = () => {
+        if (privacy === 'password') {
+            dispatch({
+                type: 'manage/updatePrivacy',
+                payload: {
+                    courseId,
+                    value: 'password',
+                    password,
+                    callback: () => setPassword('')
+                }
+            });
+        }
+        else {
+            dispatch({
+                type: 'manage/updatePrivacy',
+                payload: {
+                    courseId,
+                    value: privacy
+                }
+            });
+        }
+    };
+    const handleDeleteCourse = () => {
+        message.info('Sorry, this function is unavailable!');
+    };
+    const handleSaveMembers = () => {
+        const keys = _.map(membersData, member => member._id);
+        const membersDataObj = _.keyBy(membersData, '_id');
+        let updateData = {};
+        _.forEach(keys, key => {
+            updateData = {
+                ...updateData,
+                [key]: {
+                    ...membersDataObj[key].permission
+                }
+            };
+        });
+        dispatch({
+            type: 'manage/updateMembers',
+            payload: {
+                courseId,
+                data: updateData,
+            }
+        });
+    };
+    const handleAddMember = () => {
+        if (!checkEmail(email)) return message.error('Your email is invalid!');
+        dispatch({
+            type: 'manange/addMember',
+            payload: {
+                courseId,
+                email
+            }
+        });
+    };
     const columns = [
         {
             title: 'Instructor',
             dataIndex: 'name',
             key: 'name',
-            render: (name, { avatar }) => (
+            render: (name, { isOwner, avatar }) => (
                 <div className={styles.user}>
                     <UserAvatar
                         size={32}
@@ -69,6 +132,11 @@ const Settings = ({ dispatch, match, ...props }) => {
                         alt="ins-avatar"
                     />
                     <span className={styles.name}>{name}</span>
+                    {isOwner && (
+                        <span className={styles.owner}>
+                            <Icon type="crown" theme="filled" />
+                        </span>
+                    )}
                 </div>
             ),
             width: '35%'
@@ -164,7 +232,7 @@ const Settings = ({ dispatch, match, ...props }) => {
             render: (h, { _id: memberId }, index) => {
                 let visible = false;
                 if (permission && permission.members === 2 && userId !== memberId) visible = true;
-                return visible ? <Icon type="delete" theme="filled" className={styles.deleteBtn} onClick={() => handleDeleteMember(memberId, index)} /> : null
+                return visible ? <Icon type="delete" theme="filled" className={styles.deleteBtn} onClick={() => handleDeleteMember(index)} /> : null
             }
         }
     ]
@@ -205,7 +273,10 @@ const Settings = ({ dispatch, match, ...props }) => {
                                 placeholder="Privacy"
                                 size="large"
                                 value={privacy}
-                                onChange={value => setPrivacy(value)}
+                                onChange={value => {
+                                    setPrivacy(value);
+                                    setPassword('');
+                                }}
                                 style={{ width: '100%' }}
                             >
                                 <Option value="public">Public</Option>
@@ -222,15 +293,17 @@ const Settings = ({ dispatch, match, ...props }) => {
                         <div className={styles.text}>
                             {text}
                         </div>
-                        <div className={styles.btn}>
-                            <Button
-                                type="primary"
-                                disabled={!courseInfo || infoLoading || initLoading || !permission || permission.privacy === 0}
-                                loading={!courseInfo || infoLoading || initLoading || !permission}
-                            >
-                                Save
-                            </Button>
-                        </div>
+                        {courseInfo && !infoLoading && !initLoading && permission && permission.privacy === 1 && (
+                            <div className={styles.btn}>
+                                <Button
+                                    type="primary"
+                                    onClick={handleSavePrivacy}
+                                    loading={privacyLoading}
+                                >
+                                    Save
+                                </Button>
+                            </div>
+                        )}
                     </div>
                     <Divider dashed className={styles.divider} />
                     <div className={styles.delete}>
@@ -245,6 +318,7 @@ const Settings = ({ dispatch, match, ...props }) => {
                                 type="danger"
                                 disabled={initLoading || !permission || permission.privacy === 0}
                                 loading={initLoading || !permission}
+                                onClick={handleDeleteCourse}
                             >
                                 Delete course
                             </Button>
@@ -263,9 +337,11 @@ const Settings = ({ dispatch, match, ...props }) => {
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             enterButton="Add"
+                            loading={addLoading}
                             size="large"
                             disabled={initLoading || !permission || permission.members === 0}
                             style={{ width: '100%' }}
+                            onSearch={handleAddMember}
                         />
                     </div>
                     <div className={styles.members}>
@@ -274,20 +350,21 @@ const Settings = ({ dispatch, match, ...props }) => {
                             dataSource={membersData || []}
                             rowKey={member => member._id}
                             pagination={false}
-                            loading={initLoading || !permission || loading || !membersData}
+                            loading={initLoading || !permission || loading || !membersData || membersLoading}
                             rowClassName={styles.memberRow}
                         />
                     </div>
-                    <div className={styles.btn}>
-                        <Button
-                            type="primary"
-                            onClick={() => {}}
-                            disabled={initLoading || !permission || loading || !membersData}
-                            loading={initLoading || !permission || loading || !membersData}
-                        >
-                            Save
-                        </Button>
-                    </div>
+                    {permission && membersData && !initLoading && !loading && permission.members === 2 && (
+                        <div className={styles.btn}>
+                            <Button
+                                type="primary"
+                                onClick={handleSaveMembers}
+                                loading={membersLoading}
+                            >
+                                Save
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </Row>
         </div>
@@ -302,6 +379,9 @@ export default connect(
         initLoading: !!loading.effects['manage/fetchPermission'],
         loading: !!loading.effects['manage/fetchMembers'],
         permission: manage.settings.permission,
-        members: manage.settings.members
+        members: manage.settings.members,
+        privacyLoading: !!loading.effects['manage/updatePrivacy'],
+        membersLoading: !!loading.effects['manage/updateMembers'],
+        addLoading: !!loading.effects['manage/addMembers']
     })
 )(Settings);
