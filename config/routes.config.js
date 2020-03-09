@@ -145,7 +145,22 @@ export default [
                     {
                         path: '/course/:courseId/manage/reviews',
                         title: 'route.course.manage.reviews',
-                        component: './Course/Manage/Reviews'
+                        component: '../layouts/ReviewsLayout',
+                        routes: [
+                            {
+                                path: '/course/:courseId/manage/reviews',
+                                title: 'route.course.manage.reviews',
+                                component: './Course/Manage/Reviews/index'
+                            },
+                            {
+                                path: '/course/:courseId/manage/reviews/thread/:threadId',
+                                title: 'route.course.manage.reviews',
+                                component: './Course/Manage/Reviews/Thread'
+                            },
+                            {
+                                component: '404'
+                            }
+                        ]
                     },
                     {
                         path: '/course/:courseId/manage/messenger',

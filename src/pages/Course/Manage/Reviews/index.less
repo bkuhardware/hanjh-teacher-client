@@ -71,23 +71,86 @@
                     margin-top: 15px;
                     font-size: 1.15em;
                 }
-                .voting {
+                .tail {
                     margin-top: 10px;
-                    .like {
-                        margin-left: 25px;
-                    }
-                    .dislike {
-                        margin-left: 10px;
-                    }
-                    .like, .dislike {
-                        i {
-                            font-size: 1.5em;
-                            position: relative;
-                            top: 3px;
-                            cursor: pointer;
+                    .voting {
+                        text-align: left;
+                        .like {
+                            margin-left: 25px;
                         }
-                        &:hover {
-                            opacity: 0.8;
+                        .dislike {
+                            margin-left: 10px;
+                        }
+                        .like, .dislike {
+                            i {
+                                font-size: 1.5em;
+                                position: relative;
+                                top: 3px;
+                                cursor: pointer;
+                            }
+                            &:hover {
+                                opacity: 0.8;
+                            }
+                        }
+                    }
+                    .detail {
+                        text-align: right;
+                        & > span {
+                            .text {
+                                margin-right: 8px;
+                            }
+                            cursor: pointer;
+                            &:hover {
+                                color: #fada5e;
+                            }
+                        }
+                    }
+                }
+                .answers {
+                    width: 90%;
+                    margin-left: auto;
+                    margin-top: 20px;
+                    padding-right: 40px;
+                    .title {
+                        font-weight: bold;
+                        margin-bottom: 25px;
+                    }
+                    .data {
+                        width: 100%;
+                        .divider {
+                            background: rgba(250, 218, 94, 0.5);
+                        }
+                        .answer {
+                            .user {
+                                height: auto;
+                                width: 100%;
+                                position: relative;
+                                .avatarCont {
+                                    width: 48px;
+                                    padding: 0;
+                                    display: inline-block;
+                                    margin-bottom: 0
+                                }
+                                .info {
+                                    position: absolute;
+                                    top: 0;
+                                    left: 75px;
+                                    .names {
+                                        .name {
+                                            font-size: 1em;
+                                        }
+                                        .instructor {
+                                            margin-left: 10px;
+                                        }
+                                    }
+                                    .time {
+                                        font-size: 0.9em;
+                                    }
+                                }
+                            }
+                            .content {
+                                font-size: 1em;
+                            }
                         }
                     }
                 }
@@ -124,23 +187,38 @@
                     margin-top: 15px;
                     font-size: 1.15em;
                 }
-                .voting {
+                .tail {
                     margin-top: 10px;
-                    .like {
-                        margin-left: 25px;
-                    }
-                    .dislike {
-                        margin-left: 10px;
-                    }
-                    .like, .dislike {
-                        i {
-                            font-size: 1.5em;
-                            position: relative;
-                            top: 3px;
-                            cursor: pointer;
+                    .voting {
+                        text-align: left;
+                        .like {
+                            margin-left: 25px;
                         }
-                        &:hover {
-                            opacity: 0.8;
+                        .dislike {
+                            margin-left: 10px;
+                        }
+                        .like, .dislike {
+                            i {
+                                font-size: 1.5em;
+                                position: relative;
+                                top: 3px;
+                                cursor: pointer;
+                            }
+                            &:hover {
+                                opacity: 0.8;
+                            }
+                        }
+                    }
+                    .detail {
+                        text-align: right;
+                        & > span {
+                            .text {
+                                margin-right: 8px;
+                            }
+                            cursor: pointer;
+                            &:hover {
+                                color: #fada5e;
+                            }
                         }
                     }
                 }

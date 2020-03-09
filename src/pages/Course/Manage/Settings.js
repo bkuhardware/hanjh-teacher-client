@@ -143,7 +143,7 @@ const Settings = ({ dispatch, match, ...props }) => {
                     )}
                 </div>
             ),
-            width: '35%'
+            width: '30%'
         },
         {
             title: 'Visible',
@@ -155,6 +155,24 @@ const Settings = ({ dispatch, match, ...props }) => {
                     checked={true}
                 />
             )
+        },
+        {
+            title: 'Review',
+            dataIndex: ['permission', 'review'],
+            key: 'review',
+            align: 'center',
+            width: '10%',
+            render: (review, { _id: memberId }, index) => {
+                let disabled = true;
+                if (permission && permission.members === 2 && userId !== memberId) disabled = false;
+                return (
+                    <Checkbox
+                        checked={review}
+                        // disabled={disabled}
+                        onChange={disabled ? () => {} : e => handleChangePermission(index, 'review', e.target.checked)}
+                    />
+                )
+            }
         },
         {
             title: 'Announcement',
@@ -231,7 +249,7 @@ const Settings = ({ dispatch, match, ...props }) => {
         {
             title: '',
             key: 'action',
-            width: '10%',
+            width: '5%',
             align: 'center',
             render: (h, { _id: memberId }, index) => {
                 let visible = false;

@@ -22,6 +22,17 @@ export default {
                     },
                     content: 'While you might not truly exit the class as an intermediate hacker, you aren’t going to be a total novice after taking this class. In fact, despite being a Windows user for years, I now feel much more comfortable using the Linux Terminal interface over the Command Prompt',
                     createdAt: 1578813445999
+                },
+                {
+                    _id: 'answer_2',
+                    user: {
+                        _id: 'user_1',
+                        avatar: 'https://scontent.fsgn4-1.fna.fbcdn.net/v/t1.0-9/84152539_1771374896337974_6897420742380486656_n.jpg?_nc_cat=101&_nc_sid=110474&_nc_oc=AQnpMiaSVVyo6htdRXPLzg1vhHx7F4Z1PT70lL-9dL_oq-qth1IrVHgO8aHXuR3E8FE&_nc_ht=scontent.fsgn4-1.fna&oh=148a3f76188777cd0ad88885e24e33fc&oe=5E957113',
+                        name: 'Huyen Dang',
+                        isInstructor: true
+                    },
+                    content: 'While you might not truly exit the class as an intermediate hacker, you aren’t going to be a total novice after taking this class. In fact, despite being a Windows user for years, I now feel much more comfortable using the Linux Terminal interface over the Command Prompt',
+                    createdAt: 1578813445999
                 }
             ],
             content: 'Please tell us a video in advance if there is a tool to install in order to start the video within the same conditions. Most of the tools really took me some time to install. Or if possible, set a list of tools to install before the course. Else, the course was fantastic!!'

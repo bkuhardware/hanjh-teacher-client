@@ -11,6 +11,44 @@ import COMMENTS from '@/assets/fakers/answers';
 import REVIEWS from '@/assets/fakers/reviews';
 import MEMBERS from '@/assets/fakers/members';
 
+const REVIEW_THREAD = {
+    _id: 1,
+    user: {
+        _id: 1,
+        avatar: 'https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/79839947_1718251121650352_2705389046368043008_o.jpg?_nc_cat=105&_nc_sid=7aed08&_nc_oc=AQm7zCIn_YPMhC86cNk_CaXiy17-f29ngxaSeJ040H5LtHHhXOgXvAtkByLf8J9ukdU&_nc_ht=scontent-hkg3-1.xx&oh=fb33333e9bca6ccb7d23ca3ae103d82b&oe=5E8E59F1',
+        name: 'Blog Wu'
+    },
+    
+    status: 1,
+    starRating: 3.5,
+    createdAt: 1578813445999,
+    answers: [
+        {
+            _id: 'answer_1',
+            user: {
+                _id: 'user_1',
+                avatar: 'https://scontent.fsgn4-1.fna.fbcdn.net/v/t1.0-9/84152539_1771374896337974_6897420742380486656_n.jpg?_nc_cat=101&_nc_sid=110474&_nc_oc=AQnpMiaSVVyo6htdRXPLzg1vhHx7F4Z1PT70lL-9dL_oq-qth1IrVHgO8aHXuR3E8FE&_nc_ht=scontent.fsgn4-1.fna&oh=148a3f76188777cd0ad88885e24e33fc&oe=5E957113',
+                name: 'Huyen Dang',
+                isInstructor: true
+            },
+            content: 'While you might not truly exit the class as an intermediate hacker, you aren’t going to be a total novice after taking this class. In fact, despite being a Windows user for years, I now feel much more comfortable using the Linux Terminal interface over the Command Prompt',
+            createdAt: 1578813445999
+        },
+        {
+            _id: 'answer_2',
+            user: {
+                _id: 'user_1',
+                avatar: 'https://scontent.fsgn4-1.fna.fbcdn.net/v/t1.0-9/84152539_1771374896337974_6897420742380486656_n.jpg?_nc_cat=101&_nc_sid=110474&_nc_oc=AQnpMiaSVVyo6htdRXPLzg1vhHx7F4Z1PT70lL-9dL_oq-qth1IrVHgO8aHXuR3E8FE&_nc_ht=scontent.fsgn4-1.fna&oh=148a3f76188777cd0ad88885e24e33fc&oe=5E957113',
+                name: 'Huyen Dang',
+                isInstructor: true
+            },
+            content: 'While you might not truly exit the class as an intermediate hacker, you aren’t going to be a total novice after taking this class. In fact, despite being a Windows user for years, I now feel much more comfortable using the Linux Terminal interface over the Command Prompt',
+            createdAt: 1578813445999
+        }
+    ],
+    content: 'Please tell us a video in advance if there is a tool to install in order to start the video within the same conditions. Most of the tools really took me some time to install. Or if possible, set a list of tools to install before the course. Else, the course was fantastic!!'
+};
+
 const initialState = {
     forum: {
         total: null,
@@ -32,8 +70,10 @@ const initialState = {
     reviews: {
         hasMore: true,
         featured: null,
-        list: null
+        list: null,
+        permission: null
     },
+    reviewThread: null,
     settings: {
         permission: null,
         members: null
@@ -47,10 +87,13 @@ export default {
         *fetchPermission({ payload }, { call, put }) {
             const { courseId, type } = payload;
             //call api with courseId, type, response return permission value
-            const permission = {
+            let permission;
+            if (type === 'announcement') permission = 1;
+            else if (type === 'settings') permission = {
                 privacy: 1,
                 members: 2,
             };
+            else if (type === 'reviews') permission = 1;
             yield delay(800);
             yield put({
                 type: 'savePermission',
@@ -432,6 +475,14 @@ export default {
             const { courseId, email, callback } = payload;
             yield delay(1200);
             if (callback) callback();
+        },
+        *fetchReviewThread({ payload }, { call, put }) {
+            const { courseId, threadId } = payload;
+            yield delay(1600);
+            yield put({
+                type: 'saveReviewThread',
+                payload: REVIEW_THREAD
+            });
         }
     },
     reducers: {
@@ -678,7 +729,10 @@ export default {
         saveReviews(state, { payload }) {
             return {
                 ...state,
-                reviews: { ...payload }
+                reviews: {
+                    ...state.reviews,
+                    ...payload
+                }
             };
         },
         pushReviews(state, { payload }) {
@@ -719,9 +773,22 @@ export default {
                 reviews: {
                     hasMore: true,
                     list: null,
-                    featured: null
+                    featured: null,
+                    permission: null
                 }
             }
+        },
+        saveReviewThread(state, { payload }) {
+            return {
+                ...state,
+                reviewThread: { ...payload }
+            };
+        },
+        resetReviewThread(state) {
+            return {
+                ...state,
+                reviewThread: null
+            };
         },
         saveMembers(state, { payload }) {
             return {

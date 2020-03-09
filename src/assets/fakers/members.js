@@ -6,6 +6,7 @@ export default [
         isOwner: true,
         permission: {
             announcement: true,
+            review: true,
             privacy: true,
             messenger: true,
             invite: true
@@ -18,6 +19,7 @@ export default [
         isOwner: false,
         permission: {
             announcement: true,
+            review: false,
             privacy: true,
             messenger: false,
             invite: true
@@ -30,6 +32,7 @@ export default [
         isOwner: false,
         permission: {
             announcement: true,
+            review: false,
             privacy: false,
             messenger: true,
             invite: false
