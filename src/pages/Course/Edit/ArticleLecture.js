@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'dva';
 import { Drawer, Icon, Button, Tabs, Select, Skeleton, Spin } from 'antd';
 import TimeAgo from 'react-timeago';
+import Scrollbars from 'react-custom-scrollbars';
 import styles from './ArticleLecture.less';
 
 const ArticleLecture = ({ dispatch, match, ...props }) => {
@@ -17,6 +18,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         resourcesLoading,
         descriptionLoading
     } = props;
+    const [visible, setVisible] = useState(false);
     useEffect(() => {
         dispatch({
             type: 'article/fetch',
@@ -54,6 +56,33 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     </div>
                 </React.Fragment>
             )}
+            <div className={styles.settings} onClick={() => setVisible(true)}>
+                <Icon type="setting" theme="filled" spin className={styles.icon} />
+                <span className={styles.text}>Open settings</span>
+            </div>
+            <Drawer
+                title={(
+                    <span className={styles.drawerTitle}>
+                        Lecture settings
+                    </span>
+                )}
+                placement="right"
+                closable={true}
+                visible={visible}
+                onClose={() => setVisible(false)}
+                width={360}
+                className={styles.settingsDrawer}
+                bodyStyle={{
+                    padding: '16px'
+                }}
+            >
+                <Scrollbars
+                    autoHeight
+                    autoHeightMax={window.innerHeight - 64}
+                >
+                    
+                </Scrollbars>
+            </Drawer>
         </div>
     )
 };

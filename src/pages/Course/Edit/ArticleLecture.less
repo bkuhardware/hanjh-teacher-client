@@ -2,6 +2,7 @@
     padding-left: 8%;
     padding-right: 8%;
     margin-bottom: 100px;
+
     .loading {
         .titleSkeleton {
             li {
@@ -12,6 +13,34 @@
             margin-top: 25px;
             padding-top: 270px;
             text-align: center;
+        }
+    }
+    .settings {
+        position: fixed;
+        right: -110px;
+        top: 40%;
+        display: inline-block;
+        background: #1e1e1e;
+        //border: 0.5px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px 0 0 20px;
+        width: auto;
+        cursor: pointer;
+        padding: 12px 0 12px 16px;
+        border-right: none;
+        &:hover {
+            right: 0;
+        }
+        transition: all 0.3s;
+        .icon {
+            font-size: 1.4em;
+            color: #fada5e;
+            position: relative;
+            top: 2px;
+        }
+        .text {
+            margin-left: 12px;
+            display: inline-block;
+            width: 110px;
         }
     }
     .title {
@@ -27,6 +56,25 @@
         margin-top: 6px;
         .text {
             margin-right: 4px;
+        }
+    }
+}
+
+.settingsDrawer {
+    height: 100vh;
+    z-index: 9999999;
+    :global {
+        .ant-drawer-header {
+            height: 64px;
+            background: #1e1e1e;
+            line-height: 64px;
+            .ant-drawer-title {
+                line-height: 32px;
+            }
+            .ant-drawer-close {
+                height: 64px;
+                line-height: 64px;
+            }
         }
     }
 }

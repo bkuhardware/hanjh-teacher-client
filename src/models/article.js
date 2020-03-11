@@ -36,7 +36,11 @@ export default {
             };
         },
         reset() {
-            return null;
+            return {
+                info: null,
+                description: null,
+                resources: null
+            };
         }
     }
 }
