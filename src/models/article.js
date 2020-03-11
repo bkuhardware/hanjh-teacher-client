@@ -16,7 +16,7 @@ export default {
                 payload: {
                     _id: lectureId,
                     title: 'Understand What Analytics data to Collect (Tip 1)',
-                    estimaseTime: null,
+                    estimateTime: null,
                     createdAt: 1578813445900,
                     updatedAt: 1578813445900,
                     chapter: {
@@ -26,6 +26,14 @@ export default {
                     content: null
                 }
             })
+        },
+        *fetchDescription({ payload }, { call, put }) {
+            const { courseId, lectureId } = payload;
+            yield delay(1000);
+            yield put({
+                type: 'saveDescription',
+                payload: '<div>Hello</div>'
+            })
         }
     },
     reducers: {
@@ -33,6 +41,12 @@ export default {
             return {
                 ...state,
                 info: { ...payload }
+            };
+        },
+        saveDescription(state, { payload }) {
+            return {
+                ...state,
+                description: payload
             };
         },
         reset() {
