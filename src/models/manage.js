@@ -234,7 +234,11 @@ export default {
                 });
             else router.replace('/error/404');
         },
-        *moreAnswers({ payload: threadId }, { call, put, select }) {
+        *moreAnswers({ payload }, { call, put, select }) {
+            const {
+                courseId,
+                threadId
+            } = payload;
             const { thread } = yield select(state => state.manage);
             const {
                 answers
@@ -317,7 +321,11 @@ export default {
                 }
             });
         },
-        *moreComments({ payload: announcementId }, { call, put, select }) {
+        *moreComments({ payload }, { call, put, select }) {
+            const {
+                announcementId,
+                courseId
+            } = payload;
             yield put({
                 type: 'saveCommentsLoading',
                 payload: {

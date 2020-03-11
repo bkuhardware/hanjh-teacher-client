@@ -35,7 +35,10 @@ const Thread = ({ match, dispatch, ...props }) => {
     const handleLoadmoreAnswers = () => {
         dispatch({
             type: 'manage/moreAnswers',
-            payload: threadId
+            payload: {
+                courseId,
+                threadId
+            }
         });
     };
 

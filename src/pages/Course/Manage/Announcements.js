@@ -84,7 +84,10 @@ const Announcements = ({ match, dispatch, ...props }) => {
     const handleMoreComments = announcementId => {
         dispatch({
             type: 'manage/moreComments',
-            payload: announcementId
+            payload: {
+                announcementId,
+                courseId
+            }
         });
     };
     const handleComment = (announcementId, comment) => {
