@@ -10,12 +10,23 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     const { courseId, lectureId } = match.params;
     const {
         article,
+        description,
+        resources,
         loading,
         resourcesInitLoading,
         resourcesLoading,
         descriptionLoading
     } = props;
-
+    useEffect(() => {
+        dispatch({
+            type: 'article/fetch',
+            payload: {
+                courseId,
+                lectureId
+            }
+        });
+        return () => dispatch({ type: 'article/reset' });
+    }, [courseId, lectureId]);
     return (
         <div className={styles.article}>
             {!article || loading ? (
@@ -30,13 +41,16 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                 <React.Fragment>
                     <div className={styles.title}>{article.title}</div>
                     <div className={styles.chapter}>
-                        {`Chapter ${lecture.chapter.title}`}
+                        {`Chapter ${article.chapter.title}`}
                     </div>
                     <div className={styles.extra}>
-                        <span className={styles.text}>{lecture.updatedAt === lecture.createdAt ? 'Created on' : 'Last updated'}</span>
+                        <span className={styles.text}>{article.updatedAt === article.createdAt ? 'Created on' : 'Last updated'}</span>
                         <span className={styles.time}>
-                            <TimeAgo date={lecture.updatedAt} />
+                            <TimeAgo date={article.updatedAt} />
                         </span>
+                    </div>
+                    <div className={styles.content}>
+
                     </div>
                 </React.Fragment>
             )}
@@ -45,11 +59,13 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
 };
 
 export default connect(
-    ({ course, loading }) => ({
-        article: course.article,
-        loading: !!loading.effects['courses/fetchArticle'],
-        resourcesInitLoading: !!loading.effects['courses/fetchResources'],
-        resourcesLoading: !!loading.effects['courses/moreResources'],
-        descriptionLoading: !!loading.effects['courses/fetchDescription']
+    ({ article, loading }) => ({
+        article: article.info,
+        description: article.description,
+        resources: article.resources,
+        loading: !!loading.effects['article/fetch'],
+        resourcesInitLoading: !!loading.effects['article/fetchResources'],
+        resourcesLoading: !!loading.effects['article/moreResources'],
+        descriptionLoading: !!loading.effects['article/fetchDescription']
     })
 )(ArticleLecture)

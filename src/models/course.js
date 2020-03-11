@@ -121,7 +121,7 @@ const initialState = {
     syllabus: null,
     landing: null,
     price: null,
-    messages: null
+    messages: null,
 };
 
 export default {
