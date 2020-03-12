@@ -16,7 +16,7 @@ const { Panel } = Collapse;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 
-const EstimateTime = ({ estimateHour, estimateMinute, loading }) => {
+const EstimateTime = ({ estimateHour, estimateMinute, loading, onSave }) => {
     const [hour, setHour] = useState(0);
     const [minute, setMinute] = useState(0);
     useEffect(() => {
@@ -28,24 +28,24 @@ const EstimateTime = ({ estimateHour, estimateMinute, loading }) => {
             <InputNumber
                 min={0}
                 max={4}
-                formatter={value => value > 1 ? `${value} hours` : `${value} hour`}
-                parser={value => _.endsWith(value, 'hour') ? value.replace('hour ', '') : value.replace('hours ', '')}
                 value={hour}
                 onChange={value => setHour(_.toNumber(value))}
                 disabled={loading}
                 className={styles.inputNumber}
             />
+            <span className={styles.unit}>{hour > 1 ? 'hours' : 'hour'}</span>
             <InputNumber
                 min={0}
                 max={59}
-                formatter={value => value > 1 ? `${value} minutes` : `${value} minute`}
-                parser={value => _.endsWith(value, 'minute') ? value.replace('minute ', '') : value.replace('minutes ', '')}
+                
                 onChange={value => setMinute(_.toNumber(value))}
                 value={minute}
                 disabled={loading}
                 className={styles.inputNumber}
+                step={5}
             />
-            <Button className={styles.btn} type="primary" disabled={loading} loading={loading}>Save</Button>
+            <span className={styles.unit}>{minute > 1 ? 'minutes' : 'minute'}</span>
+            <Button className={styles.btn} type="primary" disabled={loading} loading={loading} onClick={() => onSave(hour, minute)}>Save</Button>
         </div>
     )
 };
@@ -78,12 +78,11 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         loading,
         resourcesInitLoading,
         resourcesLoading,
+        estimateLoading,
         descriptionLoading
     } = props;
     const [visible, setVisible] = useState(false);
     const [descriptionData, setDescriptionData] = useState(EditorState.createEmpty());
-    const [estimateHour, setEstimateHour] = useState(0);
-    const [estimateMinute, setEstimateMinute] = useState(0);
     const [resourceOpen, setResourceOpen] = useState(false);
     const [resourcesData, setResourcesData] = useState(null);
     const [title, setTitle] = useState('');
@@ -100,7 +99,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             }
         });
         return () => dispatch({ type: 'article/reset' });
-    }, [courseId, lectureId]);
+    }, [courseId, dispatch, lectureId]);
     useEffect(() => {
         if (description !== null) {
             const blocksFromHTML = convertFromHTML(description);
@@ -135,6 +134,17 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             });
         setVisible(true);
     };
+    const handleSaveEstimateTime = (hour, minute) => {
+        dispatch({
+            type: 'article/updateEstimateTime',
+            payload: {
+                lectureId,
+                hour,
+                minute
+            }
+        });
+    };
+
     const handleChangeTab = key => {
 
     };
@@ -226,7 +236,8 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                             <EstimateTime
                                 estimateHour={article && article.estimateHour}
                                 estimateMinute={article && article.estimateMinute}
-                                loading={!article || loading}
+                                loading={!article || loading || estimateLoading}
+                                onSave={handleSaveEstimateTime}
                             />
                         </div>
                     </div>
@@ -250,7 +261,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     <div className={styles.resources}>
                         <div className={styles.title}>Resources</div>
                         <div className={styles.main}>
-                            {!resources || !resourcesData || resourcesLoading ? (
+                            {!resources || !resourcesData || resourcesInitLoading ? (
                                 <div className={styles.loading}>
                                     <Spin indicator={<Icon type="loading-3-quarters" style={{ fontSize: '44px' }} spin />} />
                                 </div>
@@ -377,6 +388,7 @@ export default connect(
         loading: !!loading.effects['article/fetch'],
         resourcesInitLoading: !!loading.effects['article/fetchResources'],
         resourcesLoading: !!loading.effects['article/moreResources'],
-        descriptionLoading: !!loading.effects['article/fetchDescription']
+        descriptionLoading: !!loading.effects['article/fetchDescription'],
+        estimateLoading: !!loading.effects['article/updateEstimateTime']
     })
 )(ArticleLecture)

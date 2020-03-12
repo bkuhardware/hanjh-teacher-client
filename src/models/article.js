@@ -44,6 +44,17 @@ export default {
                 type: 'saveResources',
                 payload: RESOURCES
             })
+        },
+        *updateEstimateTime({ payload }, { call, put }) {
+            const { hour, minute } = payload;
+            yield delay(1200);
+            yield put({
+                type: 'saveEstimateTime',
+                payload: {
+                    hour,
+                    minute
+                }
+            });
         }
     },
     reducers: {
@@ -63,6 +74,17 @@ export default {
             return {
                 ...state,
                 resources: { ...payload }
+            };
+        },
+        saveEstimateTime(state, { payload }) {
+            const { hour, minute } = payload;
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    estimateMinute: minute,
+                    estimateHour: hour
+                }
             };
         },
         reset() {
