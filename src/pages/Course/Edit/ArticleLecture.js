@@ -2,14 +2,49 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Drawer, Icon, Button, Tabs, Select, Skeleton, Spin } from 'antd';
+import { Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse } from 'antd';
 import { EditorState, ContentState, convertFromHTML } from 'draft-js';
 import Editor from '@/components/Editor/DescriptionEditor';
 import TimeAgo from 'react-timeago';
 import Scrollbars from 'react-custom-scrollbars';
-import { usePrevious } from '@/utils/hooks';
+import { numberWithCommas } from '@/utils/utils';
 import styles from './ArticleLecture.less';
 
+const { Panel } = Collapse;
+
+const EstimateTime = ({ estimateHour, estimateMinute, loading }) => {
+    const [hour, setHour] = useState(0);
+    const [minute, setMinute] = useState(0);
+    useEffect(() => {
+        if (estimateHour !== null) setHour(estimateHour);
+        if (estimateMinute !== null) setMinute(estimateMinute);
+    }, [estimateHour, estimateMinute]);
+    return (
+        <div className={styles.all}>
+            <InputNumber
+                min={0}
+                max={4}
+                formatter={value => value > 1 ? `${value} hours` : `${value} hour`}
+                parser={value => _.endsWith(value, 'hour') ? value.replace('hour ', '') : value.replace('hours ', '')}
+                value={hour}
+                onChange={value => setHour(_.toNumber(value))}
+                disabled={loading}
+                className={styles.inputNumber}
+            />
+            <InputNumber
+                min={0}
+                max={59}
+                formatter={value => value > 1 ? `${value} minutes` : `${value} minute`}
+                parser={value => _.endsWith(value, 'minute') ? value.replace('minute ', '') : value.replace('minutes ', '')}
+                onChange={value => setMinute(_.toNumber(value))}
+                value={minute}
+                disabled={loading}
+                className={styles.inputNumber}
+            />
+            <Button className={styles.btn} type="primary" disabled={loading} loading={loading}>Save</Button>
+        </div>
+    )
+}
 const ArticleLecture = ({ dispatch, match, ...props }) => {
     const { courseId, lectureId } = match.params;
     const {
@@ -23,7 +58,10 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     } = props;
     const [visible, setVisible] = useState(false);
     const [descriptionData, setDescriptionData] = useState(EditorState.createEmpty());
-    const previousDescription = usePrevious(description);
+    const [estimateHour, setEstimateHour] = useState(0);
+    const [estimateMinute, setEstimateMinute] = useState(0);
+    const [resourceOpen, setResourceOpen] = useState(false);
+    const [resourcesData, setResourcesData] = useState(null);
     useEffect(() => {
         dispatch({
             type: 'article/fetch',
@@ -35,7 +73,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         return () => dispatch({ type: 'article/reset' });
     }, [courseId, lectureId]);
     useEffect(() => {
-        if (description && !previousDescription && !descriptionData.getCurrentContent().hasText()) {
+        if (description !== null) {
             const blocksFromHTML = convertFromHTML(description);
             const descriptionContent = ContentState.createFromBlockArray(
                 blocksFromHTML.contentBlocks,
@@ -44,6 +82,11 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             setDescriptionData(EditorState.createWithContent(descriptionContent));
         }
     }, [description]);
+    useEffect(() => {
+        if (resources !== null) {
+            setResourcesData({ ...resources });
+        }
+    }, [resources]);
     const handleOpenSettings = () => {
         if (!description) 
             dispatch({
@@ -117,17 +160,17 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     <div className={styles.estimateTime}>
                         <div className={styles.title}>Estimate time</div>
                         <div className={styles.main}>
-
+                            <EstimateTime
+                                estimateHour={article && article.estimateHour}
+                                estimateMinute={article && article.estimateMinute}
+                                loading={!article || loading}
+                            />
                         </div>
                     </div>
                     <div className={styles.description}>
                         <div className={styles.title}>Description</div>
                         <div className={styles.main}>
-                            {!description || descriptionLoading ? (
-                                <div className={styles.loading}>
-                                    <Spin indicator={<Icon type="loading-3-quarters" spin style={{ fontSize: '36px', color: '#fada5e' }} />} />
-                                </div>
-                            ) : (
+                            <Spin spinning={!description || descriptionLoading}>
                                 <div className={styles.editor}>
                                     <Editor
                                         placeholder="Description"
@@ -135,6 +178,41 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                         onChange={editorState => setDescriptionData(editorState)}
                                     />
                                 </div>
+                            </Spin>
+                        </div>
+                        <div className={styles.btn}>
+                            <Button type="primary" disabled={!description || descriptionLoading} loading={!description || descriptionLoading}>Save</Button>
+                        </div>
+                    </div>
+                    <div className={styles.resources}>
+                        <div className={styles.title}>Resources</div>
+                        <div className={styles.main}>
+                            {!resources || !resourcesData || resourcesLoading ? (
+                                <div className={styles.loading}>
+                                    <Spin indicator={<Icon type="loading-3-quarters" style={{ fontSize: '44px' }} spin />} />
+                                </div>
+                            ) : (
+                                <React.Fragment>
+                                    <div className={styles.list}>
+                                        {_.isEmpty(resourcesData.downloadable) && _.isEmpty(resourcesData.external) ? null : (
+                                            <Collapse defaultActiveKey={['downloadable', 'external']} expandIconPosition="right">
+                                                <Panel key="downloadable" header="Downloadable materials">
+
+                                                </Panel>
+                                                <Panel key="external" header="External resources">
+
+                                                </Panel>
+                                            </Collapse>
+                                        )}
+                                    </div>
+                                    {resourceOpen ? (
+                                        <div />
+                                    ) : (
+                                        <div className={styles.btn}>
+                                            <Button type="primary" icon="plus" onClick={() => setResourceOpen(true)}>Add resource</Button>
+                                        </div>
+                                    )}
+                                </React.Fragment>
                             )}
                         </div>
                     </div>

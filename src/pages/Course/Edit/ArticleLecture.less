@@ -77,23 +77,59 @@
             }
         }
     }
-    .estimateTime, .description {
+    .estimateTime, .description, .resources {
+        margin-bottom: 48px;
+        .main {
+            margin-top: 25px;
+        }
         .title {
             color: white;
             margin-bottom: 12px;
         }
     }
     .estimateTime {
-        margin-bottom: 32px;
+        margin-bottom: 48px;
+        .main {
+            .inputNumber {
+                margin-right: 16px;
+                width: 120px;
+            }
+            .btn {
+                width: 100px;
+                float: right;
+            }
+            &::after {
+                clear: both;
+                content: ''
+            }
+        }
     }
     .description {
+        margin-bottom: 48px;
         .main {
-            .loading {
-                text-align: center;
-                padding: 70px 0;
-            }
             .editor > div {
                 background: #1e1e1e;
+            }
+        }
+        .btn {
+            margin-top: 16px;
+            text-align: right;
+            button {
+                min-width: 100px;
+            }
+        }
+    }
+    .resources {
+        .main {
+            .loading {
+                padding: 30px 0;
+                text-align: center;
+            }
+            .btn {
+                margin-top: 16px;
+                button {
+                    min-width: 120px;
+                }
             }
         }
     }

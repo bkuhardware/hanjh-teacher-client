@@ -1,4 +1,5 @@
 import { delay } from '@/utils/utils';
+import RESOURCES from '@/assets/fakers/resources';
 
 export default {
     namespace: 'article',
@@ -16,7 +17,8 @@ export default {
                 payload: {
                     _id: lectureId,
                     title: 'Understand What Analytics data to Collect (Tip 1)',
-                    estimateTime: null,
+                    estimateHour: 0,
+                    estimateMinute: 0,
                     createdAt: 1578813445900,
                     updatedAt: 1578813445900,
                     chapter: {
@@ -33,6 +35,14 @@ export default {
             yield put({
                 type: 'saveDescription',
                 payload: '<div>Hello</div>'
+            });
+        },
+        *fetchResources({ payload }, { call, put }) {
+            const { courseId, lectureId } = payload;
+            yield delay(1200);
+            yield put({
+                type: 'saveResources',
+                payload: RESOURCES
             })
         }
     },
@@ -47,6 +57,12 @@ export default {
             return {
                 ...state,
                 description: payload
+            };
+        },
+        saveResources(state, { payload }) {
+            return {
+                ...state,
+                resources: { ...payload }
             };
         },
         reset() {
