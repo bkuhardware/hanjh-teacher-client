@@ -34,7 +34,7 @@ export default {
             yield delay(1000);
             yield put({
                 type: 'saveDescription',
-                payload: '<div>Hello</div>'
+                payload: ''
             });
         },
         *fetchResources({ payload }, { call, put }) {
@@ -54,6 +54,14 @@ export default {
                     hour,
                     minute
                 }
+            });
+        },
+        *updateDescription({ payload }, { call, put }) {
+            const { lectureId, content } = payload;
+            yield delay(1600);
+            yield put({
+                type: 'saveDescription',
+                payload: content
             });
         }
     },

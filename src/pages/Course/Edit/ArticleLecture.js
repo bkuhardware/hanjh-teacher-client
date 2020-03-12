@@ -10,6 +10,7 @@ import MainEditor from '@/components/Editor/MainEditor';
 import TimeAgo from 'react-timeago';
 import Scrollbars from 'react-custom-scrollbars';
 import { numberWithCommas, checkValidLink } from '@/utils/utils';
+import { exportToHTML } from '@/utils/editor';
 import styles from './ArticleLecture.less';
 
 const { Panel } = Collapse;
@@ -24,29 +25,32 @@ const EstimateTime = ({ estimateHour, estimateMinute, loading, onSave }) => {
         if (estimateMinute !== null) setMinute(estimateMinute);
     }, [estimateHour, estimateMinute]);
     return (
-        <div className={styles.all}>
-            <InputNumber
-                min={0}
-                max={4}
-                value={hour}
-                onChange={value => setHour(_.toNumber(value))}
-                disabled={loading}
-                className={styles.inputNumber}
-            />
-            <span className={styles.unit}>{hour > 1 ? 'hours' : 'hour'}</span>
-            <InputNumber
-                min={0}
-                max={59}
-                
-                onChange={value => setMinute(_.toNumber(value))}
-                value={minute}
-                disabled={loading}
-                className={styles.inputNumber}
-                step={5}
-            />
-            <span className={styles.unit}>{minute > 1 ? 'minutes' : 'minute'}</span>
-            <Button className={styles.btn} type="primary" disabled={loading} loading={loading} onClick={() => onSave(hour, minute)}>Save</Button>
-        </div>
+        <React.Fragment>
+            <div className={styles.title}>Estimate time</div>
+            <div className={styles.main}>
+                <InputNumber
+                    min={0}
+                    max={4}
+                    value={hour}
+                    onChange={value => setHour(_.toNumber(value))}
+                    disabled={loading}
+                    className={styles.inputNumber}
+                />
+                <span className={styles.unit}>{hour > 1 ? 'hours' : 'hour'}</span>
+                <InputNumber
+                    min={0}
+                    max={59}
+                    
+                    onChange={value => setMinute(_.toNumber(value))}
+                    value={minute}
+                    disabled={loading}
+                    className={styles.inputNumber}
+                    step={5}
+                />
+                <span className={styles.unit}>{minute > 1 ? 'minutes' : 'minute'}</span>
+                <Button className={styles.btn} type="primary" disabled={loading} loading={loading} onClick={() => onSave(hour, minute)}>Save</Button>
+            </div>
+        </React.Fragment>
     )
 };
 
@@ -56,6 +60,7 @@ const Content = ({ content, onChange }) => {
         return EditorState.createEmpty();
     });
     return (
+
         <MainEditor
             placeholder="Enter content..."
             editorState={lectureContent}
@@ -69,6 +74,40 @@ const Content = ({ content, onChange }) => {
     )
 };
 
+const Description = ({ description, loading, onSave }) => {
+    const [descriptionData, setDescriptionData] = useState(() => {
+        const blocksFromHTML = convertFromHTML(description);
+        const descriptionContent = ContentState.createFromBlockArray(
+            blocksFromHTML.contentBlocks,
+            blocksFromHTML.entityMap,
+        );
+        return EditorState.createWithContent(descriptionContent);
+    });
+    const handleSave = () => {
+        const html = exportToHTML(descriptionData);
+        onSave(html);
+    };
+    return (
+        <React.Fragment>
+            <div className={styles.title}>Description</div>
+            <div className={styles.main}>
+                <Spin spinning={loading}>
+                    <div className={styles.editor}>
+                        <Editor
+                            placeholder="Description"
+                            editorState={descriptionData}
+                            onChange={editorState => setDescriptionData(editorState)}
+                        />
+                    </div>
+                </Spin>
+            </div>
+            <div className={styles.btn}>
+                <Button type="primary" disabled={loading} loading={loading} onClick={handleSave}>Save</Button>
+            </div>
+        </React.Fragment>
+    )
+}
+
 const ArticleLecture = ({ dispatch, match, ...props }) => {
     const { courseId, lectureId } = match.params;
     const {
@@ -79,10 +118,11 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         resourcesInitLoading,
         resourcesLoading,
         estimateLoading,
-        descriptionLoading
+        descriptionLoading,
+        descriptionInitLoading
     } = props;
     const [visible, setVisible] = useState(false);
-    const [descriptionData, setDescriptionData] = useState(EditorState.createEmpty());
+    
     const [resourceOpen, setResourceOpen] = useState(false);
     const [resourcesData, setResourcesData] = useState(null);
     const [title, setTitle] = useState('');
@@ -101,14 +141,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         return () => dispatch({ type: 'article/reset' });
     }, [courseId, lectureId]);
     useEffect(() => {
-        if (description !== null) {
-            const blocksFromHTML = convertFromHTML(description);
-            const descriptionContent = ContentState.createFromBlockArray(
-                blocksFromHTML.contentBlocks,
-                blocksFromHTML.entityMap,
-            );
-            setDescriptionData(EditorState.createWithContent(descriptionContent));
-        }
+        
     }, [description]);
     useEffect(() => {
         if (resources !== null) {
@@ -144,6 +177,15 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             }
         });
     };
+    const handleSaveDescription = description => {
+        dispatch({
+            type: 'article/updateDescription',
+            payload: {
+                lectureId,
+                content: description
+            }
+        });
+    }
 
     const handleChangeTab = key => {
 
@@ -231,32 +273,26 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     className={styles.container}
                 >
                     <div className={styles.estimateTime}>
-                        <div className={styles.title}>Estimate time</div>
-                        <div className={styles.main}>
-                            <EstimateTime
-                                estimateHour={article && article.estimateHour}
-                                estimateMinute={article && article.estimateMinute}
-                                loading={!article || loading || estimateLoading}
-                                onSave={handleSaveEstimateTime}
-                            />
-                        </div>
+                        <EstimateTime
+                            estimateHour={article && article.estimateHour}
+                            estimateMinute={article && article.estimateMinute}
+                            loading={!article || loading || estimateLoading}
+                            onSave={handleSaveEstimateTime}
+                        />
+                        
                     </div>
                     <div className={styles.description}>
-                        <div className={styles.title}>Description</div>
-                        <div className={styles.main}>
-                            <Spin spinning={!description || descriptionLoading}>
-                                <div className={styles.editor}>
-                                    <Editor
-                                        placeholder="Description"
-                                        editorState={descriptionData}
-                                        onChange={editorState => setDescriptionData(editorState)}
-                                    />
-                                </div>
-                            </Spin>
-                        </div>
-                        <div className={styles.btn}>
-                            <Button type="primary" disabled={!description || descriptionLoading} loading={!description || descriptionLoading}>Save</Button>
-                        </div>
+                        {description === null || descriptionInitLoading ? (
+                            <div className={styles.loading}>
+                                <Spin indicator={<Icon type="loading" style={{ fontSize: '32px' }} spin />} />
+                            </div>
+                        ) : (
+                            <Description
+                                description={description}
+                                loading={descriptionLoading}
+                                onSave={handleSaveDescription}
+                            />
+                        )}
                     </div>
                     <div className={styles.resources}>
                         <div className={styles.title}>Resources</div>
@@ -388,7 +424,8 @@ export default connect(
         loading: !!loading.effects['article/fetch'],
         resourcesInitLoading: !!loading.effects['article/fetchResources'],
         resourcesLoading: !!loading.effects['article/moreResources'],
-        descriptionLoading: !!loading.effects['article/fetchDescription'],
+        descriptionInitLoading: !!loading.effects['article/fetchDescription'],
+        descriptionLoading: !!loading.effects['article/updateDescription'],
         estimateLoading: !!loading.effects['article/updateEstimateTime']
     })
 )(ArticleLecture)
