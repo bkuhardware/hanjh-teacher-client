@@ -99,7 +99,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             }
         });
         return () => dispatch({ type: 'article/reset' });
-    }, [courseId, dispatch, lectureId]);
+    }, [courseId, lectureId]);
     useEffect(() => {
         if (description !== null) {
             const blocksFromHTML = convertFromHTML(description);
