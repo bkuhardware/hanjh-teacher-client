@@ -2,7 +2,7 @@
     padding-left: 8%;
     padding-right: 8%;
     margin-bottom: 100px;
-
+    position: relative;
     .loading {
         .titleSkeleton {
             li {
@@ -15,7 +15,7 @@
             text-align: center;
         }
     }
-    .settings {
+    .settings, .save {
         position: fixed;
         right: -110px;
         top: 40%;
@@ -43,6 +43,13 @@
             width: 110px;
         }
     }
+    .save {
+        right: -80px;
+        top: calc(40% + 60px);
+        .text {
+            width: 80px;
+        }
+    }
     .title {
         color: #fada5e;
         font-size: 2.5em;
@@ -51,6 +58,9 @@
         margin-top: 5px;
         color: @primary-color;
         font-size: 1.2em;
+    }
+    .content {
+        margin-top: 40px;
     }
     .extra {
         margin-top: 6px;

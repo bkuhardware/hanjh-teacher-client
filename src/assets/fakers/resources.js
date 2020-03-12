@@ -9,7 +9,7 @@ export default {
         {
             _id: 'resource_2',
             name: 'bkuhardware_CV.pdf',
-            extra: '(2 pages)',
+            extra: '2 pages',
             //url: ''
         },
         {
@@ -19,5 +19,11 @@ export default {
             //url: ''
         }
     ],
-    external: []
+    external: [
+        {
+            _id: 'resource_4',
+            name: 'Test blog',
+            url: 'https://fb.com'
+        }
+    ]
 }

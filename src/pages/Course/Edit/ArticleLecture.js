@@ -3,8 +3,10 @@ import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'dva';
 import { Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input } from 'antd';
-import { EditorState, ContentState, convertFromHTML } from 'draft-js';
+import { SaveOutlined } from '@ant-design/icons';
+import { EditorState, ContentState, convertFromHTML, convertFromRaw } from 'draft-js';
 import Editor from '@/components/Editor/DescriptionEditor';
+import MainEditor from '@/components/Editor/MainEditor';
 import TimeAgo from 'react-timeago';
 import Scrollbars from 'react-custom-scrollbars';
 import { numberWithCommas, checkValidLink } from '@/utils/utils';
@@ -46,7 +48,27 @@ const EstimateTime = ({ estimateHour, estimateMinute, loading }) => {
             <Button className={styles.btn} type="primary" disabled={loading} loading={loading}>Save</Button>
         </div>
     )
-}
+};
+
+const Content = ({ content, onChange }) => {
+    const [lectureContent, setLectureContent] = useState(() => {
+        if (!content) return EditorState.createEmpty();
+        return EditorState.createEmpty();
+    });
+    return (
+        <MainEditor
+            placeholder="Enter content..."
+            editorState={lectureContent}
+            onChange={editorState => {
+                const curContent = lectureContent.getCurrentContent();
+                const newContent = editorState.getCurrentContent();
+                if (curContent !== newContent) onChange();
+                setLectureContent(editorState);
+            }}
+        />
+    )
+};
+
 const ArticleLecture = ({ dispatch, match, ...props }) => {
     const { courseId, lectureId } = match.params;
     const {
@@ -68,6 +90,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     const [url, setURL] = useState('');
     const [file, setFile] = useState(null);
     const [fileList, setFileList] = useState([]);
+    const [saveVisible, setSaveVisible] = useState(false);
     useEffect(() => {
         dispatch({
             type: 'article/fetch',
@@ -164,13 +187,17 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                         </span>
                     </div>
                     <div className={styles.content}>
-
+                        <Content content={article.content} onChange={() => setSaveVisible(true)}/>
                     </div>
                 </React.Fragment>
             )}
             <div className={styles.settings} onClick={handleOpenSettings}>
                 <Icon type="setting" theme="filled" spin className={styles.icon} />
                 <span className={styles.text}>Open settings</span>
+            </div>
+            <div className={styles.save} style={{ opacity: saveVisible ? '1' : '0' }}>
+                <SaveOutlined className={styles.icon} />
+                <span className={styles.text}>Save</span>
             </div>
             <Drawer
                 title={(
