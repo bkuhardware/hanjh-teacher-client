@@ -2,15 +2,17 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse } from 'antd';
+import { Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input } from 'antd';
 import { EditorState, ContentState, convertFromHTML } from 'draft-js';
 import Editor from '@/components/Editor/DescriptionEditor';
 import TimeAgo from 'react-timeago';
 import Scrollbars from 'react-custom-scrollbars';
-import { numberWithCommas } from '@/utils/utils';
+import { numberWithCommas, checkValidLink } from '@/utils/utils';
 import styles from './ArticleLecture.less';
 
 const { Panel } = Collapse;
+const { TabPane } = Tabs;
+const FormItem = Form.Item;
 
 const EstimateTime = ({ estimateHour, estimateMinute, loading }) => {
     const [hour, setHour] = useState(0);
@@ -62,6 +64,10 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     const [estimateMinute, setEstimateMinute] = useState(0);
     const [resourceOpen, setResourceOpen] = useState(false);
     const [resourcesData, setResourcesData] = useState(null);
+    const [title, setTitle] = useState('');
+    const [url, setURL] = useState('');
+    const [file, setFile] = useState(null);
+    const [fileList, setFileList] = useState([]);
     useEffect(() => {
         dispatch({
             type: 'article/fetch',
@@ -105,6 +111,35 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                 }
             });
         setVisible(true);
+    };
+    const handleChangeTab = key => {
+
+    };
+    const handleBeforeUpload = (file, fileList) => {
+        setFile(file);
+        setFileList(fileList);
+        return false;
+    };
+
+    const handleRemoveFile = () => {
+        setFile(null);
+        setFileList([]);
+    };
+
+    const handleUploadFile = e => {
+       
+        e.preventDefault();
+    };
+
+    const uploadProps = {
+        name: 'avatarfile',
+        beforeUpload: handleBeforeUpload,
+        onRemove: handleRemoveFile,
+        fileList: fileList,
+        openFileDialogOnClick: !file,
+        showUploadList: {
+            showRemoveIcon: true
+        }
     };
     return (
         <div className={styles.article}>
@@ -156,6 +191,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                 <Scrollbars
                     autoHeight
                     autoHeightMax={window.innerHeight - 64}
+                    className={styles.container}
                 >
                     <div className={styles.estimateTime}>
                         <div className={styles.title}>Estimate time</div>
@@ -196,17 +232,101 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                     <div className={styles.list}>
                                         {_.isEmpty(resourcesData.downloadable) && _.isEmpty(resourcesData.external) ? null : (
                                             <Collapse defaultActiveKey={['downloadable', 'external']} expandIconPosition="right">
-                                                <Panel key="downloadable" header="Downloadable materials">
-
-                                                </Panel>
-                                                <Panel key="external" header="External resources">
-
-                                                </Panel>
+                                                {!_.isEmpty(resourcesData.downloadable) && (
+                                                    <Panel key="downloadable" header="Downloadable materials">
+                                                        {_.map(resourcesData.downloadable, resource => (
+                                                            <Row gutter={16} key={resource._id} className={styles.resource}>
+                                                                <Col span={20} className={styles.info}>
+                                                                    <Icon type="download" className={styles.icon} />
+                                                                    <span className={styles.name}>{`${resource.name} (${resource.extra})`}</span>
+                                                                </Col>
+                                                                <Col span={4} className={styles.action}>
+                                                                    <span className={styles.icon}>
+                                                                        <Tooltip placement="top" title="Delete" overlayStyle={{ zIndex: 9999999999 }}>
+                                                                            <Icon type="delete" theme="filled" />
+                                                                        </Tooltip>
+                                                                    </span>
+                                                                </Col>
+                                                            </Row>
+                                                        ))}
+                                                    </Panel>
+                                                )}
+                                                {!_.isEmpty(resourcesData.external) && (
+                                                    <Panel key="external" header="External resources">
+                                                        {_.map(resourcesData.external, resource => (
+                                                            <Row gutter={16} key={resource._id} className={styles.resource}>
+                                                                <Col span={20} className={styles.info}>
+                                                                    <Icon type="link" className={styles.icon} />
+                                                                    <span className={styles.name}>{resource.name}</span>
+                                                                </Col>
+                                                                <Col span={4} className={styles.action}>
+                                                                    <span className={styles.icon}>
+                                                                        <Tooltip placement="top" title="Delete" overlayStyle={{ zIndex: 9999999999 }}>
+                                                                            <Icon type="delete" theme="filled" />
+                                                                        </Tooltip>
+                                                                    </span>
+                                                                </Col>
+                                                            </Row>
+                                                        ))}
+                                                    </Panel>
+                                                )}
                                             </Collapse>
                                         )}
                                     </div>
                                     {resourceOpen ? (
-                                        <div />
+                                        <div className={styles.addResource}>
+                                            <div className={styles.close}>
+                                                <Icon type="close" onClick={() => setResourceOpen(false)}/>
+                                            </div>
+                                            <Tabs defaultActiveKey="browse" onChange={handleChangeTab}>
+                                                <TabPane key="browse" tab="Browse computer" className={styles.browse}>
+                                                    <div className={styles.inline}>
+                                                        <Form layout="vertical" onSubmit={handleUploadFile}>
+                                                            <FormItem style={{ margin: 0 }}>
+                                                                <Upload {...uploadProps}>
+                                                                    {!file ? (
+                                                                        <Button className={styles.upBtn}>
+                                                                            <Icon type="upload" /> Upload file
+                                                                        </Button>
+                                                                    ) : (
+                                                                        <Button type="primary" htmlType="submit">
+                                                                            <Icon type={false ? "loading" : "check"} /> Let's upload                    
+                                                                        </Button>
+                                                                    )}
+                                                                </Upload>
+                                                            </FormItem>
+                                                        </Form>
+                                                    </div>
+                                                </TabPane>
+                                                <TabPane key="library" tab="Add from library">
+                                                    <div>Sorry this function is not available.</div>
+                                                </TabPane>
+                                                <TabPane key="external" tab="External resouces" className={styles.externalTab}>
+                                                    <Form className={styles.externalForm}>
+                                                        <FormItem label="Title" required>
+                                                            <Input
+                                                                value={title}
+                                                                placeholder="Title"
+                                                                onChange={e => setTitle(e.target.value)}
+                                                                size="large"
+                                                            />
+                                                        </FormItem>
+                                                        <FormItem label="URL" required>
+                                                            <Input
+                                                                value={url}
+                                                                placeholder="Resource URL http://"
+                                                                onChange={e => setURL(e.target.value)}
+                                                                size="large"
+                                                
+                                                            />
+                                                        </FormItem>
+                                                    </Form>
+                                                    <FormItem className={styles.btn}>
+                                                        <Button type="primary" disabled={_.isEmpty(title) || !checkValidLink(url) || _.isEmpty(url)}>OK</Button>
+                                                    </FormItem>
+                                                </TabPane>
+                                            </Tabs>
+                                        </div>
                                     ) : (
                                         <div className={styles.btn}>
                                             <Button type="primary" icon="plus" onClick={() => setResourceOpen(true)}>Add resource</Button>
