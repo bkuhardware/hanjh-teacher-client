@@ -84,7 +84,6 @@ export default {
             } = payload;
             yield delay(1000);
             //call cloud api to upload file.
-            console.log(JSON.stringify(payload));
             //api cloud return file url,
             yield delay(1500);
             //call api to add resource to lecture with correspond lectureId, params is url, name, extra, type = 'downloadable'.

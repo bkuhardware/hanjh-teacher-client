@@ -5,6 +5,7 @@ import { connect } from 'dva';
 import { Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import { Player, ControlBar, ReplayControl, ForwardControl, CurrentTimeDisplay, TimeDivider, PlaybackRateMenuButton, VolumeMenuButton, BigPlayButton } from 'video-react';
+import { Document, Page } from 'react-pdf/dist/entry.webpack';
 import { EditorState, ContentState, convertFromHTML, convertFromRaw, convertToRaw } from 'draft-js';
 import Editor from '@/components/Editor/DescriptionEditor';
 import MainEditor from '@/components/Editor/MainEditor';
@@ -528,7 +529,21 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                                                 <img src={file} alt="preview" style={{ width: '100%', height: 'auto' }}/>
                                                             </div>
                                                         )}
-                                                        {file && _.startsWith(fileInfo.mimeType, 'video/') && (
+                                                        {file && fileInfo.mimeType === 'application/pdf' && (
+                                                            <div className={styles.previewPdf}>
+                                                                <Document
+                                                                    file={file}
+                                                                    onLoadSuccess={({ numPages }) => setFileInfo({
+                                                                        ...fileInfo,
+                                                                        extra: `${numPages} ${numPages > 1 ? 'pages' : 'page'}`
+                                                                    })}
+                                                                    className={styles.document}
+                                                                >
+                                                                    <Page pageNumber={1} width={250}/>
+                                                                </Document>
+                                                            </div>
+                                                        )}
+                                                        {file && fileInfo.mimeType === 'video/mp4' && (
                                                             <div className={styles.previewVideo}>
                                                                 <Player
                                                                     fluid={true}
