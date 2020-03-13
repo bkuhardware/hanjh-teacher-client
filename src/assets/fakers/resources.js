@@ -3,20 +3,20 @@ export default {
         {
             _id: 'resource_1',
             name: 'video-143434344343.mp4',
-            extra: '1:30',
-            //url: ''
+            extra: '01:30',
+            url: ''
         },
         {
             _id: 'resource_2',
             name: 'bkuhardware_CV.pdf',
-            extra: '2 pages',
-            //url: ''
+            extra: '256 KB',
+            url: ''
         },
         {
             _id: 'resource_3',
             name: 'abc.docx',
-            extra: '36.5kB',
-            //url: ''
+            extra: '36.5 KB',
+            url: ''
         }
     ],
     external: [

@@ -134,7 +134,9 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         contentLoading,
         estimateLoading,
         descriptionLoading,
-        descriptionInitLoading
+        descriptionInitLoading,
+        downloadableLoading,
+        externalLoading
     } = props;
     const [visible, setVisible] = useState(false);
     const [error, setError] = useState({
@@ -144,6 +146,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     const [errorTimer, setErrorTimer] = useState(null);
     const [resourceOpen, setResourceOpen] = useState(false);
     const [resourcesData, setResourcesData] = useState(null);
+    //external states
     const [title, setTitle] = useState({
         value: '',
         validateStatus: 'success',
@@ -154,9 +157,15 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         validateStatus: 'success',
         help: ''
     });
+    //downloadable states
     const [file, setFile] = useState(null);
     const [fileList, setFileList] = useState([]);
-    const [saveVisible, setSaveVisible] = useState(false);
+    const [fileInfo, setFileInfo] = useState({
+        name: null,
+        mimeType: null,
+        extra: null
+    });
+
     useEffect(() => {
         dispatch({
             type: 'article/fetch',
@@ -167,9 +176,6 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         });
         return () => dispatch({ type: 'article/reset' });
     }, [courseId, lectureId]);
-    useEffect(() => {
-        
-    }, [description]);
     useEffect(() => {
         if (resources !== null) {
             setResourcesData({ ...resources });
@@ -303,19 +309,40 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     const resetUpload = () => {
         setFile(null);
         setFileList([]);
+        setFileInfo({
+            name: null,
+            mimeType: null,
+            extra: null
+        });
         resetError();
     };
     const handleBeforeUpload = (file, fileList) => {
         const fileSize = file.size;
         const fileType = file.type;
         if (fileSize > 31457280) handleError('Your file must not greater than 30MB!');
-        else if (!fileType) handleError('Your file type is invalid!')
+        else if (!fileType) handleError('Your file type is invalid!');
         else {
-            if (errorTimer) {
-                
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+            const fileName = file.name;
+            fileReader.onload = () => {
+                const result = fileReader.result;
+                setFile(result);
+                setFileList(fileList);
+                // let extra;
+                // if (_.startsWith(fileType, 'video/')) {
+
+                // }
+                // else if (fileType === 'application/pdf') {
+
+                // }
+                // else extra = bytesToSize(fileSize);
+                setFileInfo({
+                    name: fileName,
+                    mimeType: fileType,
+                    extra: bytesToSize(fileSize)
+                });
             }
-            setFile(file);
-            setFileList(fileList);
         }
         return false;
     };
@@ -323,7 +350,17 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     const handleRemoveFile = () => resetUpload();
 
     const handleUploadFile = e => {
-        handleRemoveFile();
+        dispatch({
+            type: 'article/addDownloadable',
+            payload: {
+                lectureId,
+                name: fileInfo.name,
+                mimeType: fileInfo.mimeType,
+                extra: fileInfo.extra,
+                file: file,
+                callback: () => handleRemoveFile()
+            }
+        });
         e.preventDefault();
     };
 
@@ -477,7 +514,12 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                                             <br />
                                                             Some extension doesn't supported in HuYeFen such as .xd, .pts, .exo
                                                         </div>
-                                                        <Form layout="vertical" onSubmit={handleUploadFile}>
+                                                        {file && _.startsWith(fileInfo.mimeType, 'image/') && (
+                                                            <div className={styles.previewImage}>
+                                                                <img src={file} alt="preview" style={{ width: '100%', height: 'auto' }}/>
+                                                            </div>
+                                                        )}
+                                                        <Form layout="vertical" onSubmit={handleUploadFile} style={{ marginTop: '24px' }}>
                                                             <FormItem style={{ margin: 0 }}>
                                                                 <Upload {...uploadProps}>
                                                                     {!file ? (
@@ -485,8 +527,8 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                                                             <Icon type="upload" /> Upload file
                                                                         </Button>
                                                                     ) : (
-                                                                        <Button type="primary" htmlType="submit">
-                                                                            <Icon type={false ? "loading" : "check"} /> Let's upload                    
+                                                                        <Button type="primary" htmlType="submit" disabled={downloadableLoading}>
+                                                                            <Icon type={downloadableLoading ? "loading" : "check"} /> Let's upload                    
                                                                         </Button>
                                                                     )}
                                                                 </Upload>
@@ -553,6 +595,8 @@ export default connect(
         descriptionInitLoading: !!loading.effects['article/fetchDescription'],
         descriptionLoading: !!loading.effects['article/updateDescription'],
         contentLoading: !!loading.effects['article/updateContent'],
-        estimateLoading: !!loading.effects['article/updateEstimateTime']
+        estimateLoading: !!loading.effects['article/updateEstimateTime'],
+        downloadableLoading: !!loading.effects['article/addDownloadable'],
+        externalLoading: !!loading.effects['article/addExternal']
     })
 )(ArticleLecture)

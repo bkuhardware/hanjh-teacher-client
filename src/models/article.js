@@ -1,4 +1,5 @@
 import { delay } from '@/utils/utils';
+import _ from 'lodash';
 import RESOURCES from '@/assets/fakers/resources';
 
 export default {
@@ -71,6 +72,34 @@ export default {
                 type: 'saveContent',
                 payload: content
             });
+        },
+        *addDownloadable({ payload }, { call, put }) {
+            const {
+                lectureId,
+                name,
+                mimeType,
+                file,
+                callback,
+                extra
+            } = payload;
+            yield delay(1000);
+            //call cloud api to upload file.
+            console.log(payload);
+            //api cloud return file url,
+            yield delay(1500);
+            //call api to add resource to lecture with correspond lectureId, params is url, name, extra, type = 'downloadable'.
+            //server return new object.
+            //front end push to downloadable list.
+            yield put({
+                type: 'pushDownloadable',
+                payload: {
+                    _id: _.uniqueId('resource_'),
+                    name: name,
+                    extra: extra,
+                    url: 'https://fb.com'
+                }
+            });
+            if (callback) callback();
         }
     },
     reducers: {
@@ -109,6 +138,18 @@ export default {
                     ...state.info,
                     estimateMinute: minute,
                     estimateHour: hour
+                }
+            };
+        },
+        pushDownloadable(state, { payload }) {
+            return {
+                ...state,
+                resources: {
+                    ...state.resources,
+                    downloadable: [
+                        ...state.resources.downloadable,
+                        { ...payload }
+                    ]
                 }
             };
         },
