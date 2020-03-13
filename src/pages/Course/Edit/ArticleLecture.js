@@ -281,6 +281,17 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             });
         }
     };
+    const handleAddExternal = e => {
+        dispatch({
+            type: 'article/addExternal',
+            payload: {
+                lectureId,
+                name: title.value,
+                url: url.value,
+                callback: () => resetExternal()
+            }
+        });
+    };
     const resetExternal = () => {
         setTitle({
             value: '',
@@ -588,27 +599,29 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                                     <div>Sorry this function is not available.</div>
                                                 </TabPane>
                                                 <TabPane key="external" tab="External resouces" className={styles.externalTab}>
-                                                    <Form className={styles.externalForm}>
-                                                        <FormItem label="Title" required validateStatus={title.validateStatus} help={title.help}>
-                                                            <Input
-                                                                value={title.value}
-                                                                placeholder="Title"
-                                                                onChange={handleChangeTitle}
-                                                                size="large"
-                                                            />
-                                                        </FormItem>
-                                                        <FormItem label="URL" required validateStatus={url.validateStatus} help={url.help}>
-                                                            <Input
-                                                                value={url.value}
-                                                                placeholder="Resource URL http://"
-                                                                onChange={handleChangeURL}
-                                                                size="large"
-                                                
-                                                            />
-                                                        </FormItem>
-                                                    </Form>
+                                                    <Spin spinning={externalLoading}>
+                                                        <Form className={styles.externalForm}>
+                                                            <FormItem label="Title" required validateStatus={title.validateStatus} help={title.help}>
+                                                                <Input
+                                                                    value={title.value}
+                                                                    placeholder="Title"
+                                                                    onChange={handleChangeTitle}
+                                                                    size="large"
+                                                                />
+                                                            </FormItem>
+                                                            <FormItem label="URL" required validateStatus={url.validateStatus} help={url.help}>
+                                                                <Input
+                                                                    value={url.value}
+                                                                    placeholder="Resource URL http://"
+                                                                    onChange={handleChangeURL}
+                                                                    size="large"
+                                                    
+                                                                />
+                                                            </FormItem>
+                                                        </Form>
+                                                    </Spin>
                                                     <FormItem className={styles.btn}>
-                                                        <Button type="primary" disabled={_.isEmpty(title.value) || !checkValidLink(url.value) || _.isEmpty(url.value)}>OK</Button>
+                                                        <Button type="primary" loading={externalLoading} disabled={_.isEmpty(title.value) || !checkValidLink(url.value) || _.isEmpty(url.value)} onClick={handleAddExternal}>OK</Button>
                                                     </FormItem>
                                                 </TabPane>
                                             </Tabs>

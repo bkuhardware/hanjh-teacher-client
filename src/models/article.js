@@ -99,6 +99,21 @@ export default {
                 }
             });
             if (callback) callback();
+        },
+        *addExternal({ payload }, { call, put }) {
+            const { lectureId, callback, name, url } = payload;
+            yield delay(1200);
+            //call api with id, name, url, extra default = null, type = 'external'
+            yield put({
+                type: 'pushExternal',
+                payload: {
+                    _id: _.uniqueId('resource_external_'),
+                    name: name,
+                    extra: null,
+                    url: url
+                }
+            });
+            if (callback) callback();
         }
     },
     reducers: {
@@ -147,6 +162,18 @@ export default {
                     ...state.resources,
                     downloadable: [
                         ...state.resources.downloadable,
+                        { ...payload }
+                    ]
+                }
+            };
+        },
+        pushExternal(state, { payload }) {
+            return {
+                ...state,
+                resources: {
+                    ...state.resources,
+                    external: [
+                        ...state.resources.external,
                         { ...payload }
                     ]
                 }

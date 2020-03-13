@@ -23,6 +23,7 @@ export default {
         {
             _id: 'resource_4',
             name: 'Test blog',
+            extra: null,
             url: 'https://fb.com'
         }
     ]
