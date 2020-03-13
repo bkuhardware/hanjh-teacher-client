@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input } from 'antd';
+import { Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
-import { EditorState, ContentState, convertFromHTML, convertFromRaw } from 'draft-js';
+import { EditorState, ContentState, convertFromHTML, convertFromRaw, convertToRaw } from 'draft-js';
 import Editor from '@/components/Editor/DescriptionEditor';
 import MainEditor from '@/components/Editor/MainEditor';
 import TimeAgo from 'react-timeago';
 import Scrollbars from 'react-custom-scrollbars';
-import { numberWithCommas, checkValidLink } from '@/utils/utils';
+import { numberWithCommas, checkValidLink, bytesToSize } from '@/utils/utils';
 import { exportToHTML } from '@/utils/editor';
 import styles from './ArticleLecture.less';
 
@@ -54,23 +54,37 @@ const EstimateTime = ({ estimateHour, estimateMinute, loading, onSave }) => {
     )
 };
 
-const Content = ({ content, onChange }) => {
+const Content = ({ content, onSave, loading }) => {
+    const [saveVisible, setSaveVisible] = useState(false);
     const [lectureContent, setLectureContent] = useState(() => {
         if (!content) return EditorState.createEmpty();
-        return EditorState.createEmpty();
+        const contentState = convertFromRaw(content);
+        return EditorState.createWithContent(contentState);
     });
+    const handleSave = () => {
+        const contentState = lectureContent.getCurrentContent();
+        const rawData = convertToRaw(contentState);
+        onSave(rawData);
+    };
     return (
-
-        <MainEditor
-            placeholder="Enter content..."
-            editorState={lectureContent}
-            onChange={editorState => {
-                const curContent = lectureContent.getCurrentContent();
-                const newContent = editorState.getCurrentContent();
-                if (curContent !== newContent) onChange();
-                setLectureContent(editorState);
-            }}
-        />
+        <React.Fragment>
+            <div className={styles.save} style={{ opacity: saveVisible ? '1' : '0' }} onClick={handleSave}>
+                {loading ? <Icon type="loading" className={styles.icon} /> : <SaveOutlined className={styles.icon} />}
+                <span className={styles.text}>Save</span>
+            </div>
+            <Spin spinning={loading}>
+                <MainEditor
+                    placeholder="Enter content..."
+                    editorState={lectureContent}
+                    onChange={editorState => {
+                        const curContent = lectureContent.getCurrentContent();
+                        const newContent = editorState.getCurrentContent();
+                        if (curContent !== newContent) setSaveVisible(true);
+                        setLectureContent(editorState);
+                    }}
+                />
+            </Spin>
+        </React.Fragment>
     )
 };
 
@@ -117,12 +131,17 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         loading,
         resourcesInitLoading,
         resourcesLoading,
+        contentLoading,
         estimateLoading,
         descriptionLoading,
         descriptionInitLoading
     } = props;
     const [visible, setVisible] = useState(false);
-    
+    const [error, setError] = useState({
+        status: 0,
+        text: ''
+    });
+    const [errorTimer, setErrorTimer] = useState(null);
     const [resourceOpen, setResourceOpen] = useState(false);
     const [resourcesData, setResourcesData] = useState(null);
     const [title, setTitle] = useState('');
@@ -185,14 +204,71 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                 content: description
             }
         });
-    }
+    };
+    const handleSaveContent = content => {
+        dispatch({
+            type: 'article/updateContent',
+            payload: {
+                lectureId,
+                content
+            }
+        });
+    };
 
     const handleChangeTab = key => {
-
+        if (key !== 'downloadable') {
+            setFile(null);
+            setFileList([])
+        }
+        if (key !== 'external') {
+            setURL('');
+            setTitle('');
+        }
     };
     const handleBeforeUpload = (file, fileList) => {
-        setFile(file);
-        setFileList(fileList);
+        const fileSize = file.size;
+        const fileType = file.type;
+        if (fileSize > 3145728) {
+            setError({
+                status: 1,
+                text: 'Your file must not greater than 30MB!'
+            });
+            if (errorTimer) clearTimeout(errorTimer);
+            const timer = setTimeout(() => {
+                setError({
+                    status: 0,
+                    text: ''
+                });
+                setErrorTimer(null);
+            }, 15000);
+            setErrorTimer(timer);
+        }
+        else if (!fileType) {
+            setError({
+                status: 1,
+                text: 'Your file type is invalid!'
+            });
+            if (errorTimer) clearTimeout(errorTimer);
+            const timer = setTimeout(() => {
+                setError({
+                    status: 0,
+                    text: ''
+                });
+                setErrorTimer(null);
+            }, 2000);
+            setErrorTimer(timer);
+        }
+        else {
+            if (errorTimer) {
+                setError({
+                    status: 0,
+                    text: ''
+                });
+                setErrorTimer(null);
+            }
+            setFile(file);
+            setFileList(fileList);
+        }
         return false;
     };
 
@@ -202,7 +278,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     };
 
     const handleUploadFile = e => {
-       
+        handleRemoveFile();
         e.preventDefault();
     };
 
@@ -239,17 +315,13 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                         </span>
                     </div>
                     <div className={styles.content}>
-                        <Content content={article.content} onChange={() => setSaveVisible(true)}/>
+                        <Content content={article.content} onSave={handleSaveContent} loading={contentLoading} />
                     </div>
                 </React.Fragment>
             )}
             <div className={styles.settings} onClick={handleOpenSettings}>
                 <Icon type="setting" theme="filled" spin className={styles.icon} />
                 <span className={styles.text}>Open settings</span>
-            </div>
-            <div className={styles.save} style={{ opacity: saveVisible ? '1' : '0' }}>
-                <SaveOutlined className={styles.icon} />
-                <span className={styles.text}>Save</span>
             </div>
             <Drawer
                 title={(
@@ -269,7 +341,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             >
                 <Scrollbars
                     autoHeight
-                    autoHeightMax={window.innerHeight - 64}
+                    autoHeightMax={window.innerHeight - 96}
                     className={styles.container}
                 >
                     <div className={styles.estimateTime}>
@@ -355,6 +427,11 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                             <Tabs defaultActiveKey="browse" onChange={handleChangeTab}>
                                                 <TabPane key="browse" tab="Browse computer" className={styles.browse}>
                                                     <div className={styles.inline}>
+                                                        <div className={styles.warning}>
+                                                            Your file must not greater than 30MB.
+                                                            <br />
+                                                            Some extension doesn't supported in HuYeFen such as .xd, .pts, .exo
+                                                        </div>
                                                         <Form layout="vertical" onSubmit={handleUploadFile}>
                                                             <FormItem style={{ margin: 0 }}>
                                                                 <Upload {...uploadProps}>
@@ -370,6 +447,10 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                                                 </Upload>
                                                             </FormItem>
                                                         </Form>
+                                                        <div className={styles.error} style={{ opacity: error.status === 1 ? '1' : '0' }}>
+                                                            <Icon type="close" style={{ marginRight: '8px' }} />
+                                                            {error.text}
+                                                        </div>
                                                     </div>
                                                 </TabPane>
                                                 <TabPane key="library" tab="Add from library">
@@ -426,6 +507,7 @@ export default connect(
         resourcesLoading: !!loading.effects['article/moreResources'],
         descriptionInitLoading: !!loading.effects['article/fetchDescription'],
         descriptionLoading: !!loading.effects['article/updateDescription'],
+        contentLoading: !!loading.effects['article/updateContent'],
         estimateLoading: !!loading.effects['article/updateEstimateTime']
     })
 )(ArticleLecture)

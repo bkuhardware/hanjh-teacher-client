@@ -77,7 +77,7 @@ const Anchor = ({ contentState, entityKey, children }) => {
 	);
 };
 
-const ImageEditor = ({ dispatch, editorState, onChange, placeholder }) => {
+const MainEditor = ({ dispatch, editorState, onChange, placeholder }) => {
     const editorRef = useRef(null);
     //const [colorVisible, setColorVisible] = useState(false);
     const [imageVisible, setImageVisible] = useState(false);
@@ -367,4 +367,4 @@ const ImageEditor = ({ dispatch, editorState, onChange, placeholder }) => {
     )
 };
 
-export default connect()(ImageEditor);
+export default connect()(MainEditor);

@@ -15,7 +15,7 @@
             text-align: center;
         }
     }
-    .settings, .save {
+    .settings, .content > .save {
         position: fixed;
         right: -110px;
         top: 40%;
@@ -29,6 +29,7 @@
         border-right: none;
         &:hover {
             right: 0;
+            color: white;
         }
         transition: all 0.3s;
         .icon {
@@ -43,7 +44,7 @@
             width: 110px;
         }
     }
-    .save {
+    .content > .save {
         right: -80px;
         top: calc(40% + 60px);
         .text {
@@ -164,12 +165,24 @@
                         }
                     }
                     .browse {
-                        height: 200px;
+                        height: 270px;
                         border-radius: 5px;
                         border: 0.5px dashed rgba(255, 255, 255, 0.2);
                         background: rgba(30, 30, 30, 0.6);
                         position: relative;
                         .inline {
+                            .warning {
+                                margin-bottom: 30px;
+                                color: white;
+                                line-height: 21px;
+                            }
+                            .error {
+                                color: tomato;
+                                font-size: 0.9em;
+                                transition: opacity .25s ease-in-out;
+                                -moz-transition: opacity .25s ease-in-out;
+                                -webkit-transition: opacity .25s ease-in-out;
+                            }
                             text-align: center;
                             width: 75%;
                             position: absolute;

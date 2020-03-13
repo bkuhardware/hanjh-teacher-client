@@ -75,9 +75,9 @@ export const minutesToHour = mins => {
     if (mins < 60) return `${mins} mins`;
     let num = mins;
     let hours = (num / 60);
-    let rhours = Math.floor(hours);
+    let rhours = _.floor(hours);
     let minutes = (hours - rhours) * 60;
-    let rminutes = Math.round(minutes);
+    let rminutes = _.round(minutes);
     return rminutes > 0 ? `${rhours}h${rminutes}m` : `${rhours}h`;
 };
 
@@ -103,4 +103,11 @@ export const capitalText = name => {
 
 export const checkEmail = email => {
     return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
+};
+
+export const bytesToSize = (bytes) => {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) return '0 Byte';
+    const i = parseInt(_.floor(Math.log(bytes) / Math.log(1024)));
+    return _.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 };
