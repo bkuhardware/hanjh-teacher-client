@@ -223,23 +223,13 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         });
     };
     const handleCloseAddResource = () => {
-        handleChangeTab('close');
+        resetUpload();
+        resetExternal();
         setResourceOpen(false);
     };
     const handleChangeTab = key => {
-        if (key !== 'downloadable') {
-            setFile(null);
-            setFileList([]);
-            setError({
-                status: 0,
-                text: ''
-            });
-            setErrorTimer(null);
-        }
-        if (key !== 'external') {
-            setURL('');
-            setTitle('');
-        }
+        if (key !== 'downloadable') resetUpload();
+        if (key !== 'external') resetExternal();
     };
     const handleChangeTitle = e => {
         const val = e.target.value;
@@ -281,47 +271,48 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                 help: ''
             });
         }
-    }
+    };
+    const resetExternal = () => {
+        setTitle({
+            value: '',
+            validateStatus: 'success',
+            help: ''
+        });
+        setURL({
+            value: '',
+            validateStatus: 'success',
+            help: ''
+        });
+    };
+    const handleError = (message) => {
+        setError({
+            status: 1,
+            text: message
+        });
+        if (errorTimer) clearTimeout(errorTimer);
+        const timer = setTimeout(() => resetError(), 3000);
+        setErrorTimer(timer);
+    };
+    const resetError = () => {
+        setError({
+            status: 0,
+            text: ''
+        });
+        setErrorTimer(null);
+    };
+    const resetUpload = () => {
+        setFile(null);
+        setFileList([]);
+        resetError();
+    };
     const handleBeforeUpload = (file, fileList) => {
         const fileSize = file.size;
         const fileType = file.type;
-        if (fileSize > 3145728) {
-            setError({
-                status: 1,
-                text: 'Your file must not greater than 30MB!'
-            });
-            if (errorTimer) clearTimeout(errorTimer);
-            const timer = setTimeout(() => {
-                setError({
-                    status: 0,
-                    text: ''
-                });
-                setErrorTimer(null);
-            }, 3000);
-            setErrorTimer(timer);
-        }
-        else if (!fileType) {
-            setError({
-                status: 1,
-                text: 'Your file type is invalid!'
-            });
-            if (errorTimer) clearTimeout(errorTimer);
-            const timer = setTimeout(() => {
-                setError({
-                    status: 0,
-                    text: ''
-                });
-                setErrorTimer(null);
-            }, 3000);
-            setErrorTimer(timer);
-        }
+        if (fileSize > 31457280) handleError('Your file must not greater than 30MB!');
+        else if (!fileType) handleError('Your file type is invalid!')
         else {
             if (errorTimer) {
-                setError({
-                    status: 0,
-                    text: ''
-                });
-                setErrorTimer(null);
+                
             }
             setFile(file);
             setFileList(fileList);
@@ -329,10 +320,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         return false;
     };
 
-    const handleRemoveFile = () => {
-        setFile(null);
-        setFileList([]);
-    };
+    const handleRemoveFile = () => resetUpload();
 
     const handleUploadFile = e => {
         handleRemoveFile();
