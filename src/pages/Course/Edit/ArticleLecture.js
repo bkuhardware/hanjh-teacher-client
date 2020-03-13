@@ -138,7 +138,8 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         descriptionLoading,
         descriptionInitLoading,
         downloadableLoading,
-        externalLoading
+        externalLoading,
+        deleteLoading
     } = props;
     const playerRef = useRef(null);
     const [visible, setVisible] = useState(false);
@@ -185,7 +186,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         }
     }, [resources]);
     const handleOpenSettings = () => {
-        if (!description) 
+        if (description === null) 
             dispatch({
                 type: 'article/fetchDescription',
                 payload: {
@@ -193,7 +194,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     lectureId
                 }
             });
-        if (!resources)
+        if (resources === null)
             dispatch({
                 type: 'article/fetchResources',
                 payload: {
@@ -235,6 +236,15 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         resetUpload();
         resetExternal();
         setResourceOpen(false);
+    };
+    const handleDeleteResource = (resourceId, type) => {
+        dispatch({
+            type: 'article/deleteResource',
+            payload: {
+                resourceId,
+                type,
+            }
+        });
     };
     const handleChangeTab = key => {
         if (key !== 'downloadable') resetUpload();
@@ -480,46 +490,48 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                 <React.Fragment>
                                     <div className={styles.list}>
                                         {_.isEmpty(resourcesData.downloadable) && _.isEmpty(resourcesData.external) ? null : (
-                                            <Collapse defaultActiveKey={['downloadable', 'external']} expandIconPosition="right">
-                                                {!_.isEmpty(resourcesData.downloadable) && (
-                                                    <Panel key="downloadable" header="Downloadable materials">
-                                                        {_.map(resourcesData.downloadable, resource => (
-                                                            <Row gutter={16} key={resource._id} className={styles.resource}>
-                                                                <Col span={20} className={styles.info}>
-                                                                    <Icon type="download" className={styles.icon} />
-                                                                    <span className={styles.name}>{`${resource.name} (${resource.extra})`}</span>
-                                                                </Col>
-                                                                <Col span={4} className={styles.action}>
-                                                                    <span className={styles.icon}>
-                                                                        <Tooltip placement="top" title="Delete" overlayStyle={{ zIndex: 9999999999 }}>
-                                                                            <Icon type="delete" theme="filled" />
-                                                                        </Tooltip>
-                                                                    </span>
-                                                                </Col>
-                                                            </Row>
-                                                        ))}
-                                                    </Panel>
-                                                )}
-                                                {!_.isEmpty(resourcesData.external) && (
-                                                    <Panel key="external" header="External resources">
-                                                        {_.map(resourcesData.external, resource => (
-                                                            <Row gutter={16} key={resource._id} className={styles.resource}>
-                                                                <Col span={20} className={styles.info}>
-                                                                    <Icon type="link" className={styles.icon} />
-                                                                    <span className={styles.name}>{resource.name}</span>
-                                                                </Col>
-                                                                <Col span={4} className={styles.action}>
-                                                                    <span className={styles.icon}>
-                                                                        <Tooltip placement="top" title="Delete" overlayStyle={{ zIndex: 9999999999 }}>
-                                                                            <Icon type="delete" theme="filled" />
-                                                                        </Tooltip>
-                                                                    </span>
-                                                                </Col>
-                                                            </Row>
-                                                        ))}
-                                                    </Panel>
-                                                )}
-                                            </Collapse>
+                                            <Spin spinning={deleteLoading}>
+                                                <Collapse defaultActiveKey={['downloadable', 'external']} expandIconPosition="right">
+                                                    {!_.isEmpty(resourcesData.downloadable) && (
+                                                        <Panel key="downloadable" header="Downloadable materials">
+                                                            {_.map(resourcesData.downloadable, resource => (
+                                                                <Row gutter={16} key={resource._id} className={styles.resource}>
+                                                                    <Col span={20} className={styles.info}>
+                                                                        <Icon type="download" className={styles.icon} />
+                                                                        <span className={styles.name}>{`${resource.name} (${resource.extra})`}</span>
+                                                                    </Col>
+                                                                    <Col span={4} className={styles.action}>
+                                                                        <span className={styles.icon}>
+                                                                            <Tooltip placement="top" title="Delete" overlayStyle={{ zIndex: 9999999999 }}>
+                                                                                <Icon type="delete" theme="filled" onClick={() => handleDeleteResource(resource._id, 'downloadable')}/>
+                                                                            </Tooltip>
+                                                                        </span>
+                                                                    </Col>
+                                                                </Row>
+                                                            ))}
+                                                        </Panel>
+                                                    )}
+                                                    {!_.isEmpty(resourcesData.external) && (
+                                                        <Panel key="external" header="External resources">
+                                                            {_.map(resourcesData.external, resource => (
+                                                                <Row gutter={16} key={resource._id} className={styles.resource}>
+                                                                    <Col span={20} className={styles.info}>
+                                                                        <Icon type="link" className={styles.icon} />
+                                                                        <span className={styles.name}>{resource.name}</span>
+                                                                    </Col>
+                                                                    <Col span={4} className={styles.action}>
+                                                                        <span className={styles.icon}>
+                                                                            <Tooltip placement="top" title="Delete" overlayStyle={{ zIndex: 9999999999 }}>
+                                                                                <Icon type="delete" theme="filled" onClick={() => handleDeleteResource(resource._id, 'external')}/>
+                                                                            </Tooltip>
+                                                                        </span>
+                                                                    </Col>
+                                                                </Row>
+                                                            ))}
+                                                        </Panel>
+                                                    )}
+                                                </Collapse>
+                                            </Spin>
                                         )}
                                     </div>
                                     {resourceOpen ? (
@@ -654,6 +666,7 @@ export default connect(
         contentLoading: !!loading.effects['article/updateContent'],
         estimateLoading: !!loading.effects['article/updateEstimateTime'],
         downloadableLoading: !!loading.effects['article/addDownloadable'],
-        externalLoading: !!loading.effects['article/addExternal']
+        externalLoading: !!loading.effects['article/addExternal'],
+        deleteLoading: !!loading.effects['article/deleteResource']
     })
 )(ArticleLecture)
