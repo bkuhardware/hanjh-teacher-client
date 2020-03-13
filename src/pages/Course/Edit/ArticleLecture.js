@@ -144,8 +144,16 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     const [errorTimer, setErrorTimer] = useState(null);
     const [resourceOpen, setResourceOpen] = useState(false);
     const [resourcesData, setResourcesData] = useState(null);
-    const [title, setTitle] = useState('');
-    const [url, setURL] = useState('');
+    const [title, setTitle] = useState({
+        value: '',
+        validateStatus: 'success',
+        help: ''
+    });
+    const [url, setURL] = useState({
+        value: '',
+        validateStatus: 'success',
+        help: ''
+    });
     const [file, setFile] = useState(null);
     const [fileList, setFileList] = useState([]);
     const [saveVisible, setSaveVisible] = useState(false);
@@ -214,17 +222,66 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             }
         });
     };
-
+    const handleCloseAddResource = () => {
+        handleChangeTab('close');
+        setResourceOpen(false);
+    };
     const handleChangeTab = key => {
         if (key !== 'downloadable') {
             setFile(null);
-            setFileList([])
+            setFileList([]);
+            setError({
+                status: 0,
+                text: ''
+            });
+            setErrorTimer(null);
         }
         if (key !== 'external') {
             setURL('');
             setTitle('');
         }
     };
+    const handleChangeTitle = e => {
+        const val = e.target.value;
+        if (_.isEmpty(val)) {
+            setTitle({
+                value: val,
+                validateStatus: 'error',
+                help: 'Title must not be empty!'
+            });
+        }
+        else {
+            setTitle({
+                value: val,
+                validateStatus: 'success',
+                help: ''
+            });
+        }
+    };
+    const handleChangeURL = e => {
+        const val = e.target.value;
+        if (_.isEmpty(val)) {
+            setURL({
+                value: val,
+                validateStatus: 'error',
+                help: 'URL must not be empty!'
+            });
+        }
+        else if (!checkValidLink(val)) {
+            setURL({
+                value: val,
+                validateStatus: 'error',
+                help: 'URL is invalid!'
+            });
+        }
+        else {
+            setURL({
+                value: val,
+                validateStatus: 'success',
+                help: ''
+            });
+        }
+    }
     const handleBeforeUpload = (file, fileList) => {
         const fileSize = file.size;
         const fileType = file.type;
@@ -240,7 +297,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     text: ''
                 });
                 setErrorTimer(null);
-            }, 15000);
+            }, 3000);
             setErrorTimer(timer);
         }
         else if (!fileType) {
@@ -255,7 +312,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     text: ''
                 });
                 setErrorTimer(null);
-            }, 2000);
+            }, 3000);
             setErrorTimer(timer);
         }
         else {
@@ -422,7 +479,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                     {resourceOpen ? (
                                         <div className={styles.addResource}>
                                             <div className={styles.close}>
-                                                <Icon type="close" onClick={() => setResourceOpen(false)}/>
+                                                <Icon type="close" onClick={handleCloseAddResource}/>
                                             </div>
                                             <Tabs defaultActiveKey="browse" onChange={handleChangeTab}>
                                                 <TabPane key="browse" tab="Browse computer" className={styles.browse}>
@@ -458,26 +515,26 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                                 </TabPane>
                                                 <TabPane key="external" tab="External resouces" className={styles.externalTab}>
                                                     <Form className={styles.externalForm}>
-                                                        <FormItem label="Title" required>
+                                                        <FormItem label="Title" required validateStatus={title.validateStatus} help={title.help}>
                                                             <Input
-                                                                value={title}
+                                                                value={title.value}
                                                                 placeholder="Title"
-                                                                onChange={e => setTitle(e.target.value)}
+                                                                onChange={handleChangeTitle}
                                                                 size="large"
                                                             />
                                                         </FormItem>
-                                                        <FormItem label="URL" required>
+                                                        <FormItem label="URL" required validateStatus={url.validateStatus} help={url.help}>
                                                             <Input
-                                                                value={url}
+                                                                value={url.value}
                                                                 placeholder="Resource URL http://"
-                                                                onChange={e => setURL(e.target.value)}
+                                                                onChange={handleChangeURL}
                                                                 size="large"
                                                 
                                                             />
                                                         </FormItem>
                                                     </Form>
                                                     <FormItem className={styles.btn}>
-                                                        <Button type="primary" disabled={_.isEmpty(title) || !checkValidLink(url) || _.isEmpty(url)}>OK</Button>
+                                                        <Button type="primary" disabled={_.isEmpty(title.value) || !checkValidLink(url.value) || _.isEmpty(url.value)}>OK</Button>
                                                     </FormItem>
                                                 </TabPane>
                                             </Tabs>
