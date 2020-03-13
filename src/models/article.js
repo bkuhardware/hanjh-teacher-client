@@ -84,7 +84,7 @@ export default {
             } = payload;
             yield delay(1000);
             //call cloud api to upload file.
-            console.log(payload);
+            console.log(JSON.stringify(payload));
             //api cloud return file url,
             yield delay(1500);
             //call api to add resource to lecture with correspond lectureId, params is url, name, extra, type = 'downloadable'.
@@ -93,7 +93,7 @@ export default {
             yield put({
                 type: 'pushDownloadable',
                 payload: {
-                    _id: _.uniqueId('resource_'),
+                    _id: _.uniqueId('resource_new_'),
                     name: name,
                     extra: extra,
                     url: 'https://fb.com'

@@ -5,16 +5,22 @@ import { connect } from 'dva';
 import { Button, Tooltip, Popover, Form, Icon, Input, Tabs, Upload, message } from 'antd';
 import { Modifier, EditorState, RichUtils, KeyBindingUtil, getDefaultKeyBinding } from 'draft-js';
 import { customStyleMap, customColorMap } from '@/config/constants';
+import { convertToRaw } from 'draft-js';
 import Editor, { composeDecorators } from 'draft-js-plugins-editor';
 import createFocusPlugin from 'draft-js-focus-plugin';
 import createResizeablePlugin from 'draft-js-resizeable-plugin';
 import createAlignmentPlugin from 'draft-js-alignment-plugin';
 import createBlockDndPlugin from 'draft-js-drag-n-drop-plugin';
 import createImagePlugin from 'draft-js-image-plugin';
+// import createVideoPlugin from 'draft-js-video-plugin';
 import { checkValidLinkWithoutProtocol, checkValidLink } from '@/utils/utils';
 import alignmentToolStyles from './alignmentToolStyles.css';
 import buttonStyles from './buttonStyles.css';
 import styles from './MainEditor.less';
+
+// const videoPlugin = createVideoPlugin();
+// const { addVideo } = videoPlugin;
+// const { types } = videoPlugin;
 
 const focusPlugin = createFocusPlugin();
 const resizeablePlugin = createResizeablePlugin();
@@ -40,7 +46,8 @@ const plugins = [
     resizeablePlugin,
     blockDndPlugin,
     alignmentPlugin,
-    imagePlugin
+    imagePlugin,
+    //videoPlugin
 ];
 
 const { hasCommandModifier } = KeyBindingUtil;
@@ -87,6 +94,8 @@ const MainEditor = ({ dispatch, editorState, onChange, placeholder }) => {
     const [imageLink, setImageLink] = useState('');
     const [link, setLink] = useState('');
     const [linkVisible, setLinkVisible] = useState(false);
+    const [videoUrl, setVideoUrl] = useState('');
+    const [videoVisible, setVideoVisible] = useState(false); 
     const decorators = [
         {
             strategy: findLinkEntity,
@@ -96,6 +105,13 @@ const MainEditor = ({ dispatch, editorState, onChange, placeholder }) => {
     const blockStyleFn = contentBlock => {
         const blockType = contentBlock.getType();
         if (blockType === 'code-block') return styles.codeBlock;
+        // const entityKey = contentBlock.getEntityAt(0);
+        // if (entityKey) {
+        //     const contentState = editorState.getCurrentContent();
+        //     const entity = contentState.getEntity(entityKey);
+        //     const entityType = entity.getType();
+        //     if (entityType === types.VIDEOTYPE) return styles.video;
+        // }
     };
     const onKeyPressed = e => {
         if (e.key === 'Tab') {
@@ -179,6 +195,18 @@ const MainEditor = ({ dispatch, editorState, onChange, placeholder }) => {
         if (getBlockType() === blockType) return classNames(styles.btn, styles.btnActive);
         return styles.btn;
     };
+    // const handleVideoVisibleChange = visible => {
+    //     if (!visible) {
+    //         setVideoUrl('');
+    //     }
+    //     setVideoVisible(visible);
+    // };
+    // const handleEmbedVideo = () => {
+    //     const newEditorState = addVideo(editorState, { src: videoUrl });
+    //     console.log(convertToRaw(newEditorState.getCurrentContent()));
+    //     onChange(newEditorState);
+    //     handleVideoVisibleChange(false);
+    // };
     const handleImageVisibleChange = visible => {
         if (!visible) {
             setImageFile(null);
@@ -358,6 +386,34 @@ const MainEditor = ({ dispatch, editorState, onChange, placeholder }) => {
                     >
                         <span className={styles.btn} ><Icon type="picture" /></span>
                     </Popover>
+                    {/* <Popover
+                        placement="top"
+                        trigger="click"
+                        popupClassName={styles.videoPopover}
+                        visible={videoVisible}
+                        onVisibleChange={handleVideoVisibleChange}
+                        content={(
+                            <div className={styles.content}>
+                                <Search
+                                    enterButton={
+                                        <Button
+                                            type="primary"
+                                            disabled={!checkValidLink(videoUrl)}
+                                            style={{ width: 90 }}
+                                        >
+                                            Embed
+                                        </Button>
+                                    }
+                                    value={videoUrl}
+                                    placeholder="Video URL"
+                                    onChange={e => setVideoUrl(e.target.value)}
+                                    onSearch={handleEmbedVideo}
+                                />
+                            </div>
+                        )}
+                    >
+                        <span className={styles.btn} ><Icon type="youtube" /></span>
+                    </Popover> */}
                     <Tooltip placement="top" title="Code block">
                         <span className={blockBtnClass('code-block')} onMouseDown={handleBlock('code-block')}><Icon type="code" /></span>
                     </Tooltip>

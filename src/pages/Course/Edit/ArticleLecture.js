@@ -10,7 +10,7 @@ import Editor from '@/components/Editor/DescriptionEditor';
 import MainEditor from '@/components/Editor/MainEditor';
 import TimeAgo from 'react-timeago';
 import Scrollbars from 'react-custom-scrollbars';
-import { numberWithCommas, checkValidLink, bytesToSize } from '@/utils/utils';
+import { numberWithCommas, checkValidLink, bytesToSize, secondsToTime } from '@/utils/utils';
 import { exportToHTML } from '@/utils/editor';
 import styles from './ArticleLecture.less';
 
@@ -316,6 +316,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             mimeType: null,
             extra: null
         });
+        playerRef.current = null;
         resetError();
     };
     const handleBeforeUpload = (file, fileList) => {
@@ -353,13 +354,18 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     const handleRemoveFile = () => resetUpload();
 
     const handleUploadFile = e => {
+        let extra = fileInfo.extra;
+        if (fileInfo.mimeType === 'video/mp4') {
+            const { player } = playerRef.current.getState();
+            extra = secondsToTime(player.duration);
+        }
         dispatch({
             type: 'article/addDownloadable',
             payload: {
                 lectureId,
                 name: fileInfo.name,
                 mimeType: fileInfo.mimeType,
-                extra: fileInfo.extra,
+                extra: extra,
                 file: file,
                 callback: () => handleRemoveFile()
             }

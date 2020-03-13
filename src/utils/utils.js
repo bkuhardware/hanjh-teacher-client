@@ -111,3 +111,10 @@ export const bytesToSize = (bytes) => {
     const i = parseInt(_.floor(Math.log(bytes) / Math.log(1024)));
     return _.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 };
+
+export const secondsToTime = time => {
+    const minutes = _.floor(time / 60);
+    const seconds = _.toInteger(time - minutes * 60);
+    const padTime = val => val < 10 ? `0${val}` : val;
+    return `${padTime(minutes)}:${padTime(seconds)}`;
+};
