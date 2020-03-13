@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'dva';
 import { Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
+import { Player, ControlBar, ReplayControl, ForwardControl, CurrentTimeDisplay, TimeDivider, PlaybackRateMenuButton, VolumeMenuButton, BigPlayButton } from 'video-react';
 import { EditorState, ContentState, convertFromHTML, convertFromRaw, convertToRaw } from 'draft-js';
 import Editor from '@/components/Editor/DescriptionEditor';
 import MainEditor from '@/components/Editor/MainEditor';
@@ -138,6 +139,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         downloadableLoading,
         externalLoading
     } = props;
+    const playerRef = useRef(null);
     const [visible, setVisible] = useState(false);
     const [error, setError] = useState({
         status: 0,
@@ -321,6 +323,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         const fileType = file.type;
         if (fileSize > 31457280) handleError('Your file must not greater than 30MB!');
         else if (!fileType) handleError('Your file type is invalid!');
+        else if (_.startsWith(fileType, 'video/') && !_.endsWith(fileType, 'mp4')) handleError('Only support .mp4 video! Please replace with .mp4 video.');
         else {
             const fileReader = new FileReader();
             fileReader.readAsDataURL(file);
@@ -512,11 +515,31 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                                         <div className={styles.warning}>
                                                             Your file must not greater than 30MB.
                                                             <br />
-                                                            Some extension doesn't supported in HuYeFen such as .xd, .pts, .exo
+                                                            Some extension doesn't supported in HuYeFen such as .xd, .mov. Only support .mp4 video.
                                                         </div>
                                                         {file && _.startsWith(fileInfo.mimeType, 'image/') && (
                                                             <div className={styles.previewImage}>
                                                                 <img src={file} alt="preview" style={{ width: '100%', height: 'auto' }}/>
+                                                            </div>
+                                                        )}
+                                                        {file && _.startsWith(fileInfo.mimeType, 'video/') && (
+                                                            <div className={styles.previewVideo}>
+                                                                <Player
+                                                                    fluid={true}
+                                                                    src={file}
+                                                                    autoPlay
+                                                                    ref={player => playerRef.current = player}
+                                                                >
+                                                                    <BigPlayButton position="center" />
+                                                                    <ControlBar>
+                                                                        <ReplayControl seconds={10} order={1.1} />
+                                                                        <ForwardControl seconds={30} order={1.2} />
+                                                                        <CurrentTimeDisplay order={4.1} />
+                                                                        <TimeDivider order={4.2} />
+                                                                        <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.1]} order={7.1} />
+                                                                        <VolumeMenuButton disabled />
+                                                                    </ControlBar>
+                                                                </Player>
                                                             </div>
                                                         )}
                                                         <Form layout="vertical" onSubmit={handleUploadFile} style={{ marginTop: '24px' }}>
