@@ -15,8 +15,104 @@ const { Panel } = Collapse;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 
-const Video = ({ videoUrl }) => {
+const Video = ({ videoUrl, loading, onUpload }) => {
+    const [file, setFile] = useState(null);
+    const [error, setError] = useState({
+        status: 0,
+        text: ''
+    });
+    const [errorTimer, setErrorTimer] = useState(null);
+    const [fileName, setFileName] = useState(null);
+    const handleUpload = () => {
 
+    }
+    const handleError = (message) => {
+        setError({
+            status: 1,
+            text: message
+        });
+        if (errorTimer) clearTimeout(errorTimer);
+        const timer = setTimeout(() => resetError(), 3000);
+        setErrorTimer(timer);
+    };
+    const resetError = () => {
+        setError({
+            status: 0,
+            text: ''
+        });
+        setErrorTimer(null);
+    };
+    const resetUpload = () => {
+        setFile(null);
+        setFileName(null);
+        resetError();
+    };
+    const handleBeforeUpload = (file, fileList) => {
+        const fileSize = file.size;
+        const fileType = file.type;
+        if (fileSize > 4294967296) handleError('Your video is too big.');
+        else if (fileType !== 'video/mp4') handleError('Only support .mp4 video! Please replace with .mp4 video.');
+        else {
+            setFile(file);
+            setFileName(file.name);
+        }
+        return false;
+    };
+
+    const handleRemoveFile = () => resetUpload();
+
+    const handleUploadFile = e => {
+        
+    };
+    
+    const uploadProps = {
+        accept: 'video/mp4',
+        name: 'videoFile',
+        beforeUpload: handleBeforeUpload,
+        openFileDialogOnClick: !file,
+        showUploadList: false
+    };
+
+    if (!videoUrl || !checkValidLink(videoUrl))
+        return (
+            <div className={styles.uploadVideo}>
+                <div className={styles.warning}>
+                    HuYeFen only support .mp4 video type. Please convert to this type before uploading. File size must less than 4 GB.
+                </div>
+                <div className={styles.uploader}>
+                    <Input
+                        type="text"
+                        value={fileName || ''}
+                        addonBefore={(
+                            <span>
+                                <Icon type="play-circle" theme="filled" style={{ position: 'relative', top: '1px', marginRight: '6px' }} />
+                                <span>New video:</span>
+                            </span>
+                        )}
+                        placeholder="Selected file"
+                        size="large"
+                        suffix={file ? (
+                            <span className={styles.suffix} onClick={handleRemoveFile}>
+                                <Icon type="delete" />
+                            </span>
+                        ) : (
+                            <Upload {...uploadProps}>
+                                <span className={styles.suffix}>
+                                    <Icon type="upload" />
+                                </span>
+                            </Upload>
+                        )}
+                    />
+                </div>
+                <div className={styles.error} style={{ opacity: error.status === 1 ? '1' : '0' }}>
+                    <Icon type="close" style={{ marginRight: '8px' }} />
+                    {error.text}
+                </div>
+            </div>
+        );
+    return (
+        <div />
+    )
 };
 
 const Description = ({ description, loading, onSave }) => {
@@ -93,6 +189,33 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         mimeType: null,
         extra: null
     });
+    useEffect(() => {
+        dispatch({
+            type: 'video/fetch',
+            payload: {
+                courseId,
+                lectureId
+            }
+        });
+        dispatch({
+            type: 'video/fetchDescription',
+            payload: {
+                courseId,
+                lectureId
+            }
+        });
+        dispatch({
+            type: 'video/fetchResources',
+            payload: {
+                courseId,
+                lectureId
+            }
+        });
+        return () => dispatch({ type: 'video/reset '});
+    }, [courseId, lectureId]);
+    const handleUploadVideo = () => {
+
+    };
     const handleSaveDescription = () => {
 
     };
@@ -219,14 +342,6 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                 const result = fileReader.result;
                 setFile(result);
                 setFileList(fileList);
-                // let extra;
-                // if (_.startsWith(fileType, 'video/')) {
-
-                // }
-                // else if (fileType === 'application/pdf') {
-
-                // }
-                // else extra = bytesToSize(fileSize);
                 setFileInfo({
                     name: fileName,
                     mimeType: fileType,
@@ -293,7 +408,11 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                             </span>
                         </div>
                         <div className={styles.main}>
-                            
+                            <Video
+                                videoUrl={video.videoUrl}
+                                loading={false}
+                                onUpload={handleUploadVideo}
+                            />
                         </div>
                     </React.Fragment>
                 )}
@@ -303,7 +422,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                 <div className={styles.main}>
                     {description === null || descriptionInitLoading ? (
                         <div className={styles.loading}>
-                            <Spin indicator={<Icon type="loading" style={{ fontSize: '32px' }} spin />} />
+                            <Spin indicator={<Icon type="loading" style={{ fontSize: '32px', color: 'inherit' }} spin />} />
                             <div className={styles.tip}>Fetching...</div>
                         </div>
                     ) : (
@@ -320,7 +439,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                 <div className={styles.main}>
                     {!resources || !resourcesData || resourcesInitLoading ? (
                         <div className={styles.loading}>
-                            <Spin indicator={<Icon type="loading-3-quarters" style={{ fontSize: '44px' }} spin />} />
+                            <Spin indicator={<Icon type="loading-3-quarters" style={{ fontSize: '44px', color: 'inherit' }} spin />} />
                             <div className={styles.tip}>Fetching...</div>
                         </div>
                     ) : (
@@ -408,7 +527,6 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                                                         <Player
                                                             fluid={true}
                                                             src={file}
-                                                            autoPlay
                                                             ref={player => playerRef.current = player}
                                                         >
                                                             <BigPlayButton position="center" />
