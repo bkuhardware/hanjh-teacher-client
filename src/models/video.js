@@ -59,6 +59,14 @@ export default {
                 payload: '<div>con c</div>'
             });
         },
+        *fetchResources({ payload }, { call, put }) {
+            const { courseId, lectureId } = payload;
+            yield delay(1200);
+            yield put({
+                type: 'saveResources',
+                payload: RESOURCES
+            })
+        },
     },
     reducers: {
         saveInfo(state, { payload }) {
@@ -80,6 +88,12 @@ export default {
             return {
                 ...state,
                 description: payload
+            };
+        },
+        saveResources(state, { payload }) {
+            return {
+                ...state,
+                resources: { ...payload }
             };
         },
         reset(state) {

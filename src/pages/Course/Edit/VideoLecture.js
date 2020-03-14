@@ -226,6 +226,11 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         });
         return () => dispatch({ type: 'video/reset '});
     }, [courseId, lectureId]);
+    useEffect(() => {
+        if (resources !== null) {
+            setResourcesData({ ...resources });
+        }
+    }, [resources]);
     const handleUploadVideo = (name, file, saveProgress, callback) => {
         dispatch({
             type: 'video/upload',
