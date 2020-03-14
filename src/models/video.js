@@ -27,6 +27,29 @@ export default {
                     videoUrl: null
                 }
             });
+        },
+        *upload({ payload }, { call, put }) {
+            const {
+                lectureId,
+                name,
+                file,
+                saveProgress,
+                callback
+            } = payload;
+            saveProgress(38);
+            yield delay(2500);
+            //call cloud api to upload video, return url,
+            saveProgress(66);
+            //call api to update videoUrl for lecture.
+            yield delay(2200);
+            saveProgress(89);
+            yield put({
+                type: 'saveVideo',
+                payload: null
+            });
+            saveProgress(100);
+            yield delay(1000); //delay for UI
+            if (callback) callback();      
         }
     },
     reducers: {
@@ -34,6 +57,15 @@ export default {
             return {
                 ...state,
                 info: { ...payload }
+            };
+        },
+        saveVideo(state, { payload: videoUrl }) {
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    videoUrl
+                }
             };
         },
         reset(state) {

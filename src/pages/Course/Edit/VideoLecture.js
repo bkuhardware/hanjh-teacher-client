@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
-import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs } from 'antd';
+import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, message } from 'antd';
 import { Player, ControlBar, ReplayControl, ForwardControl, CurrentTimeDisplay, TimeDivider, PlaybackRateMenuButton, VolumeMenuButton, BigPlayButton } from 'video-react';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
 import Editor from '@/components/Editor/DescriptionEditor';
@@ -17,41 +17,18 @@ const FormItem = Form.Item;
 
 const Video = ({ videoUrl, loading, onUpload }) => {
     const [file, setFile] = useState(null);
-    const [error, setError] = useState({
-        status: 0,
-        text: ''
-    });
-    const [errorTimer, setErrorTimer] = useState(null);
     const [fileName, setFileName] = useState(null);
-    const handleUpload = () => {
-
-    }
-    const handleError = (message) => {
-        setError({
-            status: 1,
-            text: message
-        });
-        if (errorTimer) clearTimeout(errorTimer);
-        const timer = setTimeout(() => resetError(), 3000);
-        setErrorTimer(timer);
-    };
-    const resetError = () => {
-        setError({
-            status: 0,
-            text: ''
-        });
-        setErrorTimer(null);
-    };
+    const [uploading, setUploading] = useState(false);
+    const [progress, setProgress] = useState(0);
     const resetUpload = () => {
         setFile(null);
         setFileName(null);
-        resetError();
     };
     const handleBeforeUpload = (file, fileList) => {
         const fileSize = file.size;
         const fileType = file.type;
-        if (fileSize > 4294967296) handleError('Your video is too big.');
-        else if (fileType !== 'video/mp4') handleError('Only support .mp4 video! Please replace with .mp4 video.');
+        if (fileSize > 4294967296) message.error('Your video is too big.');
+        else if (fileType !== 'video/mp4') message.error('Only support .mp4 video! Please replace with .mp4 video.');
         else {
             setFile(file);
             setFileName(file.name);
@@ -61,8 +38,22 @@ const Video = ({ videoUrl, loading, onUpload }) => {
 
     const handleRemoveFile = () => resetUpload();
 
-    const handleUploadFile = e => {
-        
+    const handleUploadFile = () => {
+        setUploading(true);
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+        setProgress(5);
+        fileReader.onloadstart = () => setProgress(8);
+        fileReader.onprogress = () => setProgress(12);
+        fileReader.onload = () => {
+            const result = fileReader.result;
+            setProgress(20);
+            onUpload(fileName, result, val => setProgress(val), () => {
+                resetUpload();
+                setProgress(0);
+                setUploading(false);
+            });
+        }
     };
     
     const uploadProps = {
@@ -72,7 +63,26 @@ const Video = ({ videoUrl, loading, onUpload }) => {
         openFileDialogOnClick: !file,
         showUploadList: false
     };
-
+    const addOnAfter = uploading && file ? (
+        <span className={styles.progress}>
+            <Icon type="loading" style={{ color: '#fada5e' }} />
+        </span>
+    ) : file ? (
+        <span>
+            <span className={styles.suffix} onClick={handleUploadFile} style={{ marginRight: '6px' }}>
+                <Icon type="cloud-upload" />
+            </span>
+            <span className={styles.suffix} onClick={handleRemoveFile}>
+                <Icon type="delete" />
+            </span>
+        </span>
+    ) : (
+        <Upload {...uploadProps}>
+            <span className={styles.suffix}>
+                <Icon type="upload" />
+            </span>
+        </Upload>
+    );
     if (!videoUrl || !checkValidLink(videoUrl))
         return (
             <div className={styles.uploadVideo}>
@@ -84,29 +94,32 @@ const Video = ({ videoUrl, loading, onUpload }) => {
                         type="text"
                         value={fileName || ''}
                         addonBefore={(
-                            <span>
-                                <Icon type="play-circle" theme="filled" style={{ position: 'relative', top: '1px', marginRight: '6px' }} />
+                            <span className={styles.addOnBefore}>
+                                <Icon type="play-circle" theme="filled" style={{ position: 'relative', top: '1px', marginRight: '6px', color: '#fada5e' }} />
                                 <span>New video:</span>
                             </span>
                         )}
-                        placeholder="Selected file"
+                        placeholder="No file selected."
                         size="large"
-                        suffix={file ? (
-                            <span className={styles.suffix} onClick={handleRemoveFile}>
-                                <Icon type="delete" />
+                        addonAfter={(
+                            <span className={styles.addOnAfter}>
+                                {addOnAfter}
                             </span>
-                        ) : (
-                            <Upload {...uploadProps}>
-                                <span className={styles.suffix}>
-                                    <Icon type="upload" />
-                                </span>
-                            </Upload>
                         )}
                     />
-                </div>
-                <div className={styles.error} style={{ opacity: error.status === 1 ? '1' : '0' }}>
-                    <Icon type="close" style={{ marginRight: '8px' }} />
-                    {error.text}
+                    <div
+                        className={styles.progressBar}
+                        style={{
+                            display: uploading ? 'block' : 'none',
+                            width: `calc(${progress / 100} * (100% - 184px))`
+                        }}
+                    >
+                        <div className={styles.skeletonBox}>
+                            <span>
+                                {`${progress}%`}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -213,8 +226,17 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         });
         return () => dispatch({ type: 'video/reset '});
     }, [courseId, lectureId]);
-    const handleUploadVideo = () => {
-
+    const handleUploadVideo = (name, file, saveProgress, callback) => {
+        dispatch({
+            type: 'video/upload',
+            payload: {
+                lectureId,
+                name,
+                file,
+                saveProgress,
+                callback
+            }
+        });
     };
     const handleSaveDescription = () => {
 
