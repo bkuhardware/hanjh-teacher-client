@@ -50,7 +50,15 @@ export default {
             saveProgress(100);
             yield delay(1000); //delay for UI
             if (callback) callback();      
-        }
+        },
+        *fetchDescription({ payload }, { call, put }) {
+            const { courseId, lectureId } = payload;
+            yield delay(1000);
+            yield put({
+                type: 'saveDescription',
+                payload: '<div>con c</div>'
+            });
+        },
     },
     reducers: {
         saveInfo(state, { payload }) {
@@ -66,6 +74,12 @@ export default {
                     ...state.info,
                     videoUrl
                 }
+            };
+        },
+        saveDescription(state, { payload }) {
+            return {
+                ...state,
+                description: payload
             };
         },
         reset(state) {

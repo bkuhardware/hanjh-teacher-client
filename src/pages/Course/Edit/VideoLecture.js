@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
-import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, message } from 'antd';
+import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Divider, message } from 'antd';
 import { Player, ControlBar, ReplayControl, ForwardControl, CurrentTimeDisplay, TimeDivider, PlaybackRateMenuButton, VolumeMenuButton, BigPlayButton } from 'video-react';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
 import Editor from '@/components/Editor/DescriptionEditor';
@@ -439,6 +439,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                     </React.Fragment>
                 )}
             </div>
+            <Divider dashed className={styles.divider} />
             <div className={styles.description}>
                 <div className={styles.title}>Description</div>
                 <div className={styles.main}>
@@ -456,6 +457,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                     )}
                 </div>
             </div>
+            <Divider dashed className={styles.divider} />
             <div className={styles.resources}>
                 <div className={styles.title}>Resources</div>
                 <div className={styles.main}>
