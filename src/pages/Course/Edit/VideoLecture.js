@@ -243,8 +243,14 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             }
         });
     };
-    const handleSaveDescription = () => {
-
+    const handleSaveDescription = description => {
+        dispatch({
+            type: 'video/updateDescription',
+            payload: {
+                lectureId,
+                content: description
+            }
+        });
     };
     const handleCloseAddResource = () => {
         resetUpload();

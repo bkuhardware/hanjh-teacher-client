@@ -67,6 +67,14 @@ export default {
                 payload: RESOURCES
             })
         },
+        *updateDescription({ payload }, { call, put }) {
+            const { lectureId, content } = payload;
+            yield delay(1600);
+            yield put({
+                type: 'saveDescription',
+                payload: content
+            });
+        },
     },
     reducers: {
         saveInfo(state, { payload }) {
