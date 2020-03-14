@@ -277,7 +277,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                         <Skeleton className={styles.titleSkeleton} active title={null} paragraph={{ rows: 1, width: '96%' }} />
                         <Skeleton active title={null} paragraph={{ rows: 2, width: ['62%', '42%'] }} />
                         <div className={styles.spin}>
-                            <Spin indicator={<Icon type="loading" style={{ fontSize: 64 }} spin />} />
+                            <Spin indicator={<Icon type="loading" style={{ fontSize: 64, color: '#fada5e' }} spin />} />
                         </div>
                     </div>
                 ) : (
@@ -304,6 +304,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                     {description === null || descriptionInitLoading ? (
                         <div className={styles.loading}>
                             <Spin indicator={<Icon type="loading" style={{ fontSize: '32px' }} spin />} />
+                            <div className={styles.tip}>Fetching...</div>
                         </div>
                     ) : (
                         <Description
@@ -320,6 +321,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                     {!resources || !resourcesData || resourcesInitLoading ? (
                         <div className={styles.loading}>
                             <Spin indicator={<Icon type="loading-3-quarters" style={{ fontSize: '44px' }} spin />} />
+                            <div className={styles.tip}>Fetching...</div>
                         </div>
                     ) : (
                         <React.Fragment>
