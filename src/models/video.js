@@ -117,6 +117,18 @@ export default {
             });
             if (callback) callback();
         },
+        *deleteResource({ payload }, { call, put }) {
+            const { resourceId, type } = payload;
+            //call api with resourceId, if success moi dung type. response return only status
+            yield delay(1500); 
+            yield put({
+                type: 'removeResource',
+                payload: {
+                    resourceId,
+                    type
+                }
+            });
+        }
     },
     reducers: {
         saveInfo(state, { payload }) {
@@ -167,6 +179,16 @@ export default {
                         ...state.resources.external,
                         { ...payload }
                     ]
+                }
+            };
+        },
+        removeResource(state, { payload }) {
+            const { resourceId, type } = payload;
+            return {
+                ...state,
+                resources: {
+                    ...state.resources,
+                    [type]: _.filter(state.resources[type], resource => resource._id !== resourceId)
                 }
             };
         },
