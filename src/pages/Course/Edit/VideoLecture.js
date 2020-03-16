@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
-import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Divider, message } from 'antd';
+import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Divider, message, Drawer } from 'antd';
 import { Player, ControlBar, ReplayControl, ForwardControl, CurrentTimeDisplay, TimeDivider, PlaybackRateMenuButton, VolumeMenuButton, BigPlayButton } from 'video-react';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
+import Scrollbars from 'react-custom-scrollbars';
 import Editor from '@/components/Editor/DescriptionEditor';
 import { EditorState, convertFromHTML, ContentState } from 'draft-js';
 import TimeAgo from 'react-timeago';
@@ -15,11 +16,23 @@ const { Panel } = Collapse;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 
+const Caption = () => {
+    return (
+        <React.Fragment>
+            <div className={styles.title}>Caption</div>
+            <div className={styles.main}>
+
+            </div>
+        </React.Fragment>
+    )
+};
+
 const Video = ({ videoUrl, loading, onUpload }) => {
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [editing, setEditing] = useState(false);
     const resetUpload = () => {
         setFile(null);
         setFileName(null);
@@ -83,49 +96,71 @@ const Video = ({ videoUrl, loading, onUpload }) => {
             </span>
         </Upload>
     );
-    if (!videoUrl || !checkValidLink(videoUrl))
-        return (
-            <div className={styles.uploadVideo}>
-                <div className={styles.warning}>
-                    HuYeFen only support .mp4 video type. Please convert to this type before uploading. File size must less than 4 GB.
+    return(
+        <div className={styles.uploadVideoContainer}>
+            {videoUrl && checkValidLink(videoUrl) && (
+                <div className={styles.videoPlayer}>
+                    <div className={styles.player}>
+                        <Player
+                            fluid={false}
+                            src={videoUrl}
+                            width={1000}
+                            height={550}
+                        >
+                            <BigPlayButton position="center" />
+                            <ControlBar>
+                                <ReplayControl seconds={10} order={1.1} />
+                                <ForwardControl seconds={30} order={1.2} />
+                                <CurrentTimeDisplay order={4.1} />
+                                <TimeDivider order={4.2} />
+                                <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.1]} order={7.1} />
+                                <VolumeMenuButton disabled />
+                            </ControlBar>
+                        </Player>
+                    </div>
                 </div>
-                <div className={styles.uploader}>
-                    <Input
-                        type="text"
-                        value={fileName || ''}
-                        addonBefore={(
-                            <span className={styles.addOnBefore}>
-                                <Icon type="play-circle" theme="filled" style={{ position: 'relative', top: '1px', marginRight: '6px', color: '#fada5e' }} />
-                                <span>New video:</span>
-                            </span>
-                        )}
-                        placeholder="No file selected."
-                        size="large"
-                        addonAfter={(
-                            <span className={styles.addOnAfter}>
-                                {addOnAfter}
-                            </span>
-                        )}
-                    />
-                    <div
-                        className={styles.progressBar}
-                        style={{
-                            display: uploading ? 'block' : 'none',
-                            width: `calc(${progress / 100} * (100% - 184px))`
-                        }}
-                    >
-                        <div className={styles.skeletonBox}>
-                            <span>
-                                {`${progress}%`}
-                            </span>
+            )}
+            {(!videoUrl || !checkValidLink(videoUrl) || editing) && (
+                <div className={styles.uploadVideo}>
+                    <div className={styles.warning}>
+                        HuYeFen only support .mp4 video type. Please convert to this type before uploading. File size must less than 4 GB.
+                    </div>
+                    <div className={styles.uploader}>
+                        <Input
+                            type="text"
+                            value={fileName || ''}
+                            addonBefore={(
+                                <span className={styles.addOnBefore}>
+                                    <Icon type="play-circle" theme="filled" style={{ position: 'relative', top: '1px', marginRight: '6px', color: '#fada5e' }} />
+                                    <span>New video:</span>
+                                </span>
+                            )}
+                            placeholder="No file selected."
+                            size="large"
+                            addonAfter={(
+                                <span className={styles.addOnAfter}>
+                                    {addOnAfter}
+                                </span>
+                            )}
+                        />
+                        <div
+                            className={styles.progressBar}
+                            style={{
+                                display: uploading ? 'block' : 'none',
+                                width: `calc(${progress / 100} * (100% - 184px))`
+                            }}
+                        >
+                            <div className={styles.skeletonBox}>
+                                <span>
+                                    {`${progress}%`}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        );
-    return (
-        <div />
-    )
+            )}
+        </div>
+    );
 };
 
 const Description = ({ description, loading, onSave }) => {
@@ -176,6 +211,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         deleteLoading
     } = props;
     const playerRef = useRef(null);
+    const [visible, setVisible] = useState(false);
     const [error, setError] = useState({
         status: 0,
         text: ''
@@ -210,20 +246,6 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                 lectureId
             }
         });
-        dispatch({
-            type: 'video/fetchDescription',
-            payload: {
-                courseId,
-                lectureId
-            }
-        });
-        dispatch({
-            type: 'video/fetchResources',
-            payload: {
-                courseId,
-                lectureId
-            }
-        });
         return () => dispatch({ type: 'video/reset '});
     }, [courseId, lectureId]);
     useEffect(() => {
@@ -231,6 +253,25 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             setResourcesData({ ...resources });
         }
     }, [resources]);
+    const handleOpenSettings = () => {
+        if (description === null) 
+            dispatch({
+                type: 'video/fetchDescription',
+                payload: {
+                    courseId,
+                    lectureId
+                }
+            });
+        if (resources === null)
+            dispatch({
+                type: 'video/fetchResources',
+                payload: {
+                    courseId,
+                    lectureId
+                }
+            });
+        setVisible(true);
+    };
     const handleUploadVideo = (name, file, saveProgress, callback) => {
         dispatch({
             type: 'video/upload',
@@ -450,193 +491,220 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                     </React.Fragment>
                 )}
             </div>
-            <Divider dashed className={styles.divider} />
-            <div className={styles.description}>
-                <div className={styles.title}>Description</div>
-                <div className={styles.main}>
-                    {description === null || descriptionInitLoading ? (
-                        <div className={styles.loading}>
-                            <Spin indicator={<Icon type="loading" style={{ fontSize: '32px', color: 'inherit' }} spin />} />
-                            <div className={styles.tip}>Fetching...</div>
-                        </div>
-                    ) : (
-                        <Description
-                            description={description}
-                            loading={descriptionLoading}
-                            onSave={handleSaveDescription}
-                        />
-                    )}
-                </div>
+            <div className={styles.settings} onClick={handleOpenSettings}>
+                <Icon type="setting" theme="filled" spin className={styles.icon} />
+                <span className={styles.text}>Open settings</span>
             </div>
-            <Divider dashed className={styles.divider} />
-            <div className={styles.resources}>
-                <div className={styles.title}>Resources</div>
-                <div className={styles.main}>
-                    {!resources || !resourcesData || resourcesInitLoading ? (
-                        <div className={styles.loading}>
-                            <Spin indicator={<Icon type="loading-3-quarters" style={{ fontSize: '44px', color: 'inherit' }} spin />} />
-                            <div className={styles.tip}>Fetching...</div>
-                        </div>
-                    ) : (
-                        <React.Fragment>
-                            <div className={styles.list}>
-                                {_.isEmpty(resourcesData.downloadable) && _.isEmpty(resourcesData.external) ? null : (
-                                    <Spin spinning={deleteLoading}>
-                                        <Collapse defaultActiveKey={['downloadable', 'external']} expandIconPosition="right">
-                                            {!_.isEmpty(resourcesData.downloadable) && (
-                                                <Panel key="downloadable" header="Downloadable materials">
-                                                    {_.map(resourcesData.downloadable, resource => (
-                                                        <Row gutter={16} key={resource._id} className={styles.resource}>
-                                                            <Col span={20} className={styles.info}>
-                                                                <Icon type="download" className={styles.icon} />
-                                                                <span className={styles.name}>{`${resource.name} (${resource.extra})`}</span>
-                                                            </Col>
-                                                            <Col span={4} className={styles.action}>
-                                                                <span className={styles.icon}>
-                                                                    <Tooltip placement="top" title="Delete" overlayStyle={{ zIndex: 9999999999 }}>
-                                                                        <Icon type="delete" theme="filled" onClick={() => handleDeleteResource(resource._id, 'downloadable')}/>
-                                                                    </Tooltip>
-                                                                </span>
-                                                            </Col>
-                                                        </Row>
-                                                    ))}
-                                                </Panel>
-                                            )}
-                                            {!_.isEmpty(resourcesData.external) && (
-                                                <Panel key="external" header="External resources">
-                                                    {_.map(resourcesData.external, resource => (
-                                                        <Row gutter={16} key={resource._id} className={styles.resource}>
-                                                            <Col span={20} className={styles.info}>
-                                                                <Icon type="link" className={styles.icon} />
-                                                                <span className={styles.name}>{resource.name}</span>
-                                                            </Col>
-                                                            <Col span={4} className={styles.action}>
-                                                                <span className={styles.icon}>
-                                                                    <Tooltip placement="top" title="Delete" overlayStyle={{ zIndex: 9999999999 }}>
-                                                                        <Icon type="delete" theme="filled" onClick={() => handleDeleteResource(resource._id, 'external')}/>
-                                                                    </Tooltip>
-                                                                </span>
-                                                            </Col>
-                                                        </Row>
-                                                    ))}
-                                                </Panel>
-                                            )}
-                                        </Collapse>
-                                    </Spin>
-                                )}
+            <Drawer
+                title={(
+                    <span className={styles.drawerTitle}>
+                        Lecture settings
+                    </span>
+                )}
+                placement="right"
+                closable={true}
+                visible={visible}
+                onClose={() => setVisible(false)}
+                width={860}
+                className={styles.settingsDrawer}
+                bodyStyle={{
+                    padding: '16px'
+                }}
+            >
+                <Scrollbars
+                    autoHeight
+                    autoHeightMax={window.innerHeight - 96}
+                    className={styles.container}
+                >
+                    <div className={styles.caption}>
+                        <Caption
+                            
+                        />
+                    </div>
+                    <div className={styles.description}>
+                        <div className={styles.title}>Description</div>
+                        {description === null || descriptionInitLoading ? (
+                            <div className={styles.loading}>
+                                <Spin indicator={<Icon type="loading" style={{ fontSize: '32px' }} spin />} />
                             </div>
-                            {resourceOpen ? (
-                                <div className={styles.addResource}>
-                                    <div className={styles.close}>
-                                        <Icon type="close" onClick={handleCloseAddResource}/>
-                                    </div>
-                                    <Tabs defaultActiveKey="browse" onChange={handleChangeTab}>
-                                        <TabPane key="browse" tab="Browse computer" className={styles.browse}>
-                                            <div className={styles.inline}>
-                                                <div className={styles.warning}>
-                                                    Your file must not greater than 30MB.
-                                                    <br />
-                                                    Some extension doesn't supported in HuYeFen such as .xd, .mov. Only support .mp4 video.
-                                                </div>
-                                                {file && _.startsWith(fileInfo.mimeType, 'image/') && (
-                                                    <div className={styles.previewImage}>
-                                                        <img src={file} alt="preview" style={{ width: '100%', height: 'auto' }}/>
-                                                    </div>
-                                                )}
-                                                {file && fileInfo.mimeType === 'application/pdf' && (
-                                                    <div className={styles.previewPdf}>
-                                                        <Document
-                                                            file={file}
-                                                            onLoadSuccess={({ numPages }) => setFileInfo({
-                                                                ...fileInfo,
-                                                                extra: `${numPages} ${numPages > 1 ? 'pages' : 'page'}`
-                                                            })}
-                                                            className={styles.document}
-                                                        >
-                                                            <Page pageNumber={1} width={250}/>
-                                                        </Document>
-                                                    </div>
-                                                )}
-                                                {file && fileInfo.mimeType === 'video/mp4' && (
-                                                    <div className={styles.previewVideo}>
-                                                        <Player
-                                                            fluid={true}
-                                                            src={file}
-                                                            ref={player => playerRef.current = player}
-                                                        >
-                                                            <BigPlayButton position="center" />
-                                                            <ControlBar>
-                                                                <ReplayControl seconds={10} order={1.1} />
-                                                                <ForwardControl seconds={30} order={1.2} />
-                                                                <CurrentTimeDisplay order={4.1} />
-                                                                <TimeDivider order={4.2} />
-                                                                <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.1]} order={7.1} />
-                                                                <VolumeMenuButton disabled />
-                                                            </ControlBar>
-                                                        </Player>
-                                                    </div>
-                                                )}
-                                                <Form layout="vertical" onSubmit={handleUploadFile} style={{ marginTop: '24px' }}>
-                                                    <FormItem style={{ margin: 0 }}>
-                                                        <Upload {...uploadProps}>
-                                                            {!file ? (
-                                                                <Button className={styles.upBtn}>
-                                                                    <Icon type="upload" /> Upload file
-                                                                </Button>
-                                                            ) : (
-                                                                <Button type="primary" htmlType="submit" disabled={downloadableLoading}>
-                                                                    <Icon type={downloadableLoading ? "loading" : "check"} /> Let's upload                    
-                                                                </Button>
-                                                            )}
-                                                        </Upload>
-                                                    </FormItem>
-                                                </Form>
-                                                <div className={styles.error} style={{ opacity: error.status === 1 ? '1' : '0' }}>
-                                                    <Icon type="close" style={{ marginRight: '8px' }} />
-                                                    {error.text}
-                                                </div>
-                                            </div>
-                                        </TabPane>
-                                        <TabPane key="library" tab="Add from library">
-                                            <div>Sorry this function is not available.</div>
-                                        </TabPane>
-                                        <TabPane key="external" tab="External resouces" className={styles.externalTab}>
-                                            <Spin spinning={externalLoading}>
-                                                <Form className={styles.externalForm}>
-                                                    <FormItem label="Title" required validateStatus={title.validateStatus} help={title.help}>
-                                                        <Input
-                                                            value={title.value}
-                                                            placeholder="Title"
-                                                            onChange={handleChangeTitle}
-                                                            size="large"
-                                                        />
-                                                    </FormItem>
-                                                    <FormItem label="URL" required validateStatus={url.validateStatus} help={url.help}>
-                                                        <Input
-                                                            value={url.value}
-                                                            placeholder="Resource URL http://"
-                                                            onChange={handleChangeURL}
-                                                            size="large"
-                                            
-                                                        />
-                                                    </FormItem>
-                                                </Form>
-                                            </Spin>
-                                            <FormItem className={styles.btn}>
-                                                <Button type="primary" loading={externalLoading} disabled={_.isEmpty(title.value) || !checkValidLink(url.value) || _.isEmpty(url.value)} onClick={handleAddExternal}>OK</Button>
-                                            </FormItem>
-                                        </TabPane>
-                                    </Tabs>
+                        ) : (
+                            <Description
+                                description={description}
+                                loading={descriptionLoading}
+                                onSave={handleSaveDescription}
+                            />
+                        )}
+                    </div>
+                    <div className={styles.resources}>
+                        <div className={styles.title}>Resources</div>
+                        <div className={styles.main}>
+                            {!resources || !resourcesData || resourcesInitLoading ? (
+                                <div className={styles.loading}>
+                                    <Spin indicator={<Icon type="loading-3-quarters" style={{ fontSize: '44px' }} spin />} />
                                 </div>
                             ) : (
-                                <div className={styles.btn}>
-                                    <Button type="primary" icon="plus" onClick={() => setResourceOpen(true)}>Add resource</Button>
-                                </div>
+                                <React.Fragment>
+                                    <div className={styles.list}>
+                                        {_.isEmpty(resourcesData.downloadable) && _.isEmpty(resourcesData.external) ? null : (
+                                            <Spin spinning={deleteLoading}>
+                                                <Collapse defaultActiveKey={['downloadable', 'external']} expandIconPosition="right">
+                                                    {!_.isEmpty(resourcesData.downloadable) && (
+                                                        <Panel key="downloadable" header="Downloadable materials">
+                                                            {_.map(resourcesData.downloadable, resource => (
+                                                                <Row gutter={16} key={resource._id} className={styles.resource}>
+                                                                    <Col span={20} className={styles.info}>
+                                                                        <Icon type="download" className={styles.icon} />
+                                                                        <span className={styles.name}>{`${resource.name} (${resource.extra})`}</span>
+                                                                    </Col>
+                                                                    <Col span={4} className={styles.action}>
+                                                                        <span className={styles.icon}>
+                                                                            <Tooltip placement="top" title="Delete" overlayStyle={{ zIndex: 9999999999 }}>
+                                                                                <Icon type="delete" theme="filled" onClick={() => handleDeleteResource(resource._id, 'downloadable')}/>
+                                                                            </Tooltip>
+                                                                        </span>
+                                                                    </Col>
+                                                                </Row>
+                                                            ))}
+                                                        </Panel>
+                                                    )}
+                                                    {!_.isEmpty(resourcesData.external) && (
+                                                        <Panel key="external" header="External resources">
+                                                            {_.map(resourcesData.external, resource => (
+                                                                <Row gutter={16} key={resource._id} className={styles.resource}>
+                                                                    <Col span={20} className={styles.info}>
+                                                                        <Icon type="link" className={styles.icon} />
+                                                                        <span className={styles.name}>{resource.name}</span>
+                                                                    </Col>
+                                                                    <Col span={4} className={styles.action}>
+                                                                        <span className={styles.icon}>
+                                                                            <Tooltip placement="top" title="Delete" overlayStyle={{ zIndex: 9999999999 }}>
+                                                                                <Icon type="delete" theme="filled" onClick={() => handleDeleteResource(resource._id, 'external')}/>
+                                                                            </Tooltip>
+                                                                        </span>
+                                                                    </Col>
+                                                                </Row>
+                                                            ))}
+                                                        </Panel>
+                                                    )}
+                                                </Collapse>
+                                            </Spin>
+                                        )}
+                                    </div>
+                                    {resourceOpen ? (
+                                        <div className={styles.addResource}>
+                                            <div className={styles.close}>
+                                                <Icon type="close" onClick={handleCloseAddResource}/>
+                                            </div>
+                                            <Tabs defaultActiveKey="browse" onChange={handleChangeTab}>
+                                                <TabPane key="browse" tab="Browse computer" className={styles.browse}>
+                                                    <div className={styles.inline}>
+                                                        <div className={styles.warning}>
+                                                            Your file must not greater than 30MB.
+                                                            <br />
+                                                            Some extension doesn't supported in HuYeFen such as .xd, .mov. Only support .mp4 video.
+                                                        </div>
+                                                        {file && _.startsWith(fileInfo.mimeType, 'image/') && (
+                                                            <div className={styles.previewImage}>
+                                                                <img src={file} alt="preview" style={{ width: '100%', height: 'auto' }}/>
+                                                            </div>
+                                                        )}
+                                                        {file && fileInfo.mimeType === 'application/pdf' && (
+                                                            <div className={styles.previewPdf}>
+                                                                <Document
+                                                                    file={file}
+                                                                    onLoadSuccess={({ numPages }) => setFileInfo({
+                                                                        ...fileInfo,
+                                                                        extra: `${numPages} ${numPages > 1 ? 'pages' : 'page'}`
+                                                                    })}
+                                                                    className={styles.document}
+                                                                >
+                                                                    <Page pageNumber={1} width={250}/>
+                                                                </Document>
+                                                            </div>
+                                                        )}
+                                                        {file && fileInfo.mimeType === 'video/mp4' && (
+                                                            <div className={styles.previewVideo}>
+                                                                <Player
+                                                                    fluid={true}
+                                                                    src={file}
+                                                                    autoPlay
+                                                                    ref={player => playerRef.current = player}
+                                                                >
+                                                                    <BigPlayButton position="center" />
+                                                                    <ControlBar>
+                                                                        <ReplayControl seconds={10} order={1.1} />
+                                                                        <ForwardControl seconds={30} order={1.2} />
+                                                                        <CurrentTimeDisplay order={4.1} />
+                                                                        <TimeDivider order={4.2} />
+                                                                        <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.1]} order={7.1} />
+                                                                        <VolumeMenuButton disabled />
+                                                                    </ControlBar>
+                                                                </Player>
+                                                            </div>
+                                                        )}
+                                                        <Form layout="vertical" onSubmit={handleUploadFile} style={{ marginTop: '24px' }}>
+                                                            <FormItem style={{ margin: 0 }}>
+                                                                <Upload {...uploadProps}>
+                                                                    {!file ? (
+                                                                        <Button className={styles.upBtn}>
+                                                                            <Icon type="upload" /> Upload file
+                                                                        </Button>
+                                                                    ) : (
+                                                                        <Button type="primary" htmlType="submit" disabled={downloadableLoading}>
+                                                                            <Icon type={downloadableLoading ? "loading" : "check"} /> Let's upload                    
+                                                                        </Button>
+                                                                    )}
+                                                                </Upload>
+                                                            </FormItem>
+                                                        </Form>
+                                                        <div className={styles.error} style={{ opacity: error.status === 1 ? '1' : '0' }}>
+                                                            <Icon type="close" style={{ marginRight: '8px' }} />
+                                                            {error.text}
+                                                        </div>
+                                                    </div>
+                                                </TabPane>
+                                                <TabPane key="library" tab="Add from library">
+                                                    <div>Sorry this function is not available.</div>
+                                                </TabPane>
+                                                <TabPane key="external" tab="External resouces" className={styles.externalTab}>
+                                                    <Spin spinning={externalLoading}>
+                                                        <Form className={styles.externalForm}>
+                                                            <FormItem label="Title" required validateStatus={title.validateStatus} help={title.help}>
+                                                                <Input
+                                                                    value={title.value}
+                                                                    placeholder="Title"
+                                                                    onChange={handleChangeTitle}
+                                                                    size="large"
+                                                                />
+                                                            </FormItem>
+                                                            <FormItem label="URL" required validateStatus={url.validateStatus} help={url.help}>
+                                                                <Input
+                                                                    value={url.value}
+                                                                    placeholder="Resource URL http://"
+                                                                    onChange={handleChangeURL}
+                                                                    size="large"
+                                                    
+                                                                />
+                                                            </FormItem>
+                                                        </Form>
+                                                    </Spin>
+                                                    <FormItem className={styles.btn}>
+                                                        <Button type="primary" loading={externalLoading} disabled={_.isEmpty(title.value) || !checkValidLink(url.value) || _.isEmpty(url.value)} onClick={handleAddExternal}>OK</Button>
+                                                    </FormItem>
+                                                </TabPane>
+                                            </Tabs>
+                                        </div>
+                                    ) : (
+                                        <div className={styles.btn}>
+                                            <Button type="primary" icon="plus" onClick={() => setResourceOpen(true)}>Add resource</Button>
+                                        </div>
+                                    )}
+                                </React.Fragment>
                             )}
-                        </React.Fragment>
-                    )}
-                </div>
-            </div>
+                        </div>
+                    </div>
+                </Scrollbars>
+            </Drawer>
         </div>
     )
 };

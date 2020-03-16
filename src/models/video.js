@@ -24,7 +24,7 @@ export default {
                         _id: 1,
                         title: 'ES6 Javscript'
                     },
-                    videoUrl: null
+                    videoUrl: 'https://a2.udemycdn.com/2018-02-26_01-07-48-57026b79a022f2010b78262a90d2aa9c/WebHD.mp4?nva=20200316062756&token=071b929ae19df54d30e73'
                 }
             });
         },
