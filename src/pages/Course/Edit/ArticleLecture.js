@@ -4,7 +4,7 @@ import moment from 'moment';
 import { connect } from 'dva';
 import { Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
-import { Player, ControlBar, ReplayControl, ForwardControl, CurrentTimeDisplay, TimeDivider, PlaybackRateMenuButton, VolumeMenuButton, BigPlayButton } from 'video-react';
+import Video from '@/components/Videos/default';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
 import { EditorState, ContentState, convertFromHTML, convertFromRaw, convertToRaw } from 'draft-js';
 import Editor from '@/components/Editor/DescriptionEditor';
@@ -169,6 +169,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         mimeType: null,
         extra: null
     });
+    const [videoDuration, setVideoDuration] = useState(null);
 
     useEffect(() => {
         dispatch({
@@ -355,14 +356,6 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                 const result = fileReader.result;
                 setFile(result);
                 setFileList(fileList);
-                // let extra;
-                // if (_.startsWith(fileType, 'video/')) {
-
-                // }
-                // else if (fileType === 'application/pdf') {
-
-                // }
-                // else extra = bytesToSize(fileSize);
                 setFileInfo({
                     name: fileName,
                     mimeType: fileType,
@@ -378,8 +371,9 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     const handleUploadFile = e => {
         let extra = fileInfo.extra;
         if (fileInfo.mimeType === 'video/mp4') {
-            const { player } = playerRef.current.getState();
-            extra = secondsToTime(player.duration);
+            if (playerRef.current) {
+                extra = secondsToTime(playerRef.current.duration);
+            }
         }
         dispatch({
             type: 'article/addDownloadable',
@@ -568,22 +562,15 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                                         )}
                                                         {file && fileInfo.mimeType === 'video/mp4' && (
                                                             <div className={styles.previewVideo}>
-                                                                <Player
-                                                                    fluid={true}
+                                                                <video
                                                                     src={file}
+                                                                    ref={playerRef}
                                                                     autoPlay
-                                                                    ref={player => playerRef.current = player}
-                                                                >
-                                                                    <BigPlayButton position="center" />
-                                                                    <ControlBar>
-                                                                        <ReplayControl seconds={10} order={1.1} />
-                                                                        <ForwardControl seconds={30} order={1.2} />
-                                                                        <CurrentTimeDisplay order={4.1} />
-                                                                        <TimeDivider order={4.2} />
-                                                                        <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.1]} order={7.1} />
-                                                                        <VolumeMenuButton disabled />
-                                                                    </ControlBar>
-                                                                </Player>
+                                                                    loop
+                                                                    controls={false}
+                                                                    controlsList="nodownload"
+                                                                    muted
+                                                                />
                                                             </div>
                                                         )}
                                                         <Form layout="vertical" onSubmit={handleUploadFile} style={{ marginTop: '24px' }}>

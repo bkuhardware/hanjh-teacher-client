@@ -11,7 +11,7 @@ import Mute from '@/elements/icon/mute';
 import SmallVolume from '@/elements/icon/smallVolume';
 import Volume from '@/elements/icon/volume';
 import { videoRates as rates, videoResolutions as resolutions, videoCaptions as captions } from '@/config/constants';
-import { secondsToTime } from 'utils';
+import { secondsToTime } from '@/utils/utils';
 import styles from './default.less';
 
 const { SubMenu } = Menu;
