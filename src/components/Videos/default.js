@@ -327,8 +327,11 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
             multiple
             selectedKeys={[resolution, playbackRate, caption]}
             onSelect={handleSelectSetting}
+            style={{
+                height: _.size(curOpenKeys) > 0 ? '250px' : '151px'
+            }}
         >
-            <SubMenu key="resolution" title={`Resolution (${resolutions[resolution]})`}>
+            <SubMenu key="resolution" title={`Resolution [${resolutions[resolution]}]`}>
                 {_.map(_.orderBy(_.keys(resolutions), key => key, ['desc']), resolutionKey => (
                     <MenuItem key={resolutionKey} >
                         {resolutions[resolutionKey]}
@@ -337,7 +340,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                 ))}
             </SubMenu>
             <Menu.Divider />
-            <SubMenu key="rate" title={`Playback rate (${rates[playbackRate]})`}>
+            <SubMenu key="rate" title={`Playback rate [${rates[playbackRate]}]`}>
                 {_.map(_.keys(rates), rateKey => (
                     <MenuItem key={rateKey}>
                         {rates[rateKey]}
@@ -346,7 +349,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                 ))}
             </SubMenu>
             <Menu.Divider />
-            <SubMenu key="caption" title={`Captions (${captions[caption]})`}>
+            <SubMenu key="caption" title={`Captions [${captions[caption]}]`}>
                 {_.map(_.keys(captions), captionKey => (
                     <MenuItem key={captionKey}>
                         {captions[captionKey]}
