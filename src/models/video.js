@@ -45,7 +45,7 @@ export default {
             saveProgress(89);
             yield put({
                 type: 'saveVideo',
-                payload: 'https://a2.udemycdn.com/2020-02-20_09-58-28-0f53cead3f09ab469fbc2c6f4041e824/WebHD.mp4?nva=20200316074806&token=0dabbdeebf3763a3b34fe'
+                payload: file
             });
             saveProgress(100);
             yield delay(1000); //delay for UI

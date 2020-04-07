@@ -21,6 +21,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
     const divRef = useRef(null);
     const videoRef = useRef(null);
     const previewRef = useRef(null);
+    const [srcObject, setSrcObject] = useState(null);
     const [fullScreen, setFullScreen] = useState(false);
     const [loop, setLoop] = useState(false);
     const [controlVisible, setControlVisible] = useState(false);
@@ -57,6 +58,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
     const [settingsVisible, setSettingsVisible] = useState(false);
     useEffect(() => {
         if (videoRef.current) {
+            message.success('Hello');
             const videoEle = videoRef.current;
             videoEle.ondurationchange = () => setDuration(videoEle.duration);
             videoEle.onloadedmetadata = () => {
@@ -123,6 +125,24 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
             videoEle.onerror = () => handleError('Sorry, there was an error');
             videoEle.onstalled = () => handleError('Sorry, the video is not available.');
             videoEle.onabort = () => handleError('Sorry, the video is stoped downloading.');
+            setSrcObject(videoUrl);
+            return () => {
+                videoEle.ondurationchange = null;
+                videoEle.onloadeddata = null;
+                videoEle.onloadedmetadata = null;
+                videoEle.onprogress = null;
+                videoEle.oncanplay = null;
+                videoEle.ontimeupdate = null;
+                videoEle.onwaiting = null;
+                videoEle.onplaying = null;
+                videoEle.onplay = null;
+                videoEle.onpause = null;
+                videoEle.onended = null;
+                videoEle.onerror = null;
+                videoEle.onstalled = null;
+                videoEle.onabort = null;
+                setSrcObject(null);
+            };
         }
     }, [videoUrl]);
     useEffect(() => {
@@ -363,6 +383,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                 <video
                     {...props}
                     ref={videoRef}
+                    src={srcObject}
                     className={styles.videoEle}
                     width={!fullScreen ? width : '100%'}
                     height={!fullScreen ? height : '100%'}
@@ -373,10 +394,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                         e.preventDefault();
                         return false;
                     }}
-                >
-                    <source src={videoUrl} type="video/mp4" />
-                    Your browser does not support the video element.
-                </video>
+                />
             </Dropdown>
             <div className={styles.controlVisible} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                 <div style={{ opacity: controlVisible ? 1 : 1 }}>

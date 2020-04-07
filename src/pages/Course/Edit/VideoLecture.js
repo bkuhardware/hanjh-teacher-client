@@ -27,7 +27,7 @@ const Caption = () => {
     )
 };
 
-const Video = ({ videoUrl, loading, onUpload }) => {
+const Video = ({ videoUrl, onUpload }) => {
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -58,6 +58,7 @@ const Video = ({ videoUrl, loading, onUpload }) => {
     const handleRemoveFile = () => resetUpload();
 
     const handleUploadFile = () => {
+
         setUploading(true);
         const fileReader = new FileReader();
         fileReader.readAsDataURL(file);
@@ -104,7 +105,7 @@ const Video = ({ videoUrl, loading, onUpload }) => {
     );
     return(
         <div className={styles.uploadVideoContainer}>
-            {videoUrl && checkValidLink(videoUrl) && (
+            {videoUrl && (
                 <div className={styles.videoPlayer}>
                     <div className={styles.player}>
                         <Player
