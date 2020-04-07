@@ -25,3 +25,15 @@ export const videoRates = {
     '1.75': '1.75',
     '2.0': '2.0'
 };
+
+export const videoCaptions = {
+    eng: 'English',
+    vie: 'Vietnamese'
+};
+
+export const videoResolutions = {
+    '720': '720p (HD)',
+    '480': '480p',
+    '360': '360p',
+    '240': '240p'
+};

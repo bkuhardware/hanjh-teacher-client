@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
-import { message, Slider, Row, Col, Menu, Tooltip, Popover, Dropdown } from 'antd';
+import { Button, message, Slider, Row, Col, Menu, Tooltip, Popover, Dropdown } from 'antd';
 import {
     ExpandOutlined, CloseOutlined, CaretRightFilled, PauseOutlined, ReloadOutlined, 
     Loading3QuartersOutlined, FrownOutlined, BackwardOutlined, ForwardOutlined, CompressOutlined, RetweetOutlined, LinkOutlined,
@@ -10,6 +10,7 @@ import {
 import Mute from '@/elements/icon/mute';
 import SmallVolume from '@/elements/icon/smallVolume';
 import Volume from '@/elements/icon/volume';
+import { videoRates as rates, videoResolutions as resolutions, videoCaptions as captions } from '@/config/constants';
 import { secondsToTime } from 'utils';
 import styles from './default.less';
 
@@ -341,7 +342,7 @@ const Video = ({ videoUrl, ...props }) => {
                 <RetweetOutlined />Loop
                 {loop && (
                     <span className={styles.loopOk}>
-                        <CheckOutlined />
+                        <CheckOutlined style={{ color: '#FADA5E' }} />
                     </span>
                 )}
             </MenuItem>
@@ -357,7 +358,7 @@ const Video = ({ videoUrl, ...props }) => {
         </Menu>
     );
     return (
-        <div className={styles.video} ref={divRef} style={{ height: height }}>
+        <div className={styles.defaultVideo} ref={divRef} style={{ height: height }}>
             <Dropdown overlay={dropdownMenu} trigger={['contextMenu']} overlayClassName={styles.contextDropdown} getPopupContainer={() => divRef.current}>
                 <video
                     {...props}
