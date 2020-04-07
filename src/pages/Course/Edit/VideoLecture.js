@@ -37,6 +37,12 @@ const Video = ({ videoUrl, loading, onUpload }) => {
         setFile(null);
         setFileName(null);
     };
+    const handleChange = () => setEditing(true);
+    const handleDelete = () => { };
+    const handleCancelChange = () => {
+        resetUpload();
+        setEditing(false);
+    };
     const handleBeforeUpload = (file, fileList) => {
         const fileSize = file.size;
         const fileType = file.type;
@@ -62,7 +68,7 @@ const Video = ({ videoUrl, loading, onUpload }) => {
             const result = fileReader.result;
             setProgress(20);
             onUpload(fileName, result, val => setProgress(val), () => {
-                resetUpload();
+                handleCancelChange();
                 setProgress(0);
                 setUploading(false);
             });
@@ -117,6 +123,22 @@ const Video = ({ videoUrl, loading, onUpload }) => {
                                 <VolumeMenuButton disabled />
                             </ControlBar>
                         </Player>
+                    </div>
+                    <div className={styles.btns}>
+                        {!editing ? (
+                            <>
+                                <Button type="default" onClick={handleChange} icon="edit">
+                                    Change
+                                </Button>
+                                <Button type="default" onClick={handleDelete} style={{ marginLeft: '12px' }} icon="delete">
+                                    Delete
+                                </Button>
+                            </>
+                        ) : (
+                            <Button type="default" onClick={handleCancelChange} icon="close">
+                                Cancel
+                            </Button>
+                        )}
                     </div>
                 </div>
             )}

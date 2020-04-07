@@ -24,7 +24,7 @@ export default {
                         _id: 1,
                         title: 'ES6 Javscript'
                     },
-                    videoUrl: 'https://a2.udemycdn.com/2018-02-26_01-07-48-57026b79a022f2010b78262a90d2aa9c/WebHD.mp4?nva=20200316062756&token=071b929ae19df54d30e73'
+                    videoUrl: 'https://a.udemycdn.com/2020-02-20_09-58-28-0f53cead3f09ab469fbc2c6f4041e824/WebHD_480.mp4?nva=20200316081537&token=030acb351ebce3475fc4f'
                 }
             });
         },
@@ -45,7 +45,7 @@ export default {
             saveProgress(89);
             yield put({
                 type: 'saveVideo',
-                payload: null
+                payload: 'https://a2.udemycdn.com/2020-02-20_09-58-28-0f53cead3f09ab469fbc2c6f4041e824/WebHD.mp4?nva=20200316074806&token=0dabbdeebf3763a3b34fe'
             });
             saveProgress(100);
             yield delay(1000); //delay for UI
