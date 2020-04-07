@@ -169,7 +169,6 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         mimeType: null,
         extra: null
     });
-    const [videoDuration, setVideoDuration] = useState(null);
 
     useEffect(() => {
         dispatch({

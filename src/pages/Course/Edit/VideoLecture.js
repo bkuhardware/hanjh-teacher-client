@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
 import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Divider, message, Drawer } from 'antd';
-import { Player, ControlBar, ReplayControl, ForwardControl, CurrentTimeDisplay, TimeDivider, PlaybackRateMenuButton, VolumeMenuButton, BigPlayButton } from 'video-react';
+import Player from '@/components/Videos/default';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
 import Scrollbars from 'react-custom-scrollbars';
 import Editor from '@/components/Editor/DescriptionEditor';
@@ -107,7 +107,7 @@ const Video = ({ videoUrl, loading, onUpload }) => {
             {videoUrl && checkValidLink(videoUrl) && (
                 <div className={styles.videoPlayer}>
                     <div className={styles.player}>
-                        <Player
+                        {/* <Player
                             fluid={false}
                             src={videoUrl}
                             width={1000}
@@ -122,7 +122,7 @@ const Video = ({ videoUrl, loading, onUpload }) => {
                                 <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.1]} order={7.1} />
                                 <VolumeMenuButton disabled />
                             </ControlBar>
-                        </Player>
+                        </Player> */}
                     </div>
                     <div className={styles.btns}>
                         {!editing ? (
@@ -453,8 +453,9 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
     const handleUploadFile = e => {
         let extra = fileInfo.extra;
         if (fileInfo.mimeType === 'video/mp4') {
-            const { player } = playerRef.current.getState();
-            extra = secondsToTime(player.duration);
+            if (playerRef.current) {
+                extra = secondsToTime(playerRef.current.duration);
+            }
         }
         dispatch({
             type: 'video/addDownloadable',
@@ -646,22 +647,15 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                                                         )}
                                                         {file && fileInfo.mimeType === 'video/mp4' && (
                                                             <div className={styles.previewVideo}>
-                                                                <Player
-                                                                    fluid={true}
+                                                                <video
                                                                     src={file}
+                                                                    ref={playerRef}
                                                                     autoPlay
-                                                                    ref={player => playerRef.current = player}
-                                                                >
-                                                                    <BigPlayButton position="center" />
-                                                                    <ControlBar>
-                                                                        <ReplayControl seconds={10} order={1.1} />
-                                                                        <ForwardControl seconds={30} order={1.2} />
-                                                                        <CurrentTimeDisplay order={4.1} />
-                                                                        <TimeDivider order={4.2} />
-                                                                        <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.1]} order={7.1} />
-                                                                        <VolumeMenuButton disabled />
-                                                                    </ControlBar>
-                                                                </Player>
+                                                                    loop
+                                                                    controls={false}
+                                                                    controlsList="nodownload"
+                                                                    muted
+                                                                />
                                                             </div>
                                                         )}
                                                         <Form layout="vertical" onSubmit={handleUploadFile} style={{ marginTop: '24px' }}>
