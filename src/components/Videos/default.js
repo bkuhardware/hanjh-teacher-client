@@ -5,11 +5,11 @@ import { message, Slider, Row, Col, Menu, Tooltip, Popover, Dropdown } from 'ant
 import {
     ExpandOutlined, CloseOutlined, CaretRightFilled, PauseOutlined, ReloadOutlined, 
     Loading3QuartersOutlined, FrownOutlined, BackwardOutlined, ForwardOutlined, CompressOutlined, RetweetOutlined, LinkOutlined,
-    FileTextFilled, SettingFilled, CheckOutlined, QuestionCircleFilled, InfoCircleOutlined, QuestionCircleOutlined, 
+    FileTextFilled, SettingFilled, CheckOutlined, InfoCircleOutlined, QuestionCircleOutlined, 
 } from '@ant-design/icons';
-import Mute from 'icons/Mute';
-import SmallVolume from 'icons/SmallVolume';
-import Volume from 'icons/Volume';
+import Mute from '@/elements/icon/mute';
+import SmallVolume from '@/elements/icon/smallVolume';
+import Volume from '@/elements/icon/volume';
 import { secondsToTime } from 'utils';
 import styles from './default.less';
 
