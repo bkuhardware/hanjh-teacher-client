@@ -3,7 +3,7 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import { Button, message, Slider, Row, Col, Menu, Tooltip, Popover, Dropdown } from 'antd';
 import {
-    ExpandOutlined, CloseOutlined, CaretRightFilled, PauseOutlined, ReloadOutlined, 
+    ExpandOutlined, CloseOutlined, CaretRightFilled, PauseOutlined, ReloadOutlined, PlayCircleFilled,
     Loading3QuartersOutlined, FrownOutlined, BackwardOutlined, ForwardOutlined, CompressOutlined, RetweetOutlined, LinkOutlined,
     FileTextFilled, SettingFilled, CheckOutlined, InfoCircleOutlined, QuestionCircleOutlined, 
 } from '@ant-design/icons';
@@ -17,11 +17,10 @@ import styles from './default.less';
 const { SubMenu } = Menu;
 const MenuItem = Menu.Item;
 
-const Video = ({ videoUrl, ...props }) => {
+const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
     const divRef = useRef(null);
     const videoRef = useRef(null);
     const previewRef = useRef(null);
-    const [srcObject, setSrcObject] = useState(null);
     const [fullScreen, setFullScreen] = useState(false);
     const [loop, setLoop] = useState(false);
     const [controlVisible, setControlVisible] = useState(false);
@@ -65,18 +64,20 @@ const Video = ({ videoUrl, ...props }) => {
                 const videoWidth = videoEle.videoWidth;
                 let realHeight, realWidth, realPreviewHeight, realPreviewWidth;
                 if (videoWidth / videoHeight < 4 / 3) {
-                    realHeight = 525;
-                    realWidth = (525 / videoHeight) * videoWidth;
+                    realHeight = baseHeight;
+                    realWidth = (baseHeight / videoHeight) * videoWidth;
                     realPreviewHeight = 84;
                     realPreviewWidth = (84 / videoHeight) * videoWidth;
                 }
                 else {
                     const divEle = divRef.current;
-                    const divWidth = divEle.clientWidth;
-                    realWidth = divWidth;
-                    realHeight = (realWidth / videoWidth) * videoHeight;
-                    realPreviewWidth = 160;
-                    realPreviewHeight = (realPreviewWidth / videoWidth) * videoHeight;
+                    if (divEle) {
+                        const divWidth = divEle.clientWidth;
+                        realWidth = divWidth;
+                        realHeight = (realWidth / videoWidth) * videoHeight;
+                        realPreviewWidth = 160;
+                        realPreviewHeight = (realPreviewWidth / videoWidth) * videoHeight;
+                    }
                 }
                 setPreviewWidth(realPreviewWidth);
                 setPreviewHeight(realPreviewHeight);
@@ -122,7 +123,6 @@ const Video = ({ videoUrl, ...props }) => {
             videoEle.onerror = () => handleError('Sorry, there was an error');
             videoEle.onstalled = () => handleError('Sorry, the video is not available.');
             videoEle.onabort = () => handleError('Sorry, the video is stoped downloading.');
-            setSrcObject(videoUrl);
         }
     }, [videoUrl]);
     useEffect(() => {
@@ -342,7 +342,7 @@ const Video = ({ videoUrl, ...props }) => {
                 <RetweetOutlined />Loop
                 {loop && (
                     <span className={styles.loopOk}>
-                        <CheckOutlined style={{ color: '#FADA5E' }} />
+                        <CheckOutlined />
                     </span>
                 )}
             </MenuItem>
@@ -358,7 +358,7 @@ const Video = ({ videoUrl, ...props }) => {
         </Menu>
     );
     return (
-        <div className={styles.defaultVideo} ref={divRef} style={{ height: height }}>
+        <div className={styles.defaultVideo} ref={divRef} style={{ height: height, width: baseWidth }}>
             <Dropdown overlay={dropdownMenu} trigger={['contextMenu']} overlayClassName={styles.contextDropdown} getPopupContainer={() => divRef.current}>
                 <video
                     {...props}
@@ -374,8 +374,8 @@ const Video = ({ videoUrl, ...props }) => {
                         return false;
                     }}
                 >
-                    <source type="video/mp4" src={srcObject} />
-                    Sorry, your browser doesn't support .mp4 file.
+                    <source src={videoUrl} type="video/mp4" />
+                    Your browser does not support the video element.
                 </video>
             </Dropdown>
             <div className={styles.controlVisible} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
@@ -500,6 +500,15 @@ const Video = ({ videoUrl, ...props }) => {
                     </div>
                 </div>
             )}
+            {playingStatus === 1 && (
+                <div className={classNames(styles.overlay, styles.replay)}>
+                    <div className={styles.outer}>
+                        <div className={styles.inlineDiv}>
+                            <div onClick={handleTogglePlay}><PlayCircleFilled style={{ fontSize: '84px', cursor: 'pointer' }}/></div>
+                        </div>
+                    </div>
+                </div>
+            )}
             {waiting && (
                 <div className={styles.overlay}>
                     <div className={styles.outer}>
@@ -537,6 +546,6 @@ const Video = ({ videoUrl, ...props }) => {
             </div>
         </div>
     );
-};
+}
 
 export default Video;
