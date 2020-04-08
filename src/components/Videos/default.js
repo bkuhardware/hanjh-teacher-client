@@ -416,22 +416,24 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                     <div className={styles.controlBar}>
                                         <Row gutter={8}>
                                             <Col className={styles.playStatus} span={2}>
-                                                {playingStatus === 1 ? (
-                                                    <PlayerTooltip placement="top" title="Play">
-                                                        <CaretRightFilled />
-                                                    </PlayerTooltip>
-                                                ) : playingStatus === 0 ? (
-                                                    <PlayerTooltip placement="top" title="Pause">
-                                                        <PauseOutlined />
-                                                    </PlayerTooltip>
-                                                ) : (
-                                                    <PlayerTooltip placement="top" title="Reload">
-                                                        <ReloadOutlined />
-                                                    </PlayerTooltip>
-                                                )}
+                                                <div className={styles.val} onClick={handleTogglePlay}>
+                                                    {playingStatus === 1 ? (
+                                                        <PlayerTooltip placement="top" title="Play">
+                                                            <CaretRightFilled />
+                                                        </PlayerTooltip>
+                                                    ) : playingStatus === 0 ? (
+                                                        <PlayerTooltip placement="top" title="Pause">
+                                                            <PauseOutlined />
+                                                        </PlayerTooltip>
+                                                    ) : (
+                                                        <PlayerTooltip placement="top" title="Reload">
+                                                            <ReloadOutlined />
+                                                        </PlayerTooltip>
+                                                    )}
+                                                </div>
                                             </Col>
                                             <Col className={styles.center} span={16}>
-                                                <Divider type="vertical" />
+                                                {/* <Divider type="vertical" /> */}
                                                 <Row gutter={8}>
                                                     <Col className={styles.playbackRate} span={3}>
                                                         <span className={styles.val}>
@@ -471,7 +473,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                                         </PlayerTooltip>
                                                     </Col>
                                                 </Row>
-                                                <Divider type="vertical" />
+                                                {/* <Divider type="vertical" /> */}
                                             </Col>
                                             <Col className={styles.options} span={6}>
                                                 <Row>
