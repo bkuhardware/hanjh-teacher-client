@@ -372,11 +372,6 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
             </MenuItem>
         </Menu>
     );
-    const PlayerTooltip = ({ placement, title, children }) => (
-        <Tooltip placement={placement} title={title}>
-            {children}
-        </Tooltip>
-    );
     return  (
         <React.Fragment>
             {(width === 0 || height === 0) && (
@@ -418,59 +413,65 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                             <Col className={styles.playStatus} span={2}>
                                                 <div className={styles.val} onClick={handleTogglePlay}>
                                                     {playingStatus === 1 ? (
-                                                        <PlayerTooltip placement="top" title="Play">
+                                                        <Tooltip placement="top" title="Play" getPopupContainer={() => divRef.current}>
                                                             <CaretRightFilled />
-                                                        </PlayerTooltip>
+                                                        </Tooltip>
                                                     ) : playingStatus === 0 ? (
-                                                        <PlayerTooltip placement="top" title="Pause">
+                                                        <Tooltip placement="top" title="Pause" getPopupContainer={() => divRef.current}>
                                                             <PauseOutlined />
-                                                        </PlayerTooltip>
+                                                        </Tooltip>
                                                     ) : (
-                                                        <PlayerTooltip placement="top" title="Reload">
+                                                        <Tooltip placement="top" title="Reload" getPopupContainer={() => divRef.current}>
                                                             <ReloadOutlined />
-                                                        </PlayerTooltip>
+                                                        </Tooltip>
                                                     )}
                                                 </div>
                                             </Col>
                                             <Col className={styles.center} span={16}>
                                                 {/* <Divider type="vertical" /> */}
                                                 <Row gutter={8}>
-                                                    <Col className={styles.playbackRate} span={3}>
-                                                        <span className={styles.val}>
-                                                            1.0x
-                                                        </span>
+                                                    <Col className={styles.playbackRate} span={2}>
+                                                        <div>
+                                                            <Tooltip placement="top" title="Playback rate" getPopupContainer={() => divRef.current}>
+                                                                <span className={styles.val}>
+                                                                    1.0x
+                                                                </span>
+                                                            </Tooltip>
+                                                        </div>
                                                     </Col>
                                                     <Col className={styles.currentTime} span={3}>
                                                         <span className={styles.val}>
                                                             {secondsToTime(currentTime.value)}
                                                         </span>
                                                     </Col>
-                                                    <Col className={styles.slider} span={12}>
-                                                        <Slider
-                                                            min={0}
-                                                            max={_.round(duration, 1)}
-                                                            step={0.1}
-                                                            value={currentTime.value}
-                                                            onChange={value => {
-                                                                setCurrentTime({
-                                                                    value,
-                                                                    changing: true
-                                                                });
-                                                            }}
-                                                            onAfterChange={handleChangeCurrentTime}
-                                                            tooltipVisible={false}
-                                                        />
-                                                        <span className={styles.buffered} style={{ width: `${(bufferTime * 100) / duration}%` }}/>
+                                                    <Col className={styles.sliderCol} span={14}>
+                                                        <div className={styles.slider} onMouseMove={handleMouseOnSlider} onMouseLeave={resetPreview}>
+                                                            <Slider
+                                                                min={0}
+                                                                max={_.round(duration, 1)}
+                                                                step={0.1}
+                                                                value={currentTime.value}
+                                                                onChange={value => {
+                                                                    setCurrentTime({
+                                                                        value,
+                                                                        changing: true
+                                                                    });
+                                                                }}
+                                                                onAfterChange={handleChangeCurrentTime}
+                                                                tooltipVisible={false}
+                                                            />
+                                                            <span className={styles.buffered} style={{ width: `${(bufferTime * 100) / duration}%` }}/>
+                                                        </div>
                                                     </Col>
                                                     <Col className={styles.endTime} span={3}>
                                                         <span className={styles.val}>
                                                             {secondsToTime(duration)}
                                                         </span>
                                                     </Col>
-                                                    <Col className={styles.forward} span={3}>
-                                                        <PlayerTooltip placement="top" title="Forward 15s">
+                                                    <Col className={styles.forward} span={2}>
+                                                        <Tooltip placement="top" title="Forward 15s">
                                                             <StepForwardOutlined />
-                                                        </PlayerTooltip>
+                                                        </Tooltip>
                                                     </Col>
                                                 </Row>
                                                 {/* <Divider type="vertical" /> */}
@@ -478,19 +479,19 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                             <Col className={styles.options} span={6}>
                                                 <Row>
                                                     <Col span={8} className={styles.transcript}>
-                                                        <PlayerTooltip title="Transcript" placement="top">
+                                                        <Tooltip title="Transcript" placement="top">
                                                             <FileTextFilled />
-                                                        </PlayerTooltip>
+                                                        </Tooltip>
                                                     </Col>
                                                     <Col span={8} className={styles.subtitles}>
-                                                        <PlayerTooltip placement="top" title="Subtitles">
+                                                        <Tooltip placement="top" title="Subtitles">
                                                             <Caption />
-                                                        </PlayerTooltip>
+                                                        </Tooltip>
                                                     </Col>
                                                     <Col span={8} className={styles.subtitles}>
-                                                        <PlayerTooltip placement="top" title="Setting">
+                                                        <Tooltip placement="top" title="Setting">
                                                             <SettingFilled />
-                                                        </PlayerTooltip>
+                                                        </Tooltip>
                                                     </Col>
                                                 </Row>
                                             </Col>

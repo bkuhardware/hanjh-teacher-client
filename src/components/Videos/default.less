@@ -24,7 +24,7 @@
         height: 40px;
         z-index: 3;
         .controlBar {
-            width: 85%;
+            width: 858px;
             margin: auto;
             position: relative;
             border-radius: 4px;
@@ -42,6 +42,62 @@
                 border-bottom-left-radius: 4px;
                 &:hover {
                     opacity: 0.8;
+                }
+            }
+            .center {
+                border-left: 0.5px solid rgba(250, 218, 94, 0.3);
+                border-right: 0.5px solid rgba(250, 218, 94, 0.3);
+                .playbackRate {
+                    .val {
+                        display: inline-block;
+                        border-radius: 2px;
+                        border: none;
+                        font-weight: bold;
+                        font-size: 0.9em;
+                        padding: 4px 6px;
+                        background: #FADA5E;
+                        color: black;
+                        line-height: 15px;
+                    }
+                }
+                .sliderCol {
+                    .slider {
+                        position: relative;
+                        :global {
+                            .ant-slider {
+                                margin-top: 12px;
+                                margin-left: 0;
+                                margin-right: 0;
+                            }
+                            .ant-slider, .ant-slider-step, .ant-slider-track, .ant-slider-rail {
+                                height: 8px;
+                            }
+                            .ant-slider-step {
+                                z-index: 2;
+                            }
+                            .ant-slider-track {
+                                background: #FADA5E;
+                                z-index: 2;
+                            }
+                            .ant-slider-handle {
+                                width: 18px;
+                                height: 18px;
+                                border-color: #FADA5E;
+                                z-index: 3;
+                            }
+                        }
+                        .buffered {
+                            display: inline-block;
+                            position: absolute;
+                            top: calc(50% + 4px);
+                            left: 0px;
+                            height: 8px;
+                            background: rgba(250, 218, 94, 0.3);
+                            transform: translate(0, -50%);
+                            border-radius: 2px;
+                            z-index: 1;
+                        }
+                    }
                 }
             }
         }
