@@ -57,7 +57,7 @@
                         font-weight: bold;
                         font-size: 0.9em;
                         padding: 4px 6px;
-                        background: #FADA5E;
+                        background: white;
                         color: black;
                         line-height: 15px;
                     }
@@ -100,6 +100,23 @@
                             z-index: 1;
                         }
                     }
+                }
+                .endTime {
+                    color: #FADA5E;
+                }
+            }
+            .options {
+                .transcript, .subtitles, .settings {
+                    cursor: pointer;
+                    font-size: 1.2em;
+                    font-weight: bold;
+                    color: white;
+                    &:hover {
+                        opacity: 0.8;
+                    }
+                }
+                .subtitles {
+                    font-size: 1.6em;
                 }
             }
         }

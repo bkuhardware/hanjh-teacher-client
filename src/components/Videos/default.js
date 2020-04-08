@@ -492,7 +492,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                                             <Caption />
                                                         </Tooltip>
                                                     </Col>
-                                                    <Col span={8} className={styles.subtitles}>
+                                                    <Col span={8} className={styles.settings}>
                                                         <Tooltip placement="top" title="Setting">
                                                             <SettingFilled />
                                                         </Tooltip>
