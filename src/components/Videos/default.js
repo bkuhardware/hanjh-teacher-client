@@ -1,16 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
-import { Button, message, Slider, Row, Col, Menu, Tooltip, Popover, Dropdown, Spin } from 'antd';
+import { Button, message, Slider, Row, Col, Menu, Tooltip, Popover, Dropdown, Spin, Divider } from 'antd';
 import {
-    ExpandOutlined, CloseOutlined, CaretRightFilled, PauseOutlined, ReloadOutlined, PlayCircleFilled,
-    Loading3QuartersOutlined, FrownOutlined, BackwardOutlined, ForwardOutlined, CompressOutlined, RetweetOutlined, LinkOutlined,
+    FullscreenOutlined, CloseOutlined, CaretRightFilled, PauseOutlined, ReloadOutlined, PlayCircleFilled,
+    Loading3QuartersOutlined, FrownOutlined, BackwardOutlined, StepForwardOutlined, FullscreenExitOutlined, RetweetOutlined, LinkOutlined,
     FileTextFilled, SettingFilled, CheckOutlined, InfoCircleOutlined, QuestionCircleOutlined, 
 } from '@ant-design/icons';
 import Slide from 'react-reveal/Slide';
 import Mute from '@/elements/icon/mute';
 import SmallVolume from '@/elements/icon/smallVolume';
 import Volume from '@/elements/icon/volume';
+import Caption from '@/elements/icon/caption';
 import { videoRates as rates, videoResolutions as resolutions, videoCaptions as captions } from '@/config/constants';
 import { secondsToTime } from '@/utils/utils';
 import styles from './default.less';
@@ -26,7 +27,6 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
     const [fullScreen, setFullScreen] = useState(false);
     const [loop, setLoop] = useState(false);
     const [controlVisible, setControlVisible] = useState(false);
-    const [visibleTimer, setVisibleTimer] = useState(null);
     const [duration, setDuration] = useState(null);
     const [currentTime, setCurrentTime] = useState({
         changing: false,
@@ -372,6 +372,11 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
             </MenuItem>
         </Menu>
     );
+    const PlayerTooltip = ({ placement, title, children }) => (
+        <Tooltip placement={placement} title={title}>
+            {children}
+        </Tooltip>
+    );
     return  (
         <React.Fragment>
             {(width === 0 || height === 0) && (
@@ -405,9 +410,92 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                 </Dropdown>
                 {width > 0 && height > 0 && (
                     <>
-                        {controlVisible && (
+                        {true && (
                             <Slide bottom duration={200}>
-                                <div className={styles.controlVisible}>
+                                <div className={styles.controlBarOuter}>
+                                    <div className={styles.controlBar}>
+                                        <Row gutter={8}>
+                                            <Col className={styles.playStatus} span={2}>
+                                                {playingStatus === 1 ? (
+                                                    <PlayerTooltip placement="top" title="Play">
+                                                        <CaretRightFilled />
+                                                    </PlayerTooltip>
+                                                ) : playingStatus === 0 ? (
+                                                    <PlayerTooltip placement="top" title="Pause">
+                                                        <PauseOutlined />
+                                                    </PlayerTooltip>
+                                                ) : (
+                                                    <PlayerTooltip placement="top" title="Reload">
+                                                        <ReloadOutlined />
+                                                    </PlayerTooltip>
+                                                )}
+                                            </Col>
+                                            <Col className={styles.center} span={16}>
+                                                <Divider type="vertical" />
+                                                <Row gutter={8}>
+                                                    <Col className={styles.playbackRate} span={3}>
+                                                        <span className={styles.val}>
+                                                            1.0x
+                                                        </span>
+                                                    </Col>
+                                                    <Col className={styles.currentTime} span={3}>
+                                                        <span className={styles.val}>
+                                                            {secondsToTime(currentTime.value)}
+                                                        </span>
+                                                    </Col>
+                                                    <Col className={styles.slider} span={12}>
+                                                        <Slider
+                                                            min={0}
+                                                            max={_.round(duration, 1)}
+                                                            step={0.1}
+                                                            value={currentTime.value}
+                                                            onChange={value => {
+                                                                setCurrentTime({
+                                                                    value,
+                                                                    changing: true
+                                                                });
+                                                            }}
+                                                            onAfterChange={handleChangeCurrentTime}
+                                                            tooltipVisible={false}
+                                                        />
+                                                        <span className={styles.buffered} style={{ width: `${(bufferTime * 100) / duration}%` }}/>
+                                                    </Col>
+                                                    <Col className={styles.endTime} span={3}>
+                                                        <span className={styles.val}>
+                                                            {secondsToTime(duration)}
+                                                        </span>
+                                                    </Col>
+                                                    <Col className={styles.forward} span={3}>
+                                                        <PlayerTooltip placement="top" title="Forward 15s">
+                                                            <StepForwardOutlined />
+                                                        </PlayerTooltip>
+                                                    </Col>
+                                                </Row>
+                                                <Divider type="vertical" />
+                                            </Col>
+                                            <Col className={styles.options} span={6}>
+                                                <Row>
+                                                    <Col span={8} className={styles.transcript}>
+                                                        <PlayerTooltip title="Transcript" placement="top">
+                                                            <FileTextFilled />
+                                                        </PlayerTooltip>
+                                                    </Col>
+                                                    <Col span={8} className={styles.subtitles}>
+                                                        <PlayerTooltip placement="top" title="Subtitles">
+                                                            <Caption />
+                                                        </PlayerTooltip>
+                                                    </Col>
+                                                    <Col span={8} className={styles.subtitles}>
+                                                        <PlayerTooltip placement="top" title="Setting">
+                                                            <SettingFilled />
+                                                        </PlayerTooltip>
+                                                    </Col>
+                                                </Row>
+                                            </Col>
+                                        </Row>
+                                    </div>
+                                </div>
+                                {/* <div className={styles.controlVisible}>
                                     <div>
                                         <div className={styles.slider} onMouseMove={handleMouseOnSlider} onMouseLeave={resetPreview}>
                                             <Slider
@@ -450,7 +538,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                                 </span>
                                                 <span className={styles.forward} onClick={handlePlayForward}>
                                                     <Tooltip placement="top" title="Forward 15s">
-                                                        <ForwardOutlined />
+                                                        <StepForwardOutlined />
                                                     </Tooltip>
                                                 </span>
                                                 
@@ -507,13 +595,13 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                             </Col>
                                         </Row>
                                     </div>
-                                </div>
+                                </div> */}
                             </Slide>
                         )}
                         <div className={styles.expand} onClick={handleToggleExpand}>
                             <Tooltip placement="top" title={fullScreen ? "Collapse" : "Full screen"}>
                                 <span className={styles.btn}>
-                                    {fullScreen ? <CompressOutlined /> : <ExpandOutlined />}
+                                    {fullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
                                 </span>
                             </Tooltip>
                         </div>
