@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
-import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Divider, message, Drawer } from 'antd';
+import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Drawer } from 'antd';
 import Player from '@/components/Videos/default';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
 import Scrollbars from 'react-custom-scrollbars';
@@ -27,7 +27,7 @@ const Caption = () => {
     )
 };
 
-const Video = ({ videoUrl, onUpload }) => {
+const Video = ({ videoUrl, onUpload, onDelete }) => {
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -38,7 +38,15 @@ const Video = ({ videoUrl, onUpload }) => {
         setFileName(null);
     };
     const handleChange = () => setEditing(true);
-    const handleDelete = () => { };
+    const handleDelete = () => {
+        Modal.confirm({
+            title: 'Are you sure to delete this video?',
+            content: 'This cause the lecture unpublic to student',
+            okText: 'Yes',
+            cancelText: 'No',
+            onOk: () => onDelete()
+        })
+    };
     const handleCancelChange = () => {
         resetUpload();
         setEditing(false);
@@ -296,6 +304,12 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             }
         });
     };
+    const handleDeleteVideo = () => {
+        return dispatch({
+            type: 'video/delete',
+            payload: lectureId
+        });
+    };
     const handleSaveDescription = description => {
         dispatch({
             type: 'video/updateDescription',
@@ -499,6 +513,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                                 videoUrl={video.videoUrl}
                                 loading={false}
                                 onUpload={handleUploadVideo}
+                                onDelete={handleDeleteVideo}
                             />
                         </div>
                     </React.Fragment>

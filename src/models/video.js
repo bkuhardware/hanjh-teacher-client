@@ -24,7 +24,7 @@ export default {
                         _id: 1,
                         title: 'ES6 Javscript'
                     },
-                    videoUrl: ''
+                    videoUrl: null
                 }
             });
         },
@@ -50,6 +50,14 @@ export default {
             saveProgress(100);
             yield delay(1000); //delay for UI
             if (callback) callback();    
+        },
+        *delete({ payload: lectureId }, { call, put }) {
+            //call api to delete
+            yield delay(1200);
+            yield put({
+                type: 'saveVideo',
+                payload: null
+            });
         },
         *fetchDescription({ payload }, { call, put }) {
             const { courseId, lectureId } = payload;
