@@ -33,16 +33,18 @@
             background: @component-background;
             height: 100%;
             line-height: 40px;
-            .playStatus {
+            .playStatus, .forward {
                 cursor: pointer;
                 font-size: 1.4em;
                 font-weight: bold;
                 color: #FADA5E;
-                border-top-left-radius: 4px;
-                border-bottom-left-radius: 4px;
                 &:hover {
                     opacity: 0.8;
                 }
+            }
+            .playStatus {
+                border-top-left-radius: 4px;
+                border-bottom-left-radius: 4px;
             }
             .center {
                 border-left: 0.5px solid rgba(250, 218, 94, 0.3);
@@ -128,7 +130,7 @@
     .overlay {
         z-index: 2;
         background: rgba(20, 20, 20, 0.6);
-        color: white;
+        color: @component-background;
         position: absolute;
         width: 100%;
         height: 100%;

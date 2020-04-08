@@ -22,6 +22,7 @@ const MenuItem = Menu.Item;
 const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
     const divRef = useRef(null);
     const videoRef = useRef(null);
+    const sliderRef = useRef(null);
     const previewRef = useRef(null);
     const [srcObj, setSrcObj] = useState(null); 
     const [fullScreen, setFullScreen] = useState(false);
@@ -203,7 +204,8 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
     };
     const handleMouseOnSlider = e => {
         const offsetX = e.nativeEvent.offsetX;
-        const sliderWidth = 328.19;
+        const sliderWidth = sliderRef.current.clientWidth;
+        console.log(sliderWidth);
         const time = (offsetX / sliderWidth) * duration;
         const clientX = e.clientX;
         const clientY = e.clientY;
@@ -427,7 +429,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                                     )}
                                                 </div>
                                             </Col>
-                                            <Col className={styles.center} span={16}>
+                                            <Col className={styles.center} span={18}>
                                                 {/* <Divider type="vertical" /> */}
                                                 <Row gutter={8}>
                                                     <Col className={styles.playbackRate} span={2}>
@@ -445,7 +447,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                                         </span>
                                                     </Col>
                                                     <Col className={styles.sliderCol} span={14}>
-                                                        <div className={styles.slider} onMouseMove={handleMouseOnSlider} onMouseLeave={resetPreview}>
+                                                        <div className={styles.slider} onMouseMove={handleMouseOnSlider} onMouseLeave={resetPreview} ref={sliderRef}>
                                                             <Slider
                                                                 min={0}
                                                                 max={_.round(duration, 1)}
@@ -469,14 +471,16 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                                         </span>
                                                     </Col>
                                                     <Col className={styles.forward} span={2}>
-                                                        <Tooltip placement="top" title="Forward 15s">
-                                                            <StepForwardOutlined />
-                                                        </Tooltip>
+                                                        <div onClick={handlePlayForward}>
+                                                            <Tooltip placement="top" title="Forward 15s">
+                                                                <StepForwardOutlined />
+                                                            </Tooltip>
+                                                        </div>
                                                     </Col>
                                                 </Row>
                                                 {/* <Divider type="vertical" /> */}
                                             </Col>
-                                            <Col className={styles.options} span={6}>
+                                            <Col className={styles.options} span={4}>
                                                 <Row>
                                                     <Col span={8} className={styles.transcript}>
                                                         <Tooltip title="Transcript" placement="top">
