@@ -203,7 +203,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
     };
     const handleMouseOnSlider = e => {
         const offsetX = e.nativeEvent.offsetX;
-        const sliderWidth = divRef.current.clientWidth - 24;
+        const sliderWidth = 328.19;
         const time = (offsetX / sliderWidth) * duration;
         const clientX = e.clientX;
         const clientY = e.clientY;
