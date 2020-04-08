@@ -131,7 +131,7 @@
                     margin-left: 8px;
                     line-height: 25px;
                 }
-                .expand, .setting, .transcript {
+                .setting, .transcript {
                     font-size: 1.3em;
                     position: relative;
                     top: 3px;
@@ -141,6 +141,28 @@
                     }
                 }
             }
+        }
+    }
+    .expand {
+        display: inline-block;
+        text-align: center;
+        height: 42px;
+        width: 42px;
+        line-height: 42px;
+        border: none;
+        border-radius: 50%;
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: @component-background;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.19);
+        cursor: pointer;
+        .btn {
+            &:hover {
+                color: white;
+            }
+            font-size: 1.1em;
+            line-height: 40px;
         }
     }
     .overlay {

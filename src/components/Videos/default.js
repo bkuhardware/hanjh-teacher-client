@@ -504,24 +504,19 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                                         <FileTextFilled />
                                                     </Tooltip>
                                                 </span>
-                                                
-                                                <span className={styles.expand} onClick={handleToggleExpand}>
-                                                    {!fullScreen ? (
-                                                        <Tooltip placement="top" title="Full screen">
-                                                            <ExpandOutlined />
-                                                        </Tooltip>
-                                                    ) : (
-                                                        <Tooltip placement="top" title="Collapse">
-                                                            <CompressOutlined />
-                                                        </Tooltip>
-                                                    )}
-                                                </span>
                                             </Col>
                                         </Row>
                                     </div>
                                 </div>
                             </Slide>
                         )}
+                        <div className={styles.expand} onClick={handleToggleExpand}>
+                            <Tooltip placement="top" title={fullScreen ? "Collapse" : "Full screen"}>
+                                <span className={styles.btn}>
+                                    {fullScreen ? <CompressOutlined /> : <ExpandOutlined />}
+                                </span>
+                            </Tooltip>
+                        </div>
                         {playingStatus === 2 && (
                             <div className={classNames(styles.overlay, styles.replay)}>
                                 <div className={styles.outer}>
