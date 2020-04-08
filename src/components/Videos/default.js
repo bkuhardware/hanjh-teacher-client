@@ -58,7 +58,6 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
     const [settingsVisible, setSettingsVisible] = useState(false);
     useEffect(() => {
         if (videoRef.current) {
-            message.success('Hello');
             const videoEle = videoRef.current;
             videoEle.ondurationchange = () => setDuration(videoEle.duration);
             videoEle.onloadedmetadata = () => {
