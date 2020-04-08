@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
-import { Button, message, Slider, Row, Col, Menu, Tooltip, Popover, Dropdown } from 'antd';
+import { Button, message, Slider, Row, Col, Menu, Tooltip, Popover, Dropdown, Spin } from 'antd';
 import {
     ExpandOutlined, CloseOutlined, CaretRightFilled, PauseOutlined, ReloadOutlined, PlayCircleFilled,
     Loading3QuartersOutlined, FrownOutlined, BackwardOutlined, ForwardOutlined, CompressOutlined, RetweetOutlined, LinkOutlined,
@@ -21,7 +21,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
     const divRef = useRef(null);
     const videoRef = useRef(null);
     const previewRef = useRef(null);
-    const [srcObject, setSrcObject] = useState(null);
+    const [srcObj, setSrcObj] = useState(null); 
     const [fullScreen, setFullScreen] = useState(false);
     const [loop, setLoop] = useState(false);
     const [controlVisible, setControlVisible] = useState(false);
@@ -124,7 +124,6 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
             videoEle.onerror = () => handleError('Sorry, there was an error');
             videoEle.onstalled = () => handleError('Sorry, the video is not available.');
             videoEle.onabort = () => handleError('Sorry, the video is stoped downloading.');
-            setSrcObject(videoUrl);
             return () => {
                 videoEle.ondurationchange = null;
                 videoEle.onloadeddata = null;
@@ -140,10 +139,9 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                 videoEle.onerror = null;
                 videoEle.onstalled = null;
                 videoEle.onabort = null;
-                setSrcObject(null);
             };
         }
-    }, [videoUrl]);
+    }, []);
     useEffect(() => {
         const fullscreenFn = e => setFullScreen(!!document.fullscreenElement);
         const webkitFullScreenFn = e => setFullScreen(!!document.webkitFullscreenElement);
@@ -160,6 +158,16 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
             document.removeEventListener('msfullscreenchange', msFullscreenFn);
         };
     }, []);
+    useEffect(() => {
+        setSrcObj(videoUrl);
+        return () => {
+            setBufferTime(0);
+            setWidth(0);
+            setHeight(0);
+            setPlaybackRate('1.0');
+            setSrcObj(null);
+        };
+    }, [videoUrl]);
     const handleError = messageText => {
         setError({
             status: 1,
@@ -379,13 +387,13 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
             </MenuItem>
         </Menu>
     );
-    return (
+    return  (
         <div className={styles.defaultVideo} ref={divRef} style={{ height: height, width: baseWidth }}>
             <Dropdown overlay={dropdownMenu} trigger={['contextMenu']} overlayClassName={styles.contextDropdown} getPopupContainer={() => divRef.current}>
                 <video
                     {...props}
                     ref={videoRef}
-                    src={srcObject}
+                    src={srcObj}
                     className={styles.videoEle}
                     width={!fullScreen ? width : '100%'}
                     height={!fullScreen ? height : '100%'}
@@ -398,172 +406,180 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                     }}
                 />
             </Dropdown>
-            <div className={styles.controlVisible} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                <div style={{ opacity: controlVisible ? 1 : 1 }}>
-                    <div className={styles.slider} onMouseMove={handleMouseOnSlider} onMouseLeave={resetPreview}>
-                        <Slider
-                            min={0}
-                            max={_.round(duration, 1)}
-                            step={0.1}
-                            value={currentTime.value}
-                            onChange={value => {
-                                setCurrentTime({
-                                    value,
-                                    changing: true
-                                });
-                            }}
-                            onAfterChange={handleChangeCurrentTime}
-                            tooltipVisible={false}
-                        />
-                        <span className={styles.buffered} style={{ width: `${(bufferTime * 100) / duration}%` }}/>
-                    </div>
-                    <Row className={styles.options}>
-                        <Col span={12} className={styles.left}>
-                            <span className={styles.back} onClick={handlePlayBack}>
-                                <Tooltip placement="top" title="Back 15s">
-                                    <BackwardOutlined />
-                                </Tooltip>  
-                            </span>
-                            <span className={styles.playStatus} onClick={handleTogglePlay}>
-                                {playingStatus === 1 ? (
-                                    <Tooltip placement="top" title="Play">
-                                        <CaretRightFilled />
-                                    </Tooltip>
-                                ) : playingStatus === 0 ? (
-                                    <Tooltip placement="top" title="Pause">
-                                        <PauseOutlined />
-                                    </Tooltip>
-                                ) : (
-                                    <Tooltip placement="top" title="Reload">
-                                        <ReloadOutlined />
-                                    </Tooltip>
-                                )}
-                            </span>
-                            <span className={styles.forward} onClick={handlePlayForward}>
-                                <Tooltip placement="top" title="Forward 15s">
-                                    <ForwardOutlined />
-                                </Tooltip>
-                            </span>
-                            
-                            <span className={styles.volume} onMouseEnter={() => setVolumeVisible(true)} onMouseLeave={() => setVolumeVisible(false)}>
-                                <Button className={styles.sound} onClick={handleToggleVolume}>
-                                    {volume === 0 ? (
-                                        <>
-                                            <Mute/>
-                                            <CloseOutlined className={styles.close} />
-                                        </>
-                                    ) : volume < 0.5 ? (
-                                        <SmallVolume/>
-                                    ) : (
-                                        <Volume/>
-                                    )}
-                                </Button>
-                                <span className={volumeVisible ? styles.slider : classNames(styles.slider, styles.hiddenSlider)} >
-                                    <Slider
-                                        min={0}
-                                        max={1}
-                                        step={0.1}
-                                        value={volume}
-                                        onChange={value => setVolume(value)}
-                                        onAfterChange={handleSetVolume}
-                                    />
-                                </span>
-                            </span>
-                            <span className={styles.time}>
-                                {`${secondsToTime(currentTime.value)} / ${secondsToTime(duration)}`}
-                            </span>
-                        </Col>
-                        <Col span={12} className={styles.right}>
-                            <span className={styles.setting}>
-                                <Popover
-                                    content={settingsMenu}
-                                    trigger="click"
-                                    placement="top"
-                                    arrowPointAtCenter
-                                    popupClassName={styles.settingsPopover}
-                                    popupAlign={{ offset: [!fullScreen ? 0 : -35, -10] }}
-                                    getPopupContainer={() => divRef.current}
-                                    visible={settingsVisible}
-                                    onVisibleChange={handleSettingsVisibleChange}
-                                >
-                                    <SettingFilled />
-                                </Popover>
-                            </span>
-                            <span className={styles.transcript}>
-                                <Tooltip title="Transcript" placement="top">
-                                    <FileTextFilled />
-                                </Tooltip>
-                            </span>
-                            
-                            <span className={styles.expand} onClick={handleToggleExpand}>
-                                {!fullScreen ? (
-                                    <Tooltip placement="top" title="Full screen">
-                                        <ExpandOutlined />
-                                    </Tooltip>
-                                ) : (
-                                    <Tooltip placement="top" title="Collapse">
-                                        <CompressOutlined />
-                                    </Tooltip>
-                                )}
-                            </span>
-                        </Col>
-                    </Row>
+            {width === 0 || height === 0 ? (
+                <div className={styles.fetching}>
+                    <Spin size="large" />
                 </div>
-            </div>
-            {playingStatus === 2 && (
-                <div className={classNames(styles.overlay, styles.replay)}>
-                    <div className={styles.outer}>
-                        <div className={styles.inlineDiv}>
-                            <div onClick={handleTogglePlay}><ReloadOutlined style={{ fontSize: '84px', cursor: 'pointer' }}/></div>
-                            <div className={styles.text}>Play again</div>
+            ) : (
+                <>
+                    <div className={styles.controlVisible} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                        <div style={{ opacity: controlVisible ? 1 : 1 }}>
+                            <div className={styles.slider} onMouseMove={handleMouseOnSlider} onMouseLeave={resetPreview}>
+                                <Slider
+                                    min={0}
+                                    max={_.round(duration, 1)}
+                                    step={0.1}
+                                    value={currentTime.value}
+                                    onChange={value => {
+                                        setCurrentTime({
+                                            value,
+                                            changing: true
+                                        });
+                                    }}
+                                    onAfterChange={handleChangeCurrentTime}
+                                    tooltipVisible={false}
+                                />
+                                <span className={styles.buffered} style={{ width: `${(bufferTime * 100) / duration}%` }}/>
+                            </div>
+                            <Row className={styles.options}>
+                                <Col span={12} className={styles.left}>
+                                    <span className={styles.back} onClick={handlePlayBack}>
+                                        <Tooltip placement="top" title="Back 15s">
+                                            <BackwardOutlined />
+                                        </Tooltip>  
+                                    </span>
+                                    <span className={styles.playStatus} onClick={handleTogglePlay}>
+                                        {playingStatus === 1 ? (
+                                            <Tooltip placement="top" title="Play">
+                                                <CaretRightFilled />
+                                            </Tooltip>
+                                        ) : playingStatus === 0 ? (
+                                            <Tooltip placement="top" title="Pause">
+                                                <PauseOutlined />
+                                            </Tooltip>
+                                        ) : (
+                                            <Tooltip placement="top" title="Reload">
+                                                <ReloadOutlined />
+                                            </Tooltip>
+                                        )}
+                                    </span>
+                                    <span className={styles.forward} onClick={handlePlayForward}>
+                                        <Tooltip placement="top" title="Forward 15s">
+                                            <ForwardOutlined />
+                                        </Tooltip>
+                                    </span>
+                                    
+                                    <span className={styles.volume} onMouseEnter={() => setVolumeVisible(true)} onMouseLeave={() => setVolumeVisible(false)}>
+                                        <Button className={styles.sound} onClick={handleToggleVolume}>
+                                            {volume === 0 ? (
+                                                <>
+                                                    <Mute/>
+                                                    <CloseOutlined className={styles.close} />
+                                                </>
+                                            ) : volume < 0.5 ? (
+                                                <SmallVolume/>
+                                            ) : (
+                                                <Volume/>
+                                            )}
+                                        </Button>
+                                        <span className={volumeVisible ? styles.slider : classNames(styles.slider, styles.hiddenSlider)} >
+                                            <Slider
+                                                min={0}
+                                                max={1}
+                                                step={0.1}
+                                                value={volume}
+                                                onChange={value => setVolume(value)}
+                                                onAfterChange={handleSetVolume}
+                                            />
+                                        </span>
+                                    </span>
+                                    <span className={styles.time}>
+                                        {`${secondsToTime(currentTime.value)} / ${secondsToTime(duration)}`}
+                                    </span>
+                                </Col>
+                                <Col span={12} className={styles.right}>
+                                    <span className={styles.setting}>
+                                        <Popover
+                                            content={settingsMenu}
+                                            trigger="click"
+                                            placement="top"
+                                            arrowPointAtCenter
+                                            popupClassName={styles.settingsPopover}
+                                            popupAlign={{ offset: [!fullScreen ? 0 : -35, -10] }}
+                                            getPopupContainer={() => divRef.current}
+                                            visible={settingsVisible}
+                                            onVisibleChange={handleSettingsVisibleChange}
+                                        >
+                                            <SettingFilled />
+                                        </Popover>
+                                    </span>
+                                    <span className={styles.transcript}>
+                                        <Tooltip title="Transcript" placement="top">
+                                            <FileTextFilled />
+                                        </Tooltip>
+                                    </span>
+                                    
+                                    <span className={styles.expand} onClick={handleToggleExpand}>
+                                        {!fullScreen ? (
+                                            <Tooltip placement="top" title="Full screen">
+                                                <ExpandOutlined />
+                                            </Tooltip>
+                                        ) : (
+                                            <Tooltip placement="top" title="Collapse">
+                                                <CompressOutlined />
+                                            </Tooltip>
+                                        )}
+                                    </span>
+                                </Col>
+                            </Row>
                         </div>
                     </div>
-                </div>
-            )}
-            {playingStatus === 1 && (
-                <div className={classNames(styles.overlay, styles.replay)}>
-                    <div className={styles.outer}>
-                        <div className={styles.inlineDiv}>
-                            <div onClick={handleTogglePlay}><PlayCircleFilled style={{ fontSize: '84px', cursor: 'pointer' }}/></div>
+                    {playingStatus === 2 && (
+                        <div className={classNames(styles.overlay, styles.replay)}>
+                            <div className={styles.outer}>
+                                <div className={styles.inlineDiv}>
+                                    <div onClick={handleTogglePlay}><ReloadOutlined style={{ fontSize: '84px', cursor: 'pointer' }}/></div>
+                                    <div className={styles.text}>Play again</div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {playingStatus === 1 && (
+                        <div className={classNames(styles.overlay, styles.replay)}>
+                            <div className={styles.outer}>
+                                <div className={styles.inlineDiv}>
+                                    <div onClick={handleTogglePlay}><PlayCircleFilled style={{ fontSize: '84px', cursor: 'pointer' }}/></div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {waiting && (
+                        <div className={styles.overlay}>
+                            <div className={styles.outer}>
+                                <div className={styles.inlineDiv}>
+                                    <Loading3QuartersOutlined style={{ fontSize: '84px', cursor: 'pointer' }} spin/>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {error.status === 1 && (
+                        <div className={classNames(styles.overlay, styles.error)}>
+                            <div className={styles.outer}>
+                                <div className={styles.inlineDiv}>
+                                    <FrownOutlined />
+                                    <span className={styles.text}>{error.text}</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <div
+                        className={styles.preview}
+                        style={{
+                            left: preview.left,
+                            bottom: preview.bottom,
+                            visibility: preview.visible ? 'visible' : 'hidden',
+                            height: previewHeight + 4
+                        }}
+                    >
+                        <div className={styles.inner}>
+                            <video muted ref={previewRef} className={styles.videoElement} width={previewWidth} height={previewHeight}>
+                                <source src={videoUrl} type="video/mp4" />
+                            </video>
+                            <span className={styles.time}>{`${secondsToTime(preview.time)}`}</span>
                         </div>
                     </div>
-                </div>
+                </>
             )}
-            {waiting && (
-                <div className={styles.overlay}>
-                    <div className={styles.outer}>
-                        <div className={styles.inlineDiv}>
-                            <Loading3QuartersOutlined style={{ fontSize: '84px', cursor: 'pointer' }} spin/>
-                        </div>
-                    </div>
-                </div>
-            )}
-            {error.status === 1 && (
-                <div className={classNames(styles.overlay, styles.error)}>
-                    <div className={styles.outer}>
-                        <div className={styles.inlineDiv}>
-                            <FrownOutlined />
-                            <span className={styles.text}>{error.text}</span>
-                        </div>
-                    </div>
-                </div>
-            )}
-            <div
-                className={styles.preview}
-                style={{
-                    left: preview.left,
-                    bottom: preview.bottom,
-                    visibility: preview.visible ? 'visible' : 'hidden',
-                    height: previewHeight + 4
-                }}
-            >
-                <div className={styles.inner}>
-                    <video muted ref={previewRef} className={styles.videoElement} width={previewWidth} height={previewHeight}>
-                        <source src={videoUrl} type="video/mp4" />
-                    </video>
-                    <span className={styles.time}>{`${secondsToTime(preview.time)}`}</span>
-                </div>
-            </div>
         </div>
     );
 }

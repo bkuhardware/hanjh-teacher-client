@@ -132,7 +132,7 @@ const Video = ({ videoUrl, onUpload }) => {
                     </div>
                 </div>
             )}
-            {(!videoUrl || !checkValidLink(videoUrl) || editing) && (
+            {(!videoUrl || editing) && (
                 <div className={styles.uploadVideo}>
                     <div className={styles.warning}>
                         HuYeFen only support .mp4 video type. Please convert to this type before uploading. File size must less than 4 GB.

@@ -33,6 +33,7 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^16.8.6",
     "react-pdf": "^4.1.0",
+    "react-reveal": "^1.2.2",
     "react-spinners": "^0.8.0",
     "react-timeago": "^4.4.0",
     "video-react": "^0.14.1"

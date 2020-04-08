@@ -38,7 +38,7 @@ export default {
             } = payload;
             saveProgress(38);
             yield delay(2500);
-            //call cloud api to upload video, return url,
+            //call cloud api to upload video, return url, this cloud api is different, only for video.
             saveProgress(66);
             //call api to update videoUrl for lecture.
             yield delay(2200);
@@ -49,7 +49,7 @@ export default {
             });
             saveProgress(100);
             yield delay(1000); //delay for UI
-            if (callback) callback();      
+            if (callback) callback();    
         },
         *fetchDescription({ payload }, { call, put }) {
             const { courseId, lectureId } = payload;
