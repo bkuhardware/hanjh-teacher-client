@@ -60,6 +60,10 @@
                         background: white;
                         color: black;
                         line-height: 15px;
+                        cursor: pointer;
+                        &:hover {
+                            opacity: 0.8;
+                        }
                     }
                 }
                 .sliderCol {
@@ -304,6 +308,40 @@
         .loopOk {
             float: right;
             font-size: 0.9em;
+        }
+    }
+}
+
+.ratesPopover {
+    z-index: 30;
+    width: 80px;
+    :global {
+        .ant-popover-inner-content {
+            padding: 0;
+        }
+        .ant-popover-arrow {
+            display: none;
+        }
+    }
+    .ratesMenu {
+        width: 100%;
+        text-align: center;
+        background: inherit;
+        height: 198px;
+        overflow: auto;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        .rate {
+            padding: 6px 0;
+            cursor: pointer;
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+        .selectedRate {
+            color: black;
+            background: #FADA5E;
         }
     }
 }

@@ -51,8 +51,10 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
     const [volume, setVolume] = useState(0);
     const [oldVolume, setOldVolume] = useState(0);
     const [volumeVisible, setVolumeVisible] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
     const [playbackRate, setPlaybackRate] = useState("1.0");
     const [curOpenKeys, setOpenKeys] = useState([]);
+    const [rateVisible, setRateVisible] = useState(false);
     const [resolution, setResolution] = useState('720');
     const [caption, setCaption] = useState('eng');
     const [settingsVisible, setSettingsVisible] = useState(false);
@@ -226,13 +228,15 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
         });
     };
     const handleMouseMove = () => {
-        setControlVisible(true);
-        if (controlTimer) 
-            clearTimeout(controlTimer);
-        setControlTimer(setTimeout(() => {
-            setControlTimer(null);
-            setControlVisible(false);
-        }, 2500));
+        if (!menuOpen) {
+            setControlVisible(true);
+            if (controlTimer) 
+                clearTimeout(controlTimer);
+            setControlTimer(setTimeout(() => {
+                setControlTimer(null);
+                setControlVisible(false);
+            }, 2500));
+        }
     };
     const handlePlayForward = () => {
         const videoEle = videoRef.current;
@@ -277,81 +281,49 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
             }
         }
     };
-    const handleOpenKeysChange = openKeys => {
-        const latestOpenKey = _.find(openKeys, key => _.indexOf(curOpenKeys, key) === -1);
-        if (_.indexOf(['resolution', 'rate', 'caption'], latestOpenKey) === -1) {
-            setOpenKeys(openKeys);
+    const handleRateVisibleChange = visible => {
+        if (visible) {
+            if (controlTimer) {
+                clearTimeout(controlTimer);
+                setControlTimer(null);
+            }
+            setMenuOpen(true);
         }
         else {
-            setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
+            setControlTimer(setTimeout(() => {
+                setControlTimer(null);
+                setControlVisible(false);
+            }, 2500));
+            setMenuOpen(false);
         }
+        setRateVisible(visible);
     };
-    const handleSelectSetting = ({ key }) => {
-        const submenu = curOpenKeys[0];
-        if (submenu === 'resolution') {
-            setResolution(key);
+    const handleSelectRate = rateKey => {
+        const videoEle = videoRef.current;
+        if (videoEle) {
+            videoEle.playbackRate = _.toNumber(rateKey);
+            setPlaybackRate(rateKey);
+            handleRateVisibleChange(false);
         }
-        else if (submenu === 'rate') {
-            const videoEle = videoRef.current;
-            if (videoEle) {
-                videoEle.playbackRate = _.toNumber(key);
-                setPlaybackRate(key);
-            }
-        }
-        else if (submenu === 'caption') {
-            setCaption(key);
-        }
-    };
-    const handleSettingsVisibleChange = visible => {
-        if (!visible) setOpenKeys([]);
-        setSettingsVisible(visible);
     };
     const handleSelectOption = ({ key }) => {
-        console.log(key);
         if (key === "loop") {
             setLoop(!loop);
         }
+        else message.warning('Sorry, this function is not available!');
     };
-    const settingsMenu = (
-        <Menu
-            mode="inline"
-            className={styles.menu}
-            openKeys={curOpenKeys}
-            onOpenChange={handleOpenKeysChange}
-            multiple
-            selectedKeys={[resolution, playbackRate, caption]}
-            onSelect={handleSelectSetting}
-            style={{
-                height: _.size(curOpenKeys) > 0 ? '250px' : '151px'
-            }}
-        >
-            <SubMenu key="resolution" title={`Resolution [${resolutions[resolution]}]`}>
-                {_.map(_.orderBy(_.keys(resolutions), key => key, ['desc']), resolutionKey => (
-                    <MenuItem key={resolutionKey} >
-                        {resolutions[resolutionKey]}
-                        {resolutionKey === resolution && (<CheckOutlined style={{ marginLeft: '5px', color: '#090199', fontSize: '0.85em' }}/>)}
-                    </MenuItem>
-                ))}
-            </SubMenu>
-            <Menu.Divider />
-            <SubMenu key="rate" title={`Playback rate [${rates[playbackRate]}]`}>
-                {_.map(_.keys(rates), rateKey => (
-                    <MenuItem key={rateKey}>
-                        {rates[rateKey]}
-                        {rateKey === playbackRate && (<CheckOutlined style={{ marginLeft: '5px', color: '#090199', fontSize: '0.85em' }}/>)}
-                    </MenuItem>
-                ))}
-            </SubMenu>
-            <Menu.Divider />
-            <SubMenu key="caption" title={`Captions [${captions[caption]}]`}>
-                {_.map(_.keys(captions), captionKey => (
-                    <MenuItem key={captionKey}>
-                        {captions[captionKey]}
-                        {captionKey === caption && (<CheckOutlined style={{ marginLeft: '5px', color: '#090199', fontSize: '0.85em' }}/>)}
-                    </MenuItem>
-                ))}
-            </SubMenu>
-        </Menu>
+    const playbackRateMenu = (
+        <div className={styles.ratesMenu}>
+            {_.map(_.orderBy(_.keys(rates), key => key, ['desc']), rateKey => (
+                <div
+                    key={rateKey}
+                    className={rateKey === playbackRate ? classNames(styles.rate, styles.selectedRate) : styles.rate}
+                    onClick={() => handleSelectRate(rateKey)}
+                >
+                    {rates[rateKey]}
+                </div>
+            ))}
+        </div>
     );
     const dropdownMenu = (
         <Menu className={styles.dropdownMenu} selectedKeys={[]} onClick={handleSelectOption}>
@@ -418,15 +390,15 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                             <Col className={styles.playStatus} span={2}>
                                                 <div className={styles.val} onClick={handleTogglePlay}>
                                                     {playingStatus === 1 ? (
-                                                        <Tooltip placement="top" title="Play" getPopupContainer={() => divRef.current}>
+                                                        <Tooltip placement="top" mouseEnterDelay={1} title="Play" getPopupContainer={() => divRef.current}>
                                                             <CaretRightFilled />
                                                         </Tooltip>
                                                     ) : playingStatus === 0 ? (
-                                                        <Tooltip placement="top" title="Pause" getPopupContainer={() => divRef.current}>
+                                                        <Tooltip placement="top" mouseEnterDelay={1} title="Pause" getPopupContainer={() => divRef.current}>
                                                             <PauseOutlined />
                                                         </Tooltip>
                                                     ) : (
-                                                        <Tooltip placement="top" title="Reload" getPopupContainer={() => divRef.current}>
+                                                        <Tooltip placement="top" mouseEnterDelay={1} title="Reload" getPopupContainer={() => divRef.current}>
                                                             <ReloadOutlined />
                                                         </Tooltip>
                                                     )}
@@ -437,10 +409,21 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                                 <Row gutter={8}>
                                                     <Col className={styles.playbackRate} span={2}>
                                                         <div>
-                                                            <Tooltip placement="top" title="Playback rate" getPopupContainer={() => divRef.current}>
-                                                                <span className={styles.val}>
-                                                                    1.0x
-                                                                </span>
+                                                            <Tooltip placement="top" mouseEnterDelay={1} title="Playback rate" getPopupContainer={() => divRef.current}>
+                                                                <Popover
+                                                                    trigger="click"
+                                                                    content={playbackRateMenu}
+                                                                    arrowPointAtCenter
+                                                                    placement="top"
+                                                                    visible={rateVisible}
+                                                                    onVisibleChange={handleRateVisibleChange}
+                                                                    popupClassName={styles.ratesPopover}
+                                                                    getPopupContainer={() => divRef.current}
+                                                                >
+                                                                    <span className={styles.val}>
+                                                                        {`${playbackRate}x`}
+                                                                    </span>
+                                                                </Popover>
                                                             </Tooltip>
                                                         </div>
                                                     </Col>
@@ -475,7 +458,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                                     </Col>
                                                     <Col className={styles.forward} span={2}>
                                                         <div onClick={handlePlayForward}>
-                                                            <Tooltip placement="top" title="Forward 15s">
+                                                            <Tooltip placement="top" mouseEnterDelay={1} title="Forward 15s">
                                                                 <StepForwardOutlined />
                                                             </Tooltip>
                                                         </div>
@@ -486,17 +469,17 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                             <Col className={styles.options} span={4}>
                                                 <Row>
                                                     <Col span={8} className={styles.transcript}>
-                                                        <Tooltip title="Transcript" placement="top">
+                                                        <Tooltip mouseEnterDelay={1} title="Transcript" placement="top">
                                                             <FileTextFilled />
                                                         </Tooltip>
                                                     </Col>
                                                     <Col span={8} className={styles.subtitles}>
-                                                        <Tooltip placement="top" title="Subtitles">
+                                                        <Tooltip placement="top" mouseEnterDelay={1} title="Subtitles">
                                                             <Caption />
                                                         </Tooltip>
                                                     </Col>
                                                     <Col span={8} className={styles.settings}>
-                                                        <Tooltip placement="top" title="Setting">
+                                                        <Tooltip placement="top" mouseEnterDelay={1} title="Setting">
                                                             <SettingFilled />
                                                         </Tooltip>
                                                     </Col>
@@ -527,27 +510,27 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                         <Row className={styles.options}>
                                             <Col span={12} className={styles.left}>
                                                 <span className={styles.back} onClick={handlePlayBack}>
-                                                    <Tooltip placement="top" title="Back 15s">
+                                                    <Tooltip placement="top" mouseEnterDelay={1} title="Back 15s">
                                                         <BackwardOutlined />
                                                     </Tooltip>  
                                                 </span>
                                                 <span className={styles.playStatus} onClick={handleTogglePlay}>
                                                     {playingStatus === 1 ? (
-                                                        <Tooltip placement="top" title="Play">
+                                                        <Tooltip placement="top" mouseEnterDelay={1} title="Play">
                                                             <CaretRightFilled />
                                                         </Tooltip>
                                                     ) : playingStatus === 0 ? (
-                                                        <Tooltip placement="top" title="Pause">
+                                                        <Tooltip placement="top" mouseEnterDelay={1} title="Pause">
                                                             <PauseOutlined />
                                                         </Tooltip>
                                                     ) : (
-                                                        <Tooltip placement="top" title="Reload">
+                                                        <Tooltip placement="top" mouseEnterDelay={1} title="Reload">
                                                             <ReloadOutlined />
                                                         </Tooltip>
                                                     )}
                                                 </span>
                                                 <span className={styles.forward} onClick={handlePlayForward}>
-                                                    <Tooltip placement="top" title="Forward 15s">
+                                                    <Tooltip placement="top" mouseEnterDelay={1} title="Forward 15s">
                                                         <StepForwardOutlined />
                                                     </Tooltip>
                                                 </span>
@@ -609,7 +592,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                             </Slide>
                         )}
                         <div className={styles.expand} onClick={handleToggleExpand}>
-                            <Tooltip placement="top" title={fullScreen ? "Collapse" : "Full screen"}>
+                            <Tooltip placement="top" mouseEnterDelay={1} title={fullScreen ? "Collapse" : "Full screen"}>
                                 <span className={styles.btn}>
                                     {fullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
                                 </span>
