@@ -24,7 +24,7 @@ export default {
                         _id: 1,
                         title: 'ES6 Javscript'
                     },
-                    videoUrl: 'https://mp4-a.udemycdn.com/2018-05-11_11-14-45-8469d1761758f153fa31634801ff8d12/WebHD_480.mp4?4ioTthabaHph__iM8GQzz4NlC86-GoTmb-smQDzZQZ9RvyirkrGTn9XHi-AsrOnUBtL9I15oYqe5_HZggzvCwWN4eFUu4oa7HBcMh130H_NmVVsK8r7PWKXaiYNkR7yUve7qEDC83W5QbrYVi8UAkgOZ9LmtejD8DTHGJ9e3pc9p'
+                    videoUrl: 'https://mp4-a.udemycdn.com/2018-05-11_11-14-45-8469d1761758f153fa31634801ff8d12/WebHD_480.mp4?cfJ1vU1K8kJbAXdrAZUKlSEQdiaGaFPU6zyX1tgOsucZte_uh-9cTWuWPKURoHOsV8dXF2RLC4a3Zn-hIiAFeKOo24OKmOrX_8yoaH4vz9_MA0K32sDaigQ6J7oU9t-c_y8fLrjM2lqtmPl0_J0PcZnZOYw9woWJtBK6-w6ml6cQ'
                 }
             });
         },

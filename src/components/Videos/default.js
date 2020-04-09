@@ -5,12 +5,9 @@ import { Button, message, Slider, Row, Col, Menu, Tooltip, Popover, Dropdown, Sp
 import {
     FullscreenOutlined, CloseOutlined, CaretRightFilled, PauseOutlined, ReloadOutlined, PlayCircleFilled,
     Loading3QuartersOutlined, FrownOutlined, BackwardOutlined, StepForwardOutlined, FullscreenExitOutlined, RetweetOutlined, LinkOutlined,
-    FileTextFilled, SettingFilled, CheckOutlined, InfoCircleOutlined, QuestionCircleOutlined, 
+    FileTextFilled, SettingFilled, CheckOutlined, InfoCircleOutlined, QuestionCircleOutlined, SoundFilled, StopOutlined
 } from '@ant-design/icons';
 import Slide from 'react-reveal/Slide';
-import Mute from '@/elements/icon/mute';
-import SmallVolume from '@/elements/icon/smallVolume';
-import Volume from '@/elements/icon/volume';
 import Caption from '@/elements/icon/caption';
 import { videoRates as rates, videoResolutions as resolutions, videoCaptions as captions } from '@/config/constants';
 import { secondsToTime } from '@/utils/utils';
@@ -408,7 +405,11 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                 {width > 0 && height > 0 && (
                     <>
                         {true && (
-                            <Slide bottom duration={200}>
+                            <Slide
+                                duration={200}
+                                bottom
+                                when={controlVisible}
+                            >
                                 <div className={styles.controlBarOuter}>
                                     <div className={styles.controlBar}>
                                         <Row gutter={8}>
@@ -611,6 +612,41 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                     {fullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
                                 </span>
                             </Tooltip>
+                        </div>
+                        <div
+                            className={styles.volume}
+                            style={{ width: volumeVisible ? '144px' : '42px' }}
+                            onMouseEnter={() => setVolumeVisible(true)}
+                            onMouseLeave={() => setVolumeVisible(false)}
+                        >
+                            <Row>
+                                    <Col span={5}>
+                                        <div className={styles.btn} onClick={handleToggleVolume}>
+                                            <span className={styles.sound}>
+                                                <SoundFilled />
+                                            </span>
+                                            {volume === 0 && (
+                                                <span className={styles.stop}>
+                                                    <CloseOutlined />
+                                                </span>
+                                            )}
+                                        </div>
+                                    </Col>
+                                    <Col span={19}>
+                                        <div className={!volumeVisible ? styles.hiddenSlider : undefined}>
+                                            <Slider
+                                                min={0}
+                                                max={1}
+                                                step={0.1}
+                                                value={volume}
+                                                onChange={value => setVolume(value)}
+                                                onAfterChange={handleSetVolume}
+                                                tooltipVisible={false}
+                                            />
+                                        </div>
+                                    </Col>
+                                </Row>
+                            
                         </div>
                         {playingStatus === 2 && (
                             <div className={classNames(styles.overlay, styles.replay)}>

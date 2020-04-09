@@ -121,7 +121,7 @@
             }
         }
     }
-    .expand {
+    .expand, .volume {
         display: inline-block;
         text-align: center;
         height: 42px;
@@ -143,6 +143,32 @@
             font-size: 1.4em;
             line-height: 40px;
         }
+    }
+
+    .volume {
+        top: 66px;
+        padding: 0 12px;
+        border-radius: 21px;
+        text-align: left;
+        overflow: hidden;
+        transition: all 0.3s ease-in;
+        .hiddenSlider {
+            :global(.ant-slider) {
+                display: none;
+            }
+        }
+        .btn {
+            position: relative;
+            .stop {
+                position: absolute;
+                left: 0;
+                color: red;
+                font-weight: bold;
+            }
+        }
+    }
+    .openVolume {
+        width: 144px;    
     }
     .overlay {
         z-index: 2;
