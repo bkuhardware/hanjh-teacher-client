@@ -152,6 +152,25 @@
         text-align: left;
         overflow: hidden;
         transition: all 0.3s ease-in;
+        :global {
+            .ant-slider {
+                height: 14px;
+                .ant-slider-handle {
+                    display: none;
+                }
+                .ant-slider-track {
+                    background: #FADA5E;
+                }
+                .ant-slider-track, .ant-slider-step, .ant-slider-rail {
+                    height: 6px;
+                }
+                &:hover {
+                    .ant-slider-rail {
+                        background: #555;
+                    }
+                }
+            }
+        }
         .hiddenSlider {
             :global(.ant-slider) {
                 display: none;
@@ -162,6 +181,7 @@
             .stop {
                 position: absolute;
                 left: 0;
+                top: 0;
                 color: red;
                 font-weight: bold;
             }

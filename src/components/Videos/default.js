@@ -25,6 +25,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
     const [fullScreen, setFullScreen] = useState(false);
     const [loop, setLoop] = useState(false);
     const [controlVisible, setControlVisible] = useState(false);
+    const [controlTimer, setControlTimer] = useState(null);
     const [duration, setDuration] = useState(null);
     const [currentTime, setCurrentTime] = useState({
         changing: false,
@@ -224,12 +225,14 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
             bottom: 0
         });
     };
-    const handlePlayBack = () => {
-        const videoEle = videoRef.current;
-        if (videoEle) {
-            videoEle.currentTime = videoEle.currentTime - 15;
-            if (videoEle.pause) videoEle.play();
-        }
+    const handleMouseMove = () => {
+        setControlVisible(true);
+        if (controlTimer) 
+            clearTimeout(controlTimer);
+        setControlTimer(setTimeout(() => {
+            setControlTimer(null);
+            setControlVisible(false);
+        }, 2500));
     };
     const handlePlayForward = () => {
         const videoEle = videoRef.current;
@@ -381,8 +384,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
             <div
                 className={styles.defaultVideo}
                 ref={divRef} style={{ height: height, width: baseWidth }}
-                onMouseEnter={() => setControlVisible(true)}
-                onMouseLeave={() => setControlVisible(false)}
+                onMouseMove={handleMouseMove}
             >
                 <Dropdown overlay={dropdownMenu} trigger={['contextMenu']} overlayClassName={styles.contextDropdown} getPopupContainer={() => divRef.current}>
                     <video
@@ -620,33 +622,32 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                             onMouseLeave={() => setVolumeVisible(false)}
                         >
                             <Row>
-                                    <Col span={5}>
-                                        <div className={styles.btn} onClick={handleToggleVolume}>
-                                            <span className={styles.sound}>
-                                                <SoundFilled />
+                                <Col span={5}>
+                                    <div className={styles.btn} onClick={handleToggleVolume}>
+                                        <span className={styles.sound}>
+                                            <SoundFilled />
+                                        </span>
+                                        {volume === 0 && (
+                                            <span className={styles.stop}>
+                                                <CloseOutlined />
                                             </span>
-                                            {volume === 0 && (
-                                                <span className={styles.stop}>
-                                                    <CloseOutlined />
-                                                </span>
-                                            )}
-                                        </div>
-                                    </Col>
-                                    <Col span={19}>
-                                        <div className={!volumeVisible ? styles.hiddenSlider : undefined}>
-                                            <Slider
-                                                min={0}
-                                                max={1}
-                                                step={0.1}
-                                                value={volume}
-                                                onChange={value => setVolume(value)}
-                                                onAfterChange={handleSetVolume}
-                                                tooltipVisible={false}
-                                            />
-                                        </div>
-                                    </Col>
-                                </Row>
-                            
+                                        )}
+                                    </div>
+                                </Col>
+                                <Col span={19}>
+                                    <div className={!volumeVisible ? styles.hiddenSlider : undefined}>
+                                        <Slider
+                                            min={0}
+                                            max={1}
+                                            step={0.1}
+                                            value={volume}
+                                            onChange={value => setVolume(value)}
+                                            onAfterChange={handleSetVolume}
+                                            tooltipVisible={false}
+                                        />
+                                    </div>
+                                </Col>
+                            </Row>
                         </div>
                         {playingStatus === 2 && (
                             <div className={classNames(styles.overlay, styles.replay)}>
