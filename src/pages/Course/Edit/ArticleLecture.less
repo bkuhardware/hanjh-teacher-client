@@ -261,13 +261,15 @@
         width: 100%;
         top: 0;
         left: 0;
-        background: black;  /* fallback for old browsers */
-        background: -webkit-linear-gradient(to right, black, rgb(80, 80, 80));  /* Chrome 10-25, Safari 5.1-6 */
-        background: linear-gradient(to right, black, rgb(80, 80, 80)); 
+        background: rgb(20, 20, 20);  /* fallback for old browsers */
+        background: -webkit-linear-gradient(to right, rgb(20, 20, 20), rgb(55, 55, 55));  /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to right, rgb(20, 20, 20), rgb(55, 55, 55)); 
         z-index: 100;
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.19);
         .infor {
             padding: 32px;
+            padding-bottom: 21px;
+            border-bottom: 0.5px solid rgba(255, 255, 255, 0.5);
             .iconCol {
                 text-align: center;
                 .icon {
@@ -291,6 +293,29 @@
             }
             .options {
                 text-align: right;
+                .saveBtn {
+                    display: inline-block;
+                    margin-right: 16px;
+                    button {
+                        min-width: 115px;
+                    }
+                }
+                .estimateTime {
+                    display: inline-block;
+                    margin-right: 12px;
+                }
+                .estimateTime, .metadata {
+                    font-size: 1.75em;
+                    cursor: pointer;
+                    color: white;
+                    & > span {
+                        border-radius: 50%;
+                        border: 4px solid #fada5e;
+                    }
+                    &:hover {
+                        opacity: 0.8;
+                    }
+                }
             }
         }
         .tabs {

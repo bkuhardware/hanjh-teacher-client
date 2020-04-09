@@ -427,15 +427,19 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                         {article && !loading && (
                             <>
                                 <span className={styles.saveBtn}>
-                                    <Button type="primary" size="large" disabled={!saveStatus}>
+                                    <Button type="primary" disabled={!saveStatus}>
                                         <SaveOutlined />Save
                                     </Button>
                                 </span>
                                 <span className={styles.estimateTime}>
-                                    <ClockCircleFilled />
+                                    <Tooltip placement="bottom" title="Add estimates time" mouseEnterDelay={1}>
+                                        <ClockCircleFilled />
+                                    </Tooltip>
                                 </span>
                                 <span className={styles.metadata}>
-                                    <InfoCircleFilled />
+                                    <Tooltip placement="bottom" title="View article info" mouseEnterDelay={1}>
+                                        <InfoCircleFilled />
+                                    </Tooltip>
                                 </span>
                             </>
                         )}
