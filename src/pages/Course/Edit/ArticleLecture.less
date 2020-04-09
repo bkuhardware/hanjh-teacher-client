@@ -1,256 +1,310 @@
+// .article {
+//     padding-left: 8%;
+//     padding-right: 8%;
+//     margin-bottom: 100px;
+//     position: relative;
+//     .loading {
+//         .titleSkeleton {
+//             li {
+//                 height: 20px;
+//             }
+//         }
+//         .spin {
+//             margin-top: 25px;
+//             padding-top: 270px;
+//             text-align: center;
+//         }
+//     }
+//     .settings, .content > .save {
+//         position: fixed;
+//         right: -110px;
+//         top: 40%;
+//         display: inline-block;
+//         background: #1e1e1e;
+//         //border: 0.5px solid rgba(255, 255, 255, 0.2);
+//         border-radius: 20px 0 0 20px;
+//         width: auto;
+//         cursor: pointer;
+//         padding: 12px 0 12px 16px;
+//         border-right: none;
+//         &:hover {
+//             right: 0;
+//             color: white;
+//         }
+//         transition: all 0.3s;
+//         .icon {
+//             font-size: 1.4em;
+//             color: #fada5e;
+//             position: relative;
+//             top: 2px;
+//         }
+//         .text {
+//             margin-left: 12px;
+//             display: inline-block;
+//             width: 110px;
+//         }
+//     }
+//     .content > .save {
+//         right: -80px;
+//         top: calc(40% + 60px);
+//         .text {
+//             width: 80px;
+//         }
+//     }
+//     .title {
+//         color: #fada5e;
+//         font-size: 2.5em;
+//     }
+//     .chapter {
+//         margin-top: 5px;
+//         color: @primary-color;
+//         font-size: 1.2em;
+//     }
+//     .content {
+//         margin-top: 40px;
+//     }
+//     .extra {
+//         margin-top: 6px;
+//         .text {
+//             margin-right: 4px;
+//         }
+//     }
+// }
+
+// .settingsDrawer {
+//     height: 100vh;
+//     z-index: 9999999;
+//     :global {
+//         .ant-drawer-header {
+//             height: 64px;
+//             background: #1e1e1e;
+//             line-height: 64px;
+//             .ant-drawer-title {
+//                 line-height: 32px;
+//             }
+//             .ant-drawer-close {
+//                 height: 64px;
+//                 line-height: 64px;
+//             }
+//         }
+//     }
+//     .container {
+//         & > div::-webkit-scrollbar {
+//             display: none;
+//         }
+//         .estimateTime, .description, .resources {
+//             margin-bottom: 48px;
+//             .loading {
+//                 padding: 30px 0;
+//                 text-align: center;
+//             }
+//             .main {
+//                 margin-top: 25px;
+//             }
+//             .title {
+//                 color: white;
+//                 margin-bottom: 12px;
+//             }
+//         }
+//         .estimateTime {
+//             margin-bottom: 48px;
+//             .main {
+//                 .inputNumber {
+//                     width: 60px;
+//                     margin-right: 3px;
+//                 }
+//                 .unit {
+//                     margin-right: 16px;
+//                 }
+//                 .btn {
+//                     width: 100px;
+//                     float: right;
+//                 }
+//                 &::after {
+//                     clear: both;
+//                     content: ''
+//                 }
+//             }
+//         }
+//         .description {
+//             margin-bottom: 48px;
+            
+//             .main {
+//                 .editor > div {
+//                     background: #1e1e1e;
+//                 }
+//             }
+//             .btn {
+//                 margin-top: 16px;
+//                 text-align: right;
+//                 button {
+//                     min-width: 100px;
+//                 }
+//             }
+//         }
+//         .resources {
+//             .main {
+//                 .btn {
+//                     margin-top: 16px;
+//                     button {
+//                         min-width: 120px;
+//                     }
+//                 }
+//                 .addResource {
+//                     margin-top: 16px;
+//                     position: relative;
+//                     .close {
+//                         position: absolute;
+//                         top: 12px;
+//                         right: 0;
+//                         z-index: 9000;
+//                         display: inline-block;
+//                         cursor: pointer;
+//                         &:hover {
+//                             color: white;
+//                         }
+//                     }
+//                     .browse {
+//                         border-radius: 5px;
+//                         border: 0.5px dashed rgba(255, 255, 255, 0.2);
+//                         background: rgba(30, 30, 30, 0.6);
+//                         padding: 60px 0;
+//                         .inline {
+//                             .previewImage {
+//                                 width: 50%;
+//                                 margin: auto;
+//                                 text-align: center;
+//                                 margin-top: 16px;
+//                             }
+//                             .previewVideo {
+//                                 width: 100%;
+//                                 margin: auto;
+//                                 margin-top: 16px;
+//                                 background: black;
+//                                 max-height: 360px;
+//                                 video {
+//                                     max-height: 360px;
+//                                     margin: auto;
+//                                 }
+//                             }
+//                             .previewPdf {
+//                                 width: 250px;
+//                                 margin: auto;
+//                                 margin-top: 16px;
+//                                 .document {
+//                                     width: 100%;
+//                                 }
+//                             }
+//                             .warning {
+//                                 color: white;
+//                                 line-height: 21px;
+//                             }
+//                             .error {
+//                                 color: tomato;
+//                                 font-size: 0.9em;
+//                                 transition: opacity .25s ease-in-out;
+//                                 -moz-transition: opacity .25s ease-in-out;
+//                                 -webkit-transition: opacity .25s ease-in-out;
+//                             }
+//                             text-align: center;
+//                             width: 75%;
+//                             margin: auto;
+//                         }
+//                     }
+//                     .externalTab {
+//                         padding-left: 10%;
+//                         padding-right: 10%;
+//                         .btn {
+//                             text-align: right;
+//                             button {
+//                                 min-width: 100px;
+//                             }
+//                         }
+//                     }
+//                 }
+//                 .list {
+//                     .resource {
+//                         margin-bottom: 12px;
+//                         &::last-child {
+//                             margin-bottom: 0;
+//                         }
+//                         .info {
+//                             .icon {
+//                                 color: #fada5e;
+//                             }
+//                             .name {
+//                                 margin-left: 10px;
+//                                 &:hover {
+//                                     color: white;
+//                                 }
+//                             }
+//                         }
+//                         .action {
+//                             text-align: right;
+//                             .icon {
+//                                 cursor: pointer;
+//                                 &:hover {
+//                                     color: white;
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
+
 .article {
-    padding-left: 8%;
-    padding-right: 8%;
-    margin-bottom: 100px;
-    position: relative;
-    .loading {
-        .titleSkeleton {
-            li {
-                height: 20px;
+    .header {
+        position: absolute;
+        width: 100%;
+        top: 0;
+        left: 0;
+        background: black;  /* fallback for old browsers */
+        background: -webkit-linear-gradient(to right, black, rgb(80, 80, 80));  /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to right, black, rgb(80, 80, 80)); 
+        z-index: 100;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.19);
+        .infor {
+            padding: 32px;
+            .iconCol {
+                text-align: center;
+                .icon {
+                    font-size: 3.5em;
+                    color: white;
+                }
+            }
+            .textInfo {
+                padding-left: 6px;
+                .title {
+                    font-size: 1.8em;
+                    line-height: 15px;
+                    color: #fada5e;
+                    font-weight: 400;
+                }
+                .chapter {
+                    line-height: 3em;
+                    font-size: 1.2em;
+                    color: white;
+                }
+            }
+            .options {
+                text-align: right;
             }
         }
-        .spin {
-            margin-top: 25px;
-            padding-top: 270px;
+        .tabs {
+            height: 40px;
+            line-height: 40px;
             text-align: center;
         }
     }
-    .settings, .content > .save {
-        position: fixed;
-        right: -110px;
-        top: 40%;
-        display: inline-block;
-        background: #1e1e1e;
-        //border: 0.5px solid rgba(255, 255, 255, 0.2);
-        border-radius: 20px 0 0 20px;
-        width: auto;
-        cursor: pointer;
-        padding: 12px 0 12px 16px;
-        border-right: none;
-        &:hover {
-            right: 0;
-            color: white;
-        }
-        transition: all 0.3s;
-        .icon {
-            font-size: 1.4em;
-            color: #fada5e;
-            position: relative;
-            top: 2px;
-        }
-        .text {
-            margin-left: 12px;
-            display: inline-block;
-            width: 110px;
-        }
-    }
-    .content > .save {
-        right: -80px;
-        top: calc(40% + 60px);
-        .text {
-            width: 80px;
-        }
-    }
-    .title {
-        color: #fada5e;
-        font-size: 2.5em;
-    }
-    .chapter {
-        margin-top: 5px;
-        color: @primary-color;
-        font-size: 1.2em;
+    .clear {
+        height: 120px;
+        width: 100%;
+        clear: both;
     }
     .content {
-        margin-top: 40px;
-    }
-    .extra {
-        margin-top: 6px;
-        .text {
-            margin-right: 4px;
-        }
-    }
-}
 
-.settingsDrawer {
-    height: 100vh;
-    z-index: 9999999;
-    :global {
-        .ant-drawer-header {
-            height: 64px;
-            background: #1e1e1e;
-            line-height: 64px;
-            .ant-drawer-title {
-                line-height: 32px;
-            }
-            .ant-drawer-close {
-                height: 64px;
-                line-height: 64px;
-            }
-        }
-    }
-    .container {
-        & > div::-webkit-scrollbar {
-            display: none;
-        }
-        .estimateTime, .description, .resources {
-            margin-bottom: 48px;
-            .loading {
-                padding: 30px 0;
-                text-align: center;
-            }
-            .main {
-                margin-top: 25px;
-            }
-            .title {
-                color: white;
-                margin-bottom: 12px;
-            }
-        }
-        .estimateTime {
-            margin-bottom: 48px;
-            .main {
-                .inputNumber {
-                    width: 60px;
-                    margin-right: 3px;
-                }
-                .unit {
-                    margin-right: 16px;
-                }
-                .btn {
-                    width: 100px;
-                    float: right;
-                }
-                &::after {
-                    clear: both;
-                    content: ''
-                }
-            }
-        }
-        .description {
-            margin-bottom: 48px;
-            
-            .main {
-                .editor > div {
-                    background: #1e1e1e;
-                }
-            }
-            .btn {
-                margin-top: 16px;
-                text-align: right;
-                button {
-                    min-width: 100px;
-                }
-            }
-        }
-        .resources {
-            .main {
-                .btn {
-                    margin-top: 16px;
-                    button {
-                        min-width: 120px;
-                    }
-                }
-                .addResource {
-                    margin-top: 16px;
-                    position: relative;
-                    .close {
-                        position: absolute;
-                        top: 12px;
-                        right: 0;
-                        z-index: 9000;
-                        display: inline-block;
-                        cursor: pointer;
-                        &:hover {
-                            color: white;
-                        }
-                    }
-                    .browse {
-                        border-radius: 5px;
-                        border: 0.5px dashed rgba(255, 255, 255, 0.2);
-                        background: rgba(30, 30, 30, 0.6);
-                        padding: 60px 0;
-                        .inline {
-                            .previewImage {
-                                width: 50%;
-                                margin: auto;
-                                text-align: center;
-                                margin-top: 16px;
-                            }
-                            .previewVideo {
-                                width: 100%;
-                                margin: auto;
-                                margin-top: 16px;
-                                background: black;
-                                max-height: 360px;
-                                video {
-                                    max-height: 360px;
-                                    margin: auto;
-                                }
-                            }
-                            .previewPdf {
-                                width: 250px;
-                                margin: auto;
-                                margin-top: 16px;
-                                .document {
-                                    width: 100%;
-                                }
-                            }
-                            .warning {
-                                color: white;
-                                line-height: 21px;
-                            }
-                            .error {
-                                color: tomato;
-                                font-size: 0.9em;
-                                transition: opacity .25s ease-in-out;
-                                -moz-transition: opacity .25s ease-in-out;
-                                -webkit-transition: opacity .25s ease-in-out;
-                            }
-                            text-align: center;
-                            width: 75%;
-                            margin: auto;
-                        }
-                    }
-                    .externalTab {
-                        padding-left: 10%;
-                        padding-right: 10%;
-                        .btn {
-                            text-align: right;
-                            button {
-                                min-width: 100px;
-                            }
-                        }
-                    }
-                }
-                .list {
-                    .resource {
-                        margin-bottom: 12px;
-                        &::last-child {
-                            margin-bottom: 0;
-                        }
-                        .info {
-                            .icon {
-                                color: #fada5e;
-                            }
-                            .name {
-                                margin-left: 10px;
-                                &:hover {
-                                    color: white;
-                                }
-                            }
-                        }
-                        .action {
-                            text-align: right;
-                            .icon {
-                                cursor: pointer;
-                                &:hover {
-                                    color: white;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 }

@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
+import classNames from 'classnames';
 import { connect } from 'dva';
-import { Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message } from 'antd';
-import { SaveOutlined } from '@ant-design/icons';
+import { Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message, Popover } from 'antd';
+import { SaveOutlined, FileTextFilled, InfoCircleFilled, ClockCircleFilled, EditFilled, SettingFilled } from '@ant-design/icons';
 import Video from '@/components/Videos/default';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
 import { EditorState, ContentState, convertFromHTML, convertFromRaw, convertToRaw } from 'draft-js';
@@ -150,6 +151,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     const [errorTimer, setErrorTimer] = useState(null);
     const [resourceOpen, setResourceOpen] = useState(false);
     const [resourcesData, setResourcesData] = useState(null);
+    const [saveStatus, setSaveStatus] = useState(0);
     //external states
     const [title, setTitle] = useState({
         value: '',
@@ -400,7 +402,69 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     };
     return (
         <div className={styles.article}>
-            {!article || loading ? (
+            <div className={styles.header}>
+                <Row className={styles.infor}>
+                    <Col span={1} className={styles.iconCol}>
+                        <FileTextFilled className={styles.icon} />
+                    </Col>
+                    <Col span={18} className={styles.textInfo}>
+                        {!article || loading ? (
+                            <div className={styles.loading}>
+                                <Skeleton active title={null} paragraph={{ rows: 2, width: ['62%', '42%'] }} />
+                            </div>
+                        ) : (
+                            <div>
+                                <div className={styles.title}>
+                                    {article.title}
+                                </div>
+                                <div className={styles.chapter}>
+                                    {`Chapter ${article.chapter.title}`}
+                                </div>
+                            </div>
+                        )}
+                    </Col>
+                    <Col span={5} className={styles.options}>
+                        {article && !loading && (
+                            <>
+                                <span className={styles.saveBtn}>
+                                    <Button type="primary" size="large" disabled={!saveStatus}>
+                                        <SaveOutlined />Save
+                                    </Button>
+                                </span>
+                                <span className={styles.estimateTime}>
+                                    <ClockCircleFilled />
+                                </span>
+                                <span className={styles.metadata}>
+                                    <InfoCircleFilled />
+                                </span>
+                            </>
+                        )}
+                    </Col>
+                </Row>
+                <Row className={styles.tabs}>
+                    <Col span={12} className={classNames(styles.tabPane, styles.editContent)}>
+                        <span className={styles.icon}>
+                            <EditFilled />
+                        </span>
+                        <span className={styles.text}>
+                            Edit content
+                        </span>
+                    </Col>
+                    <Col span={12} className={classNames(styles.tabPane, styles.settings)}> 
+                        <span className={styles.icon}>
+                            <SettingFilled />
+                        </span>
+                        <span className={styles.text}>
+                            Settings
+                        </span>
+                    </Col>
+                </Row>
+            </div>
+            <div className={styles.clear} />
+            <div className={styles.content}>
+
+            </div>
+            {/* {!article || loading ? (
                 <div className={styles.loading}>
                     <Skeleton className={styles.titleSkeleton} active title={null} paragraph={{ rows: 1, width: '96%' }} />
                     <Skeleton active title={null} paragraph={{ rows: 2, width: ['62%', '42%'] }} />
@@ -424,8 +488,8 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                         <Content content={article.content} onSave={handleSaveContent} loading={contentLoading} />
                     </div>
                 </React.Fragment>
-            )}
-            <div className={styles.settings} onClick={handleOpenSettings}>
+            )} */}
+            {/* <div className={styles.settings} onClick={handleOpenSettings}>
                 <Icon type="setting" theme="filled" spin className={styles.icon} />
                 <span className={styles.text}>Open settings</span>
             </div>
@@ -634,7 +698,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                         </div>
                     </div>
                 </Scrollbars>
-            </Drawer>
+            </Drawer> */}
         </div>
     )
 };
