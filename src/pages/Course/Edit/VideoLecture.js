@@ -259,6 +259,7 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
                             videoUrl={videoUrl}
                             baseWidth={"100%"}
                             baseHeight={550}
+                            captions={captions || []}
                         />
                     </div>
                 </div>

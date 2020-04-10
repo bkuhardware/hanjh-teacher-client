@@ -17,7 +17,7 @@ import styles from './default.less';
 const { SubMenu } = Menu;
 const MenuItem = Menu.Item;
 
-const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
+const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
     const divRef = useRef(null);
     const videoRef = useRef(null);
     const sliderRef = useRef(null);
@@ -54,10 +54,10 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
     const [volumeVisible, setVolumeVisible] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [playbackRate, setPlaybackRate] = useState("1.0");
-    const [curOpenKeys, setOpenKeys] = useState([]);
     const [rateVisible, setRateVisible] = useState(false);
     const [resolution, setResolution] = useState('720');
-    const [caption, setCaption] = useState('eng');
+    const [caption, setCaption] = useState('off');
+    const [captionVisible, setCaptionVisible] = useState(false);
     const [settingsVisible, setSettingsVisible] = useState(false);
     useEffect(() => {
         if (videoRef.current) {
@@ -282,7 +282,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
             }
         }
     };
-    const handleRateVisibleChange = visible => {
+    const processVisibleWithTimeout = visible => {
         if (visible) {
             if (controlTimer) {
                 clearTimeout(controlTimer);
@@ -297,6 +297,9 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
             }, 2500));
             setMenuOpen(false);
         }
+    }
+    const handleRateVisibleChange = visible => {
+        processVisibleWithTimeout(visible);
         setRateVisible(visible);
     };
     const handleSelectRate = rateKey => {
@@ -313,6 +316,13 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
         }
         else message.warning('Sorry, this function is not available!');
     };
+    const handleSelectCaption = captionId => {
+
+    };
+    const handleCaptionVisibleChange = visible => {
+        processVisibleWithTimeout(visible);
+        setCaptionVisible(visible);
+    };
     const playbackRateMenu = (
         <div className={styles.ratesMenu}>
             {_.map(_.orderBy(_.keys(rates), key => key, ['desc']), rateKey => (
@@ -326,6 +336,28 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
             ))}
         </div>
     );
+    const captionsMenu = (
+        <div className={styles.captionsMenu}>
+            <div
+                key='off'
+                className={styles.caption}
+                onClick={() => handleSelectCaption('off')}
+            >
+                Off
+                {caption === 'off' && (<span className={styles.tick} />)}
+            </div>
+            {_.map(captions, captionItem => (
+                <div
+                    key={captionItem._id}
+                    className={styles.caption}
+                    onClick={() => handleSelectCaption(captionItem._id)}
+                >
+                    {captionItem.label}
+                    {caption === captionItem._id && (<span className={styles.tick} />)}
+                </div>
+            ))}
+        </div>
+    )
     const dropdownMenu = (
         <Menu className={styles.dropdownMenu} selectedKeys={[]} onClick={handleSelectOption}>
             <MenuItem key="loop">
@@ -475,7 +507,17 @@ const Video = ({ videoUrl, baseWidth, baseHeight, ...props }) => {
                                                 </Col>
                                                 <Col span={5} className={styles.subtitles}>
                                                     <Tooltip placement="top" mouseEnterDelay={1} title="Subtitles">
-                                                        <Caption />
+                                                        <Popover
+                                                            getPopupContainer={() => divRef.current}
+                                                            content={captionsMenu}
+                                                            placement="top"
+                                                            arrowPointAtCenter
+                                                            visible={captionVisible}
+                                                            onVisibleChange={handleCaptionVisibleChange}
+                                                            popupClassName={styles.captionsPopover}
+                                                        >
+                                                            <Caption />
+                                                        </Popover>
                                                     </Tooltip>
                                                 </Col>
                                                 <Col span={5} className={styles.settings}>
