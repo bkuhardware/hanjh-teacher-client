@@ -24,6 +24,11 @@ export default {
                         _id: 1,
                         title: 'ES6 Javscript'
                     },
+                    owner: {
+                        _id: 2,
+                        name: 'Trong Luan',
+                        avatar: null
+                    },
                     videoUrl: 'https://mp4-a.udemycdn.com/2018-05-11_11-14-45-8469d1761758f153fa31634801ff8d12/WebHD_480.mp4?cfJ1vU1K8kJbAXdrAZUKlSEQdiaGaFPU6zyX1tgOsucZte_uh-9cTWuWPKURoHOsV8dXF2RLC4a3Zn-hIiAFeKOo24OKmOrX_8yoaH4vz9_MA0K32sDaigQ6J7oU9t-c_y8fLrjM2lqtmPl0_J0PcZnZOYw9woWJtBK6-w6ml6cQ'
                 }
             });
