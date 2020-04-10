@@ -470,6 +470,14 @@
                 .empty {
                     margin-bottom: 32px;
                     width: 500px;
+                    .icon {
+                        color: @error-color;
+                        display: inline-block;
+                        margin-right: 12px;
+                    }
+                    .text {
+                        color: @error-color;
+                    }
                 }
                 .uploadVideo {
                     border-radius: 4px;
@@ -480,6 +488,7 @@
                     width: 100%;
                     margin: auto;
                     transition: all 0.3ms ease-in;
+                    position: relative;
                     .warning {
                         color: white;
                         font-size: 1.2em;
@@ -549,6 +558,18 @@
                                     color: #fada5e;
                                 }
                             }
+                        }
+                    }
+                    .close {
+                        position: absolute;
+                        top: 32px;
+                        right: 32px;
+                        color: white;
+                        font-size: 1.4em;
+                        display: inline-block;
+                        cursor: pointer;
+                        &:hover {
+                            color: #fada5e;
                         }
                     }
                 }

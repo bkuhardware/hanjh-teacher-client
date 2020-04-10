@@ -4,7 +4,7 @@ import { connect } from 'dva';
 import moment from 'moment';
 import classNames from 'classnames';
 import { Alert, Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Popover, Descriptions, Divider } from 'antd';
-import { VideoCameraFilled, InfoCircleFilled, YoutubeFilled, SettingFilled, DeleteFilled, EditFilled, CreditCardFilled } from '@ant-design/icons';
+import { VideoCameraFilled, InfoCircleFilled, YoutubeFilled, SettingFilled, DeleteFilled, EditFilled, CreditCardFilled, CloseCircleFilled, CloseOutlined } from '@ant-design/icons';
 import Player from '@/components/Videos/default';
 import UserAvatar from '@/components/Avatar';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
@@ -119,50 +119,62 @@ const Video = ({ videoUrl, onUpload, onDelete }) => {
     return(
         <div className={styles.uploadVideoContainer}>
             {(!videoUrl || editing) && (
-                <React.Fragment>
-                    {!videoUrl && (
-                        <div className={styles.empty}>
-                            <Alert message="No video uploaded. Please submit video for this lecture." type="error" showIcon/>
-                        </div>
-                    )}
-                    <div className={styles.uploadVideo} style={{ marginBottom: editing ? '32px' : '0px' }}>
-                        <div className={styles.warning}>
-                            HuYeFen only support .mp4 video type. Please convert to this type before uploading. File size must less than 4 GB.
-                        </div>
-                        <div className={styles.uploader}>
-                            <Input
-                                type="text"
-                                value={fileName || ''}
-                                addonBefore={(
-                                    <span className={styles.addOnBefore}>
-                                        <Icon type="play-circle" theme="filled" style={{ position: 'relative', top: '1px', marginRight: '6px', color: '#fada5e' }} />
-                                        <span>New video:</span>
-                                    </span>
-                                )}
-                                placeholder="No file selected."
-                                size="large"
-                                addonAfter={(
-                                    <span className={styles.addOnAfter}>
-                                        {addOnAfter}
-                                    </span>
-                                )}
-                            />
-                            <div
-                                className={styles.progressBar}
-                                style={{
-                                    display: uploading ? 'block' : 'none',
-                                    width: `calc(${progress / 100} * (100% - 184px))`
-                                }}
-                            >
-                                <div className={styles.skeletonBox}>
-                                    <span>
-                                        {`${progress}%`}
-                                    </span>
+                <Fade duration={700}>
+                    <>
+                        {!videoUrl && (
+                            <div className={styles.empty}>
+                                <span className={styles.icon}>
+                                    <CloseCircleFilled />
+                                </span>
+                                <span className={styles.text}>
+                                    No video has been uploaded so your lecture is unpublic.
+                                </span>
+                            </div>
+                        )}
+                        <div className={styles.uploadVideo} style={{ marginBottom: editing ? '32px' : '0px' }}>
+                            <div className={styles.warning}>
+                                HuYeFen only support .mp4 video type. Please convert to this type before uploading. File size must less than 4 GB.
+                            </div>
+                            <div className={styles.uploader}>
+                                <Input
+                                    type="text"
+                                    value={fileName || ''}
+                                    addonBefore={(
+                                        <span className={styles.addOnBefore}>
+                                            <Icon type="play-circle" theme="filled" style={{ position: 'relative', top: '1px', marginRight: '6px', color: '#fada5e' }} />
+                                            <span>New video:</span>
+                                        </span>
+                                    )}
+                                    placeholder="No file selected."
+                                    size="large"
+                                    addonAfter={(
+                                        <span className={styles.addOnAfter}>
+                                            {addOnAfter}
+                                        </span>
+                                    )}
+                                />
+                                <div
+                                    className={styles.progressBar}
+                                    style={{
+                                        display: uploading ? 'block' : 'none',
+                                        width: `calc(${progress / 100} * (100% - 184px))`
+                                    }}
+                                >
+                                    <div className={styles.skeletonBox}>
+                                        <span>
+                                            {`${progress}%`}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+                            {editing && (
+                                <div className={styles.close} onClick={handleCancelChange}>
+                                    <CloseOutlined />
+                                </div>
+                            )}
                         </div>
-                    </div>
-                </React.Fragment>
+                    </>
+                </Fade>
             )}
             {videoUrl && (
                 <div className={styles.videoPlayer}>
