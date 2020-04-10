@@ -80,8 +80,8 @@ const Description = ({ description, loading, onSave }) => {
     };
     return (
         <React.Fragment>
-            <div className={styles.main}>
-                <Spin spinning={loading}>
+            <div className={styles.editor}>
+                <Spin spinning={loading} tip="Saving...">
                     <div className={styles.editor}>
                         <Editor
                             placeholder="Description"

@@ -40,7 +40,7 @@ export default {
             yield delay(1000);
             yield put({
                 type: 'saveDescription',
-                payload: ''
+                payload: 'Hello'
             });
         },
         *fetchResources({ payload }, { call, put }) {
