@@ -3,9 +3,9 @@ import _ from 'lodash';
 import moment from 'moment';
 import classNames from 'classnames';
 import { connect } from 'dva';
-import { Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message, Popover } from 'antd';
+import { Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message, Popover, Descriptions } from 'antd';
 import { SaveOutlined, FileTextFilled, InfoCircleFilled, ClockCircleFilled, EditFilled, SettingFilled, LoadingOutlined } from '@ant-design/icons';
-import Video from '@/components/Videos/default';
+import UserAvatar from '@/components/Avatar';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
 import { EditorState, ContentState, convertFromHTML, convertFromRaw, convertToRaw } from 'draft-js';
 import Editor from '@/components/Editor/DescriptionEditor';
@@ -384,6 +384,45 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             showRemoveIcon: true
         }
     };
+
+    const getMetadata = article => {
+        return (
+            <Descriptions
+                title={null}
+                column={1}
+                size="middle"
+            >
+                <Descriptions.Item label="Title">
+                    {article.title}
+                </Descriptions.Item>
+                <Descriptions.Item label="Chapter">
+                    {article.chapter.title}
+                </Descriptions.Item>
+                <Descriptions.Item label="Creator">
+                    <span className={styles.userName}>
+                        {article.owner.name}
+                    </span>
+                    <span className={styles.avatar}>
+                        <UserAvatar
+                            alt="user-avatar"
+                            src={article.owner.avatar}
+                            size={28}
+                            textSize={28}
+                            text={article.owner.name}
+                            borderWidth={0}
+                            style={{ color: 'black', background: 'white', fontSize: '1em' }}
+                        />
+                    </span>
+                </Descriptions.Item>
+                <Descriptions.Item label="Created at">
+                    {moment(article.createdAt).format("DD/MM/YYYY")}
+                </Descriptions.Item>
+                <Descriptions.Item label="Last updated">
+                    <TimeAgo date={article.updatedAt} />
+                </Descriptions.Item>
+            </Descriptions>
+        )
+    };
     return (
         <div className={styles.article}>
             <div className={styles.header}>
@@ -420,14 +459,23 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                     </Button>
                                 </span>
                                 <span className={styles.estimateTime}>
-                                    <Tooltip placement="bottom" title="Add estimates time" mouseEnterDelay={1}>
+                                    <Tooltip placement="top" title="Add estimates time" mouseEnterDelay={1}>
                                         <ClockCircleFilled />
                                     </Tooltip>
                                 </span>
                                 <span className={styles.metadata}>
-                                    <Tooltip placement="bottom" title="View article info" mouseEnterDelay={1}>
-                                        <InfoCircleFilled />
-                                    </Tooltip>
+                                    <Popover
+                                        trigger="click"
+                                        popupClassName={styles.metadataPopover}
+                                        placement="bottomRight"
+                                        content={getMetadata(article)}
+                                        arrowPointAtCenter
+                                        popupAlign={{ offset: [21, 6] }}
+                                    >
+                                        <Tooltip placement="top" title="View article metadata" mouseEnterDelay={1}>
+                                            <InfoCircleFilled />
+                                        </Tooltip>
+                                    </Popover>
                                 </span>
                             </>
                         )}
