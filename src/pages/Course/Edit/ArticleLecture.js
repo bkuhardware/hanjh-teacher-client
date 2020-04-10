@@ -3,7 +3,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import classNames from 'classnames';
 import { connect } from 'dva';
-import { Alert, Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message, Popover, Descriptions } from 'antd';
+import { Alert, Row, Col, Divider, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message, Popover, Descriptions } from 'antd';
 import { SaveOutlined, FileTextFilled, InfoCircleFilled, ClockCircleFilled, EditFilled, SettingFilled, LoadingOutlined } from '@ant-design/icons';
 import UserAvatar from '@/components/Avatar';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
@@ -11,6 +11,7 @@ import { EditorState, ContentState, convertFromHTML, convertFromRaw, convertToRa
 import Editor from '@/components/Editor/DescriptionEditor';
 import MainEditor from '@/components/Editor/MainEditor';
 import TimeAgo from 'react-timeago';
+import Fade from 'react-reveal/Fade';
 import Scrollbars from 'react-custom-scrollbars';
 import { numberWithCommas, checkValidLink, bytesToSize, secondsToTime } from '@/utils/utils';
 import { exportToHTML } from '@/utils/editor';
@@ -79,7 +80,6 @@ const Description = ({ description, loading, onSave }) => {
     };
     return (
         <React.Fragment>
-            <div className={styles.title}>Description</div>
             <div className={styles.main}>
                 <Spin spinning={loading}>
                     <div className={styles.editor}>
@@ -173,25 +173,6 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             setLectureContent(getLectureContentState(article.content));
         }
     }, [article]);
-    const handleOpenSettings = () => {
-        if (description === null) 
-            dispatch({
-                type: 'article/fetchDescription',
-                payload: {
-                    courseId,
-                    lectureId
-                }
-            });
-        if (resources === null)
-            dispatch({
-                type: 'article/fetchResources',
-                payload: {
-                    courseId,
-                    lectureId
-                }
-            });
-        setVisible(true);
-    };
     const handleSaveEstimateTime = (hour, minute) => {
         dispatch({
             type: 'article/updateEstimateTime',
@@ -385,6 +366,28 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         });
         e.preventDefault();
     };
+    
+    const handleChangeBigTab = tabKey => {
+        if (tabKey === "settings") {
+            if (description === null) 
+                dispatch({
+                    type: 'article/fetchDescription',
+                    payload: {
+                        courseId,
+                        lectureId
+                    }
+                });
+            if (resources === null)
+                dispatch({
+                    type: 'article/fetchResources',
+                    payload: {
+                        courseId,
+                        lectureId
+                    }
+                });
+        }
+        setTabKey(tabKey);
+    };
 
     const uploadProps = {
         name: 'avatarfile',
@@ -516,6 +519,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     <Col
                         key="editContent"
                         span={12}
+                        onClick={() => handleChangeBigTab("editContent")}
                         className={tabKey === "editContent" ? classNames(styles.tabPane, styles.selectedTabPane, styles.editContent) : classNames(styles.tabPane, styles.editContent)}
                     >
                         <span className={styles.icon}>
@@ -528,6 +532,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     <Col
                         key="settings"
                         span={12}
+                        onClick={() => handleChangeBigTab("settings")}
                         className={tabKey === "settings" ? classNames(styles.tabPane, styles.selectedTabPane, styles.settings) : classNames(styles.tabPane, styles.settings)}
                     > 
                         <span className={styles.icon}>
@@ -551,41 +556,55 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                 </div>
                             </div>
                         ) : (
-                            <Spin spinning={contentLoading} tip="Saving...">
-                                <MainEditor
-                                    placeholder="Enter content..."
-                                    editorState={lectureContent}
-                                    onChange={editorState => {
-                                        const curContent = lectureContent.getCurrentContent();
-                                        const newContent = editorState.getCurrentContent();
-                                        if (curContent !== newContent) setSaveStatus(1);
-                                        setLectureContent(editorState);
-                                    }}
-                                />
-                            </Spin>
+                            <Fade duration={500}>
+                                <Spin spinning={contentLoading} tip="Saving...">
+                                    <MainEditor
+                                        placeholder="Enter content..."
+                                        editorState={lectureContent}
+                                        onChange={editorState => {
+                                            const curContent = lectureContent.getCurrentContent();
+                                            const newContent = editorState.getCurrentContent();
+                                            if (curContent !== newContent) setSaveStatus(1);
+                                            setLectureContent(editorState);
+                                        }}
+                                    />
+                                </Spin>
+                            </Fade>
                         )}
                     </div>
                 ) : (
-                    <React.Fragment>
+                    <div className={styles.settings}>
                         <div className={styles.description}>
-                            {description === null || descriptionInitLoading ? (
-                                <div className={styles.loading}>
-                                    <Spin indicator={<Icon type="loading" style={{ fontSize: '32px' }} spin />} />
-                                </div>
-                            ) : (
-                                <Description
-                                    description={description}
-                                    loading={descriptionLoading}
-                                    onSave={handleSaveDescription}
-                                />
-                            )}
+                            <div className={styles.title}>
+                                Description
+                            </div>
+                            <div className={styles.main}>
+                                {description === null || descriptionInitLoading ? (
+                                    <div className={styles.loading}>
+                                        <Spin spinning size="large" />
+                                        <div className={styles.text}>
+                                            Description...
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <Description
+                                        description={description}
+                                        loading={descriptionLoading}
+                                        onSave={handleSaveDescription}
+                                    />
+                                )}
+                            </div>
                         </div>
+                        <Divider dashed className={styles.divider} />
                         <div className={styles.resources}>
                             <div className={styles.title}>Resources</div>
                             <div className={styles.main}>
                                 {!resources || !resourcesData || resourcesInitLoading ? (
                                     <div className={styles.loading}>
-                                        <Spin indicator={<Icon type="loading-3-quarters" style={{ fontSize: '44px' }} spin />} />
+                                        <Spin spinning size="large" />
+                                        <div className={styles.text}>
+                                            Fetching resource...
+                                        </div>
                                     </div>
                                 ) : (
                                     <React.Fragment>
@@ -741,7 +760,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                 )}
                             </div>
                         </div>
-                    </React.Fragment>
+                    </div>
                 )}
             </div>
             {/* {!article || loading ? (
