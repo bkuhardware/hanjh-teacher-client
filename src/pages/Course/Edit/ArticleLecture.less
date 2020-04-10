@@ -384,3 +384,38 @@
         margin-right: 12px;
     }
 }
+
+.estimateTimePopover {
+    max-width: 400px;
+    .title {
+        margin-bottom: 12px;
+    }
+    .alert {
+        font-size: 0.9em;
+        margin-bottom: 25px;
+        :global(.ant-alert) {
+            padding: 6px 9px;
+        }
+    }
+    .main {
+        height: 30px;
+        position: relative;
+        width: 100%;
+        line-height: 30px;
+        .inputNumber {
+            width: 60px;
+            margin-right: 6px;
+        }
+        .unit {
+            margin-right: 12px;
+        }
+        .btn {
+            display: inline-block;
+            margin-left: 25px;
+            min-width: 65px;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+    }
+}

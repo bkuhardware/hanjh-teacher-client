@@ -3,7 +3,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import classNames from 'classnames';
 import { connect } from 'dva';
-import { Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message, Popover, Descriptions } from 'antd';
+import { Alert, Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message, Popover, Descriptions } from 'antd';
 import { SaveOutlined, FileTextFilled, InfoCircleFilled, ClockCircleFilled, EditFilled, SettingFilled, LoadingOutlined } from '@ant-design/icons';
 import UserAvatar from '@/components/Avatar';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
@@ -30,6 +30,12 @@ const EstimateTime = ({ estimateHour, estimateMinute, loading, onSave }) => {
     return (
         <Spin spinning={loading} tip="Saving..." size="small">
             <div className={styles.title}>Estimate time</div>
+            <div className={styles.alert}>
+                <Alert
+                    type="warning"
+                    message="Your estimate time must less than 4 hours. Otherwise, please divide your content into small pieces."
+                />
+            </div>
             <div className={styles.main}>
                 <InputNumber
                     min={0}
@@ -38,6 +44,7 @@ const EstimateTime = ({ estimateHour, estimateMinute, loading, onSave }) => {
                     onChange={value => setHour(_.toNumber(value))}
                     disabled={loading}
                     className={styles.inputNumber}
+                    
                 />
                 <span className={styles.unit}>{hour > 1 ? 'hours' : 'hour'}</span>
                 <InputNumber
@@ -478,7 +485,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                             />
                                         )}
                                         arrowPointAtCenter
-                                        popupAlign={{ offset: [12, 6] }}
+                                        popupAlign={{ offset: [21, 6] }}
                                         visible={estimateVisible}
                                         onVisibleChange={visible => setEstimateVisible(visible)}
                                     >
