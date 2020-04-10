@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { connect } from 'dva';
 import moment from 'moment';
 import classNames from 'classnames';
-import { Alert, Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Popover, Descriptions, Divider } from 'antd';
+import { Alert, Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Popover, Descriptions, Divider, List } from 'antd';
 import { VideoCameraFilled, InfoCircleFilled, YoutubeFilled, SettingFilled, DeleteFilled, EditFilled, CreditCardFilled, CloseCircleFilled, CloseOutlined } from '@ant-design/icons';
 import Player from '@/components/Videos/default';
 import UserAvatar from '@/components/Avatar';
@@ -31,7 +31,7 @@ const Caption = () => {
     )
 };
 
-const Video = ({ videoUrl, onUpload, onDelete }) => {
+const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete }) => {
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -56,6 +56,13 @@ const Video = ({ videoUrl, onUpload, onDelete }) => {
         resetUpload();
         setEditing(false);
     };
+    const handleDeleteCaption = captionKey => {
+
+    };
+    const handleAddCaption = () => {
+
+    };
+    const handleCancelCaptions = () => setCaptioning(false);
     const handleBeforeUpload = (file, fileList) => {
         const fileSize = file.size;
         const fileType = file.type;
@@ -176,6 +183,40 @@ const Video = ({ videoUrl, onUpload, onDelete }) => {
                     </>
                 </Fade>
             )}
+            {captioning && (
+                <Fade duration={700}>
+                    <div className={styles.captions}>
+                        <div className={styles.title}>Captions</div>
+                        <div className={styles.captionsCont}>
+                            <List
+                                className={styles.list}
+                                loading={captionsLoading}
+                                itemLayout="horizontal"
+                                dataSource={captions}
+                                renderItem={caption => (
+                                    <List.Item
+                                        key={caption.key}
+                                        actions={[
+                                            <span key="test" className={styles.action}>Test</span>,
+                                            <span key="delete" className={styles.action} onClick={() => handleDeleteCaption(caption.key)}>Delete</span>
+                                        ]}
+                                    >
+                                        {caption.label}
+                                    </List.Item>
+                                )}
+                            />
+                        </div>
+                        <div className={styles.add}>
+                            <Button type="primary" icon="plus" onClick={handleAddCaption}>
+                                Add caption
+                            </Button>
+                        </div>
+                        <div className={styles.close} onClick={handleCancelCaptions}>
+                            <CloseOutlined />
+                        </div>
+                    </div>
+                </Fade>
+            )}
             {videoUrl && (
                 <div className={styles.videoPlayer}>
                     <div className={styles.btns}>
@@ -183,7 +224,7 @@ const Video = ({ videoUrl, onUpload, onDelete }) => {
                             <>
                                 <span className={styles.btn}>
                                     <Tooltip placement="top" title="Add caption">
-                                        <Button type="primary" size="small" shape="circle">
+                                        <Button type="primary" size="small" shape="circle" onClick={() => setCaptioning(true)}>
                                             <CreditCardFilled />
                                         </Button>
                                     </Tooltip>
@@ -258,15 +299,16 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         description,
         resources,
         loading,
+        captions,
         resourcesInitLoading,
         descriptionInitLoading,
         descriptionLoading,
         downloadableLoading,
         externalLoading,
-        deleteLoading
+        deleteLoading,
+        captionsLoading
     } = props;
     const playerRef = useRef(null);
-    const [visible, setVisible] = useState(false);
     const [error, setError] = useState({
         status: 0,
         text: ''
@@ -309,25 +351,6 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             setResourcesData({ ...resources });
         }
     }, [resources]);
-    const handleOpenSettings = () => {
-        if (description === null) 
-            dispatch({
-                type: 'video/fetchDescription',
-                payload: {
-                    courseId,
-                    lectureId
-                }
-            });
-        if (resources === null)
-            dispatch({
-                type: 'video/fetchResources',
-                payload: {
-                    courseId,
-                    lectureId
-                }
-            });
-        setVisible(true);
-    };
     const handleUploadVideo = (name, file, saveProgress, callback) => {
         dispatch({
             type: 'video/upload',
@@ -672,7 +695,8 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                             <Fade duration={500}>
                                 <Video
                                     videoUrl={video.videoUrl}
-                                    loading={false}
+                                    captionsLoading={captionsLoading}
+                                    captions={captions}
                                     onUpload={handleUploadVideo}
                                     onDelete={handleDeleteVideo}
                                 />
@@ -870,245 +894,6 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                     </div>
                 )}
             </div>
-            {/* <div className={styles.content}>
-                {!video || loading ? (
-                    <div className={styles.loading}>
-                        <Skeleton className={styles.titleSkeleton} active title={null} paragraph={{ rows: 1, width: '96%' }} />
-                        <Skeleton active title={null} paragraph={{ rows: 2, width: ['62%', '42%'] }} />
-                        <div className={styles.spin}>
-                            <Spin indicator={<Icon type="loading" style={{ fontSize: 64, color: '#fada5e' }} spin />} />
-                        </div>
-                    </div>
-                ) : (
-                    <React.Fragment>
-                        <div className={styles.title}>{video.title}</div>
-                        <div className={styles.chapter}>
-                            {`Chapter ${video.chapter.title}`}
-                        </div>
-                        <div className={styles.extra}>
-                            <span className={styles.text}>{video.updatedAt === video.createdAt ? 'Created on' : 'Last updated'}</span>
-                            <span className={styles.time}>
-                                <TimeAgo date={video.updatedAt} />
-                            </span>
-                        </div>
-                        <div className={styles.main}>
-                            <Video
-                                videoUrl={video.videoUrl}
-                                loading={false}
-                                onUpload={handleUploadVideo}
-                                onDelete={handleDeleteVideo}
-                            />
-                        </div>
-                    </React.Fragment>
-                )}
-            </div>
-            <div className={styles.settings} onClick={handleOpenSettings}>
-                <Icon type="setting" theme="filled" spin className={styles.icon} />
-                <span className={styles.text}>Open settings</span>
-            </div>
-            <Drawer
-                title={(
-                    <span className={styles.drawerTitle}>
-                        Lecture settings
-                    </span>
-                )}
-                placement="right"
-                closable={true}
-                visible={visible}
-                onClose={() => setVisible(false)}
-                width={860}
-                className={styles.settingsDrawer}
-                bodyStyle={{
-                    padding: '16px'
-                }}
-            >
-                <Scrollbars
-                    autoHeight
-                    autoHeightMax={window.innerHeight - 96}
-                    className={styles.container}
-                >
-                    <div className={styles.caption}>
-                        <Caption
-                            
-                        />
-                    </div>
-                    <div className={styles.description}>
-                        <div className={styles.title}>Description</div>
-                        {description === null || descriptionInitLoading ? (
-                            <div className={styles.loading}>
-                                <Spin indicator={<Icon type="loading" style={{ fontSize: '32px' }} spin />} />
-                            </div>
-                        ) : (
-                            <Description
-                                description={description}
-                                loading={descriptionLoading}
-                                onSave={handleSaveDescription}
-                            />
-                        )}
-                    </div>
-                    <div className={styles.resources}>
-                        <div className={styles.title}>Resources</div>
-                        <div className={styles.main}>
-                            {!resources || !resourcesData || resourcesInitLoading ? (
-                                <div className={styles.loading}>
-                                    <Spin indicator={<Icon type="loading-3-quarters" style={{ fontSize: '44px' }} spin />} />
-                                </div>
-                            ) : (
-                                <React.Fragment>
-                                    <div className={styles.list}>
-                                        {_.isEmpty(resourcesData.downloadable) && _.isEmpty(resourcesData.external) ? null : (
-                                            <Spin spinning={deleteLoading}>
-                                                <Collapse defaultActiveKey={['downloadable', 'external']} expandIconPosition="right">
-                                                    {!_.isEmpty(resourcesData.downloadable) && (
-                                                        <Panel key="downloadable" header="Downloadable materials">
-                                                            {_.map(resourcesData.downloadable, resource => (
-                                                                <Row gutter={16} key={resource._id} className={styles.resource}>
-                                                                    <Col span={20} className={styles.info}>
-                                                                        <Icon type="download" className={styles.icon} />
-                                                                        <span className={styles.name}>{`${resource.name} (${resource.extra})`}</span>
-                                                                    </Col>
-                                                                    <Col span={4} className={styles.action}>
-                                                                        <span className={styles.icon}>
-                                                                            <Tooltip placement="top" title="Delete" overlayStyle={{ zIndex: 9999999999 }}>
-                                                                                <Icon type="delete" theme="filled" onClick={() => handleDeleteResource(resource._id, 'downloadable')}/>
-                                                                            </Tooltip>
-                                                                        </span>
-                                                                    </Col>
-                                                                </Row>
-                                                            ))}
-                                                        </Panel>
-                                                    )}
-                                                    {!_.isEmpty(resourcesData.external) && (
-                                                        <Panel key="external" header="External resources">
-                                                            {_.map(resourcesData.external, resource => (
-                                                                <Row gutter={16} key={resource._id} className={styles.resource}>
-                                                                    <Col span={20} className={styles.info}>
-                                                                        <Icon type="link" className={styles.icon} />
-                                                                        <span className={styles.name}>{resource.name}</span>
-                                                                    </Col>
-                                                                    <Col span={4} className={styles.action}>
-                                                                        <span className={styles.icon}>
-                                                                            <Tooltip placement="top" title="Delete" overlayStyle={{ zIndex: 9999999999 }}>
-                                                                                <Icon type="delete" theme="filled" onClick={() => handleDeleteResource(resource._id, 'external')}/>
-                                                                            </Tooltip>
-                                                                        </span>
-                                                                    </Col>
-                                                                </Row>
-                                                            ))}
-                                                        </Panel>
-                                                    )}
-                                                </Collapse>
-                                            </Spin>
-                                        )}
-                                    </div>
-                                    {resourceOpen ? (
-                                        <div className={styles.addResource}>
-                                            <div className={styles.close}>
-                                                <Icon type="close" onClick={handleCloseAddResource}/>
-                                            </div>
-                                            <Tabs defaultActiveKey="browse" onChange={handleChangeTab}>
-                                                <TabPane key="browse" tab="Browse computer" className={styles.browse}>
-                                                    <div className={styles.inline}>
-                                                        <div className={styles.warning}>
-                                                            Your file must not greater than 30MB.
-                                                            <br />
-                                                            Some extension doesn't supported in HuYeFen such as .xd, .mov. Only support .mp4 video.
-                                                        </div>
-                                                        {file && _.startsWith(fileInfo.mimeType, 'image/') && (
-                                                            <div className={styles.previewImage}>
-                                                                <img src={file} alt="preview" style={{ width: '100%', height: 'auto' }}/>
-                                                            </div>
-                                                        )}
-                                                        {file && fileInfo.mimeType === 'application/pdf' && (
-                                                            <div className={styles.previewPdf}>
-                                                                <Document
-                                                                    file={file}
-                                                                    onLoadSuccess={({ numPages }) => setFileInfo({
-                                                                        ...fileInfo,
-                                                                        extra: `${numPages} ${numPages > 1 ? 'pages' : 'page'}`
-                                                                    })}
-                                                                    className={styles.document}
-                                                                >
-                                                                    <Page pageNumber={1} width={250}/>
-                                                                </Document>
-                                                            </div>
-                                                        )}
-                                                        {file && fileInfo.mimeType === 'video/mp4' && (
-                                                            <div className={styles.previewVideo}>
-                                                                <video
-                                                                    src={file}
-                                                                    ref={playerRef}
-                                                                    autoPlay
-                                                                    loop
-                                                                    controls={false}
-                                                                    controlsList="nodownload"
-                                                                    muted
-                                                                />
-                                                            </div>
-                                                        )}
-                                                        <Form layout="vertical" onSubmit={handleUploadFile} style={{ marginTop: '24px' }}>
-                                                            <FormItem style={{ margin: 0 }}>
-                                                                <Upload {...uploadProps}>
-                                                                    {!file ? (
-                                                                        <Button className={styles.upBtn}>
-                                                                            <Icon type="upload" /> Upload file
-                                                                        </Button>
-                                                                    ) : (
-                                                                        <Button type="primary" htmlType="submit" disabled={downloadableLoading}>
-                                                                            <Icon type={downloadableLoading ? "loading" : "check"} /> Let's upload                    
-                                                                        </Button>
-                                                                    )}
-                                                                </Upload>
-                                                            </FormItem>
-                                                        </Form>
-                                                        <div className={styles.error} style={{ opacity: error.status === 1 ? '1' : '0' }}>
-                                                            <Icon type="close" style={{ marginRight: '8px' }} />
-                                                            {error.text}
-                                                        </div>
-                                                    </div>
-                                                </TabPane>
-                                                <TabPane key="library" tab="Add from library">
-                                                    <div>Sorry this function is not available.</div>
-                                                </TabPane>
-                                                <TabPane key="external" tab="External resouces" className={styles.externalTab}>
-                                                    <Spin spinning={externalLoading}>
-                                                        <Form className={styles.externalForm}>
-                                                            <FormItem label="Title" required validateStatus={title.validateStatus} help={title.help}>
-                                                                <Input
-                                                                    value={title.value}
-                                                                    placeholder="Title"
-                                                                    onChange={handleChangeTitle}
-                                                                    size="large"
-                                                                />
-                                                            </FormItem>
-                                                            <FormItem label="URL" required validateStatus={url.validateStatus} help={url.help}>
-                                                                <Input
-                                                                    value={url.value}
-                                                                    placeholder="Resource URL http://"
-                                                                    onChange={handleChangeURL}
-                                                                    size="large"
-                                                    
-                                                                />
-                                                            </FormItem>
-                                                        </Form>
-                                                    </Spin>
-                                                    <FormItem className={styles.btn}>
-                                                        <Button type="primary" loading={externalLoading} disabled={_.isEmpty(title.value) || !checkValidLink(url.value) || _.isEmpty(url.value)} onClick={handleAddExternal}>OK</Button>
-                                                    </FormItem>
-                                                </TabPane>
-                                            </Tabs>
-                                        </div>
-                                    ) : (
-                                        <div className={styles.btn}>
-                                            <Button type="primary" icon="plus" onClick={() => setResourceOpen(true)}>Add resource</Button>
-                                        </div>
-                                    )}
-                                </React.Fragment>
-                            )}
-                        </div>
-                    </div>
-                </Scrollbars>
-            </Drawer> */}
         </div>
     )
 };
@@ -1118,6 +903,7 @@ export default connect(
         video: video.info,
         description: video.description,
         resources: video.resources,
+        captions: video.captions,
         loading: !!loading.effects['video/fetch'],
         resourcesInitLoading: !!loading.effects['video/fetchResources'],
         resourcesLoading: !!loading.effects['video/moreResources'],
@@ -1125,6 +911,7 @@ export default connect(
         descriptionLoading: !!loading.effects['video/updateDescription'],
         downloadableLoading: !!loading.effects['video/addDownloadable'],
         externalLoading: !!loading.effects['video/addExternal'],
-        deleteLoading: !!loading.effects['video/deleteResource']
+        deleteLoading: !!loading.effects['video/deleteResource'],
+        captionsLoading: !!loading.effects['video/addCaption'] || !!loading.effects['video/deleteCaption']
     })
 )(VideoLecture);
