@@ -413,6 +413,9 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                 <Descriptions.Item label="Chapter">
                     {article.chapter.title}
                 </Descriptions.Item>
+                <Descriptions.Item label="Type">
+                    Article
+                </Descriptions.Item>
                 <Descriptions.Item label="Creator">
                     <span className={styles.userName}>
                         {article.owner.name}
@@ -436,7 +439,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     <TimeAgo date={article.updatedAt} />
                 </Descriptions.Item>
             </Descriptions>
-        )
+        );
     };
 
     return (
@@ -763,68 +766,6 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     </div>
                 )}
             </div>
-            {/* {!article || loading ? (
-                <div className={styles.loading}>
-                    <Skeleton className={styles.titleSkeleton} active title={null} paragraph={{ rows: 1, width: '96%' }} />
-                    <Skeleton active title={null} paragraph={{ rows: 2, width: ['62%', '42%'] }} />
-                    <div className={styles.spin}>
-                        <Spin indicator={<Icon type="loading" style={{ fontSize: 64 }} spin />} />
-                    </div>
-                </div>
-            ) : (
-                <React.Fragment>
-                    <div className={styles.title}>{article.title}</div>
-                    <div className={styles.chapter}>
-                        {`Chapter ${article.chapter.title}`}
-                    </div>
-                    <div className={styles.extra}>
-                        <span className={styles.text}>{article.updatedAt === article.createdAt ? 'Created on' : 'Last updated'}</span>
-                        <span className={styles.time}>
-                            <TimeAgo date={article.updatedAt} />
-                        </span>
-                    </div>
-                    <div className={styles.content}>
-                        <Content content={article.content} onSave={handleSaveContent} loading={contentLoading} />
-                    </div>
-                </React.Fragment>
-            )} */}
-            {/* <div className={styles.settings} onClick={handleOpenSettings}>
-                <Icon type="setting" theme="filled" spin className={styles.icon} />
-                <span className={styles.text}>Open settings</span>
-            </div>
-            <Drawer
-                title={(
-                    <span className={styles.drawerTitle}>
-                        Lecture settings
-                    </span>
-                )}
-                placement="right"
-                closable={true}
-                visible={visible}
-                onClose={() => setVisible(false)}
-                width={860}
-                className={styles.settingsDrawer}
-                bodyStyle={{
-                    padding: '16px'
-                }}
-            >
-                <Scrollbars
-                    autoHeight
-                    autoHeightMax={window.innerHeight - 96}
-                    className={styles.container}
-                >
-                    <div className={styles.estimateTime}>
-                        <EstimateTime
-                            estimateHour={article && article.estimateHour}
-                            estimateMinute={article && article.estimateMinute}
-                            loading={!article || loading || estimateLoading}
-                            onSave={handleSaveEstimateTime}
-                        />
-                        
-                    </div>
-                    
-                </Scrollbars>
-            </Drawer> */}
         </div>
     )
 };

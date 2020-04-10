@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { connect } from 'dva';
-import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Drawer } from 'antd';
+import moment from 'moment';
+import classNames from 'classnames';
+import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Popover, Descriptions } from 'antd';
+import { VideoCameraFilled, InfoCircleFilled, YoutubeFilled, SettingFilled } from '@ant-design/icons';
 import Player from '@/components/Videos/default';
+import UserAvatar from '@/components/Avatar';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
 import Scrollbars from 'react-custom-scrollbars';
 import Editor from '@/components/Editor/DescriptionEditor';
@@ -239,6 +243,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
     const [errorTimer, setErrorTimer] = useState(null);
     const [resourceOpen, setResourceOpen] = useState(false);
     const [resourcesData, setResourcesData] = useState(null);
+    const [tabKey, setTabKey] = useState("editVideo");
     //external states
     const [title, setTitle] = useState({
         value: '',
@@ -485,9 +490,129 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             showRemoveIcon: true
         }
     };
+
+    const handleChangeBigTab = () => {
+
+    };
+
+    const getMetadata = video => {
+        return (
+            <Descriptions
+                title={null}
+                column={1}
+                size="middle"
+            >
+                <Descriptions.Item label="Title">
+                    {video.title}
+                </Descriptions.Item>
+                <Descriptions.Item label="Chapter">
+                    {video.chapter.title}
+                </Descriptions.Item>
+                <Descriptions.Item label="Type">
+                    Article
+                </Descriptions.Item>
+                <Descriptions.Item label="Creator">
+                    <span className={styles.userName}>
+                        {video.owner.name}
+                    </span>
+                    <span className={styles.avatar}>
+                        <UserAvatar
+                            alt="user-avatar"
+                            src={video.owner.avatar}
+                            size={28}
+                            textSize={28}
+                            text={video.owner.name}
+                            borderWidth={0}
+                            style={{ color: 'black', background: 'white', fontSize: '1em' }}
+                        />
+                    </span>
+                </Descriptions.Item>
+                <Descriptions.Item label="Created at">
+                    {moment(video.createdAt).format("DD/MM/YYYY")}
+                </Descriptions.Item>
+                <Descriptions.Item label="Last updated">
+                    <TimeAgo date={video.updatedAt} />
+                </Descriptions.Item>
+            </Descriptions>
+        )
+    };
+
     return (
         <div className={styles.videoLecture}>
+            <div className={styles.header}>
+                <Row className={styles.infor}>
+                    <Col span={1} className={styles.iconCol}>
+                        <VideoCameraFilled className={styles.icon} />
+                    </Col>
+                    <Col span={18} className={styles.textInfo}>
+                        {!video || loading ? (
+                            <div className={styles.loading}>
+                                <Skeleton active title={null} paragraph={{ rows: 2, width: ['62%', '42%'] }} />
+                            </div>
+                        ) : (
+                            <div>
+                                <div className={styles.title}>
+                                    {video.title}
+                                </div>
+                                <div className={styles.chapter}>
+                                    {`Chapter ${video.chapter.title}`}
+                                </div>
+                            </div>
+                        )}
+                    </Col>
+                    <Col span={5} className={styles.options}>
+                        {video && !loading && (
+                            <span className={styles.metadata}>
+                                <Popover
+                                    trigger="click"
+                                    popupClassName={styles.metadataPopover}
+                                    placement="bottomRight"
+                                    content={getMetadata(video)}
+                                    arrowPointAtCenter
+                                    popupAlign={{ offset: [21, 6] }}
+                                >
+                                    <Tooltip placement="top" title="View video metadata" mouseEnterDelay={1}>
+                                        <InfoCircleFilled />
+                                    </Tooltip>
+                                </Popover>
+                            </span>
+                        )}
+                    </Col>
+                </Row>
+                <Row className={styles.tabs}>
+                    <Col
+                        key="editVideo"
+                        span={12}
+                        onClick={() => handleChangeBigTab("editVideo")}
+                        className={tabKey === "editVideo" ? classNames(styles.tabPane, styles.selectedTabPane, styles.editVideo) : classNames(styles.tabPane, styles.editVideo)}
+                    >
+                        <span className={styles.icon}>
+                            <YoutubeFilled />
+                        </span>
+                        <span className={styles.text}>
+                            Edit video
+                        </span>
+                    </Col>
+                    <Col
+                        key="settings"
+                        span={12}
+                        onClick={() => handleChangeBigTab("settings")}
+                        className={tabKey === "settings" ? classNames(styles.tabPane, styles.selectedTabPane, styles.settings) : classNames(styles.tabPane, styles.settings)}
+                    > 
+                        <span className={styles.icon}>
+                            <SettingFilled />
+                        </span>
+                        <span className={styles.text}>
+                            Settings
+                        </span>
+                    </Col>
+                </Row>
+            </div>
+            <div className={styles.clear} />
             <div className={styles.content}>
+
+            </div>
+            {/* <div className={styles.content}>
                 {!video || loading ? (
                     <div className={styles.loading}>
                         <Skeleton className={styles.titleSkeleton} active title={null} paragraph={{ rows: 1, width: '96%' }} />
@@ -725,7 +850,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                         </div>
                     </div>
                 </Scrollbars>
-            </Drawer>
+            </Drawer> */}
         </div>
     )
 };
