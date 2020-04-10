@@ -29,7 +29,7 @@ export default {
                         name: 'Trong Luan',
                         avatar: null
                     },
-                    videoUrl: 'https://mp4-a.udemycdn.com/2018-05-11_11-14-45-8469d1761758f153fa31634801ff8d12/WebHD_480.mp4?cfJ1vU1K8kJbAXdrAZUKlSEQdiaGaFPU6zyX1tgOsucZte_uh-9cTWuWPKURoHOsV8dXF2RLC4a3Zn-hIiAFeKOo24OKmOrX_8yoaH4vz9_MA0K32sDaigQ6J7oU9t-c_y8fLrjM2lqtmPl0_J0PcZnZOYw9woWJtBK6-w6ml6cQ'
+                    videoUrl: 'https://mp4-a.udemycdn.com/2018-05-11_11-14-45-8469d1761758f153fa31634801ff8d12/WebHD_480.mp4?twz0SkkrJGJ_2GCaurAgDvs5YrofDB1vEoKGOcGXCJMqRXQ3KakZuYmuLYV5DPUIa5x_X5VdF40s2VjdIZ2frLCfIT_phBP1yFviySPPeVwPXhcyc_82_DuL2KBrja3sShPNmbEEbHgVIrSk1YmbJ88CWRnTmkzTkdhkKvOxLnS9'
                 }
             });
         },

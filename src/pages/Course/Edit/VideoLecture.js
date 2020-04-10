@@ -3,12 +3,12 @@ import _ from 'lodash';
 import { connect } from 'dva';
 import moment from 'moment';
 import classNames from 'classnames';
-import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Popover, Descriptions, Divider } from 'antd';
-import { VideoCameraFilled, InfoCircleFilled, YoutubeFilled, SettingFilled } from '@ant-design/icons';
+import { Alert, Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Popover, Descriptions, Divider } from 'antd';
+import { VideoCameraFilled, InfoCircleFilled, YoutubeFilled, SettingFilled, DeleteFilled, EditFilled, CreditCardFilled } from '@ant-design/icons';
 import Player from '@/components/Videos/default';
 import UserAvatar from '@/components/Avatar';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
-import Scrollbars from 'react-custom-scrollbars';
+import Fade from 'react-reveal/Fade';
 import Editor from '@/components/Editor/DescriptionEditor';
 import { EditorState, convertFromHTML, ContentState } from 'draft-js';
 import TimeAgo from 'react-timeago';
@@ -37,6 +37,7 @@ const Video = ({ videoUrl, onUpload, onDelete }) => {
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [editing, setEditing] = useState(false);
+    const [captioning, setCaptioning] = useState(false);
     const resetUpload = () => {
         setFile(null);
         setFileName(null);
@@ -117,69 +118,87 @@ const Video = ({ videoUrl, onUpload, onDelete }) => {
     );
     return(
         <div className={styles.uploadVideoContainer}>
+            {(!videoUrl || editing) && (
+                <React.Fragment>
+                    {!videoUrl && (
+                        <div className={styles.empty}>
+                            <Alert message="No video uploaded. Please submit video for this lecture." type="error" showIcon/>
+                        </div>
+                    )}
+                    <div className={styles.uploadVideo} style={{ marginBottom: editing ? '32px' : '0px' }}>
+                        <div className={styles.warning}>
+                            HuYeFen only support .mp4 video type. Please convert to this type before uploading. File size must less than 4 GB.
+                        </div>
+                        <div className={styles.uploader}>
+                            <Input
+                                type="text"
+                                value={fileName || ''}
+                                addonBefore={(
+                                    <span className={styles.addOnBefore}>
+                                        <Icon type="play-circle" theme="filled" style={{ position: 'relative', top: '1px', marginRight: '6px', color: '#fada5e' }} />
+                                        <span>New video:</span>
+                                    </span>
+                                )}
+                                placeholder="No file selected."
+                                size="large"
+                                addonAfter={(
+                                    <span className={styles.addOnAfter}>
+                                        {addOnAfter}
+                                    </span>
+                                )}
+                            />
+                            <div
+                                className={styles.progressBar}
+                                style={{
+                                    display: uploading ? 'block' : 'none',
+                                    width: `calc(${progress / 100} * (100% - 184px))`
+                                }}
+                            >
+                                <div className={styles.skeletonBox}>
+                                    <span>
+                                        {`${progress}%`}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </React.Fragment>
+            )}
             {videoUrl && (
                 <div className={styles.videoPlayer}>
+                    <div className={styles.btns}>
+                        {!editing && !captioning && (
+                            <>
+                                <span className={styles.btn}>
+                                    <Tooltip placement="top" title="Add caption">
+                                        <Button type="primary" size="small" shape="circle">
+                                            <CreditCardFilled />
+                                        </Button>
+                                    </Tooltip>
+                                </span>
+                                <span className={styles.btn}>
+                                    <Tooltip placement="top" title="Change video">
+                                        <Button type="primary" size="small" onClick={handleChange} shape="circle">
+                                            <EditFilled />
+                                        </Button>
+                                    </Tooltip>
+                                </span>
+                                <span className={styles.btn}>
+                                    <Tooltip placement="top" title="Delete video">
+                                        <Button type="primary" size="small" onClick={handleDelete} shape="circle">
+                                            <DeleteFilled />
+                                        </Button>
+                                    </Tooltip>
+                                </span>
+                            </>
+                        )}
+                    </div>
                     <div className={styles.player}>
                         <Player
                             videoUrl={videoUrl}
-                            baseWidth={1000}
+                            baseWidth={"100%"}
                             baseHeight={550}
                         />
-                    </div>
-                    <div className={styles.btns}>
-                        {!editing ? (
-                            <>
-                                <Button type="default" onClick={handleChange} icon="edit">
-                                    Change
-                                </Button>
-                                <Button type="default" onClick={handleDelete} style={{ marginLeft: '12px' }} icon="delete">
-                                    Delete
-                                </Button>
-                            </>
-                        ) : (
-                            <Button type="default" onClick={handleCancelChange} icon="close">
-                                Cancel
-                            </Button>
-                        )}
-                    </div>
-                </div>
-            )}
-            {(!videoUrl || editing) && (
-                <div className={styles.uploadVideo}>
-                    <div className={styles.warning}>
-                        HuYeFen only support .mp4 video type. Please convert to this type before uploading. File size must less than 4 GB.
-                    </div>
-                    <div className={styles.uploader}>
-                        <Input
-                            type="text"
-                            value={fileName || ''}
-                            addonBefore={(
-                                <span className={styles.addOnBefore}>
-                                    <Icon type="play-circle" theme="filled" style={{ position: 'relative', top: '1px', marginRight: '6px', color: '#fada5e' }} />
-                                    <span>New video:</span>
-                                </span>
-                            )}
-                            placeholder="No file selected."
-                            size="large"
-                            addonAfter={(
-                                <span className={styles.addOnAfter}>
-                                    {addOnAfter}
-                                </span>
-                            )}
-                        />
-                        <div
-                            className={styles.progressBar}
-                            style={{
-                                display: uploading ? 'block' : 'none',
-                                width: `calc(${progress / 100} * (100% - 184px))`
-                            }}
-                        >
-                            <div className={styles.skeletonBox}>
-                                <span>
-                                    {`${progress}%`}
-                                </span>
-                            </div>
-                        </div>
                     </div>
                 </div>
             )}
@@ -630,7 +649,23 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             <div className={styles.content}>
                 {tabKey === "editVideo" ? (
                     <div className={styles.editVideo}>
-
+                        {!video || loading ? (
+                            <div className={styles.loading}>
+                                <Spin size="large" />
+                                <div className={styles.text}>
+                                    Fetching video...
+                                </div>
+                            </div>
+                        ) : (
+                            <Fade duration={500}>
+                                <Video
+                                    videoUrl={video.videoUrl}
+                                    loading={false}
+                                    onUpload={handleUploadVideo}
+                                    onDelete={handleDeleteVideo}
+                                />
+                            </Fade>
+                        )}
                     </div>
                 ) : (
                     <div className={styles.settings}>
