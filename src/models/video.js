@@ -1,6 +1,8 @@
 import { delay } from '@/utils/utils';
 import _ from 'lodash';
 import RESOURCES from '@/assets/fakers/resources';
+import testVtt from '@/assets/fakers/test.vtt';
+import testVttvn from '@/assets/fakers/testvn.vtt';
 
 export default {
     namespace: 'video',
@@ -32,24 +34,18 @@ export default {
                     captions: [
                         {
                             _id: 'caption_1',
-                            srclang: 'en',
+                            srcLang: 'en',
                             label: 'English',
-                            src: 'https://'
-                        },
-                        {
-                            _id: 'caption_2',
-                            srclang: 'fr',
-                            label: 'French',
-                            src: 'https://'
+                            src: testVtt
                         },
                         {
                             _id: 'caption_3',
-                            srclang: 'vi',
+                            srcLang: 'vi',
                             label: 'Vietnamese',
-                            src: 'https://'
+                            src: testVttvn
                         }
                     ],
-                    videoUrl: 'https://mp4-a.udemycdn.com/2018-05-11_11-14-45-8469d1761758f153fa31634801ff8d12/WebHD_480.mp4?twz0SkkrJGJ_2GCaurAgDvs5YrofDB1vEoKGOcGXCJMqRXQ3KakZuYmuLYV5DPUIa5x_X5VdF40s2VjdIZ2frLCfIT_phBP1yFviySPPeVwPXhcyc_82_DuL2KBrja3sShPNmbEEbHgVIrSk1YmbJ88CWRnTmkzTkdhkKvOxLnS9'
+                    videoUrl: 'https://mp4-a.udemycdn.com/2018-05-11_11-14-45-8469d1761758f153fa31634801ff8d12/WebHD_480.mp4?GgeA7EtNEw7Mv2j2uZgLulw8fQrBedZ6sI4Pm5fJ5NWrK-BvNE3JbiM1zZMUsalrv00EhLRSvEIfCXwQOwAN_SNcLQ1Wwd37t2f2bFrKCnaCC6X-OUDG03QipdagGxF11nPcvbYoi_ol9j5fVpKGDcFNY5Bf2Nor2GXTSpsK1AY5'
                 }
             });
         },

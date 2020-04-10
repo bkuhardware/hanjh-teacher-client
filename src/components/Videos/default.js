@@ -12,6 +12,7 @@ import Caption from '@/elements/icon/caption';
 import { videoRates as rates, videoResolutions as resolutions, videoCaptions as captions } from '@/config/constants';
 import { secondsToTime } from '@/utils/utils';
 import logo from '@/assets/images/logo_trans.png';
+
 import styles from './default.less';
 
 const { SubMenu } = Menu;
@@ -316,8 +317,26 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
         }
         else message.warning('Sorry, this function is not available!');
     };
-    const handleSelectCaption = captionId => {
-
+    const handleSelectCaption = captionLang => {
+        const videoEle = videoRef.current;
+        if (videoEle) {
+            if (captionLang === 'off') {
+                if (caption !== 'off') {
+                    const idx = _.findIndex(videoEle.textTracks, track => track.language === caption);
+                    videoEle.textTracks[idx].mode = 'hidden';
+                }
+            }
+            else if (captionLang !== caption) {
+                for (let i = 0; i < videoEle.textTracks.length; ++i) {
+                    if (videoEle.textTracks[i].language === caption)
+                        videoEle.textTracks[i].mode = 'hidden';
+                    if (videoEle.textTracks[i].language === captionLang)
+                        videoEle.textTracks[i].mode = 'showing';
+                }
+            }
+            setCaption(captionLang);
+            handleCaptionVisibleChange(false);
+        }
     };
     const handleCaptionVisibleChange = visible => {
         processVisibleWithTimeout(visible);
@@ -351,11 +370,11 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
                 <div
                     key={captionItem._id}
                     className={styles.caption}
-                    onClick={() => handleSelectCaption(captionItem._id)}
-                    style={{ color: caption === captionItem._id ? '#fada5e' : 'inherit' }}
+                    onClick={() => handleSelectCaption(captionItem.srcLang)}
+                    style={{ color: caption === captionItem.srcLang ? '#fada5e' : 'inherit' }}
                 >
                     {captionItem.label}
-                    {caption === captionItem._id && (<span className={styles.tick} />)}
+                    {caption === captionItem.srcLang && (<span className={styles.tick} />)}
                 </div>
             ))}
         </div>
@@ -408,8 +427,17 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
                             e.preventDefault();
                             return false;
                         }}
-                        
-                    />
+                    >
+                        {_.map(captions, captionItem => (
+                            <track
+                                key={captionItem._id}
+                                label={captionItem.label}
+                                kind="Subtitles"
+                                srcLang={captionItem.srcLang}
+                                src={captionItem.src}
+                            />
+                        ))}
+                    </video>
                 </Dropdown>
                 {width > 0 && height > 0 && (
                     <>
@@ -538,107 +566,6 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
                                     </Row>
                                 </div>
                             </div>
-                            {/* <div className={styles.controlVisible}>
-                                <div>
-                                    <div className={styles.slider} onMouseMove={handleMouseOnSlider} onMouseLeave={resetPreview}>
-                                        <Slider
-                                            min={0}
-                                            max={_.round(duration, 1)}
-                                            step={0.1}
-                                            value={currentTime.value}
-                                            onChange={value => {
-                                                setCurrentTime({
-                                                    value,
-                                                    changing: true
-                                                });
-                                            }}
-                                            onAfterChange={handleChangeCurrentTime}
-                                            tooltipVisible={false}
-                                        />
-                                        <span className={styles.buffered} style={{ width: `${(bufferTime * 100) / duration}%` }}/>
-                                    </div>
-                                    <Row className={styles.options}>
-                                        <Col span={12} className={styles.left}>
-                                            <span className={styles.back} onClick={handlePlayBack}>
-                                                <Tooltip placement="top" mouseEnterDelay={1} title="Back 15s">
-                                                    <BackwardOutlined />
-                                                </Tooltip>  
-                                            </span>
-                                            <span className={styles.playStatus} onClick={handleTogglePlay}>
-                                                {playingStatus === 1 ? (
-                                                    <Tooltip placement="top" mouseEnterDelay={1} title="Play">
-                                                        <CaretRightFilled />
-                                                    </Tooltip>
-                                                ) : playingStatus === 0 ? (
-                                                    <Tooltip placement="top" mouseEnterDelay={1} title="Pause">
-                                                        <PauseOutlined />
-                                                    </Tooltip>
-                                                ) : (
-                                                    <Tooltip placement="top" mouseEnterDelay={1} title="Reload">
-                                                        <ReloadOutlined />
-                                                    </Tooltip>
-                                                )}
-                                            </span>
-                                            <span className={styles.forward} onClick={handlePlayForward}>
-                                                <Tooltip placement="top" mouseEnterDelay={1} title="Forward 15s">
-                                                    <StepForwardOutlined />
-                                                </Tooltip>
-                                            </span>
-                                            
-                                            <span className={styles.volume} onMouseEnter={() => setVolumeVisible(true)} onMouseLeave={() => setVolumeVisible(false)}>
-                                                <Button className={styles.sound} onClick={handleToggleVolume}>
-                                                    {volume === 0 ? (
-                                                        <>
-                                                            <Mute/>
-                                                            <CloseOutlined className={styles.close} />
-                                                        </>
-                                                    ) : volume < 0.5 ? (
-                                                        <SmallVolume/>
-                                                    ) : (
-                                                        <Volume/>
-                                                    )}
-                                                </Button>
-                                                <span className={volumeVisible ? styles.slider : classNames(styles.slider, styles.hiddenSlider)} >
-                                                    <Slider
-                                                        min={0}
-                                                        max={1}
-                                                        step={0.1}
-                                                        value={volume}
-                                                        onChange={value => setVolume(value)}
-                                                        onAfterChange={handleSetVolume}
-                                                        tooltipVisible={false}
-                                                    />
-                                                </span>
-                                            </span>
-                                            <span className={styles.time}>
-                                                {`${secondsToTime(currentTime.value)} / ${secondsToTime(duration)}`}
-                                            </span>
-                                        </Col>
-                                        <Col span={12} className={styles.right}>
-                                            <span className={styles.setting}>
-                                                <Popover
-                                                    content={settingsMenu}
-                                                    trigger="click"
-                                                    placement="top"
-                                                    arrowPointAtCenter
-                                                    popupClassName={styles.settingsPopover}
-                                                    popupAlign={{ offset: [!fullScreen ? 0 : -35, -10] }}
-                                                    getPopupContainer={() => divRef.current}
-                                                    visible={settingsVisible}
-                                                    onVisibleChange={handleSettingsVisibleChange}
-                                                >
-                                                    <SettingFilled />
-                                                </Popover>
-                                            </span>
-                                            <span className={styles.transcript}>
-                                                <Tooltip title="Transcript" placement="top">
-                                                    <FileTextFilled />
-                                                </Tooltip>
-                                            </span>
-                                        </Col>
-                                    </Row>
-                                </div>
-                            </div> */}
                         </Slide>
                         <div className={styles.expand} onClick={handleToggleExpand}>
                             <Tooltip placement="top" mouseEnterDelay={1} title={fullScreen ? "Collapse" : "Full screen"}>
