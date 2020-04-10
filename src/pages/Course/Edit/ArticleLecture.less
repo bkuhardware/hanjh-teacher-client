@@ -322,10 +322,35 @@
             height: 40px;
             line-height: 40px;
             text-align: center;
+            .tabPane {
+                font-size: 1.1em;
+                cursor: pointer;
+                transition: background-color 0.8s ease-in-out;
+                &:hover {
+                    opacity: 0.8;
+                    background-color: #1e1e1e;
+                    color: white;
+                }
+                .icon {
+                    font-size: 1.4em;
+                    position: relative;
+                    top: 2px;
+                }
+                .text {
+                    padding-left: 10px;
+                }
+            }
+            .selectedTabPane {
+                color: #fada5e;
+                background-color: #1e1e1e;
+            }
+            .settings {
+                border-left: 0.5px solid rgba(255, 255, 255, 0.2);
+            }
         }
     }
     .clear {
-        height: 120px;
+        height: 170px;
         width: 100%;
         clear: both;
     }
