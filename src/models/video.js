@@ -31,16 +31,19 @@ export default {
                     },
                     captions: [
                         {
+                            _id: 'caption_1',
                             srclang: 'en',
                             label: 'English',
                             src: 'https://'
                         },
                         {
+                            _id: 'caption_2',
                             srclang: 'fr',
                             label: 'French',
                             src: 'https://'
                         },
                         {
+                            _id: 'caption_3',
                             srclang: 'vi',
                             label: 'Vietnamese',
                             src: 'https://'
@@ -80,6 +83,15 @@ export default {
                 type: 'saveVideo',
                 payload: null
             });
+        },
+        *deleteCaption({ payload }, { call, put }) {
+            const { captionId, lectureId, callback } = payload;
+            yield delay(1500);
+            yield put({
+                type: 'removeCaption',
+                payload: captionId
+            });
+            if (callback) callback();
         },
         *fetchDescription({ payload }, { call, put }) {
             const { courseId, lectureId } = payload;
@@ -175,6 +187,15 @@ export default {
                     videoUrl
                 }
             };
+        },
+        removeCaption(state, { payload: captionId }) {
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    captions: _.filter(state.info.captions, caption => caption._id !== captionId)
+                }
+            }
         },
         saveDescription(state, { payload }) {
             return {

@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { connect } from 'dva';
 import moment from 'moment';
 import classNames from 'classnames';
-import { Alert, Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Popover, Descriptions, Divider, List } from 'antd';
+import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Popover, Descriptions, Divider, List } from 'antd';
 import { VideoCameraFilled, InfoCircleFilled, YoutubeFilled, SettingFilled, DeleteFilled, EditFilled, CreditCardFilled, CloseCircleFilled, CloseOutlined } from '@ant-design/icons';
 import Player from '@/components/Videos/default';
 import UserAvatar from '@/components/Avatar';
@@ -21,7 +21,7 @@ const { Panel } = Collapse;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 
-const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete }) => {
+const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDeleteCaption }) => {
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -46,11 +46,18 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete }) => {
         resetUpload();
         setEditing(false);
     };
-    const handleDeleteCaption = captionKey => {
-
-    };
     const handleAddCaption = () => {
 
+    };
+    const handleDeleteCaption = captionId => {
+        Modal.confirm({
+            content: 'Are you sure to delete this caption?',
+            okText: 'Yes',
+            cancelText: 'No',
+            onOk: () => {
+                onDeleteCaption(captionId);
+            }
+        })
     };
     const handleCancelCaptions = () => setCaptioning(false);
     const handleBeforeUpload = (file, fileList) => {
@@ -181,15 +188,18 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete }) => {
                             <List
                                 className={styles.list}
                                 loading={captionsLoading}
+                                locale={{
+                                    emptyText: 'No caption.',
+                                }}
                                 itemLayout="horizontal"
                                 dataSource={captions}
                                 renderItem={caption => (
                                     <List.Item
-                                        key={caption.srclang}
+                                        key={caption._id}
                                         actions={[
                                             <span key="test" className={styles.action}>Test</span>,
                                             <span key="download" className={styles.action}>Download</span>,
-                                            <span key="delete" className={styles.action} onClick={() => handleDeleteCaption(caption.srclang)}>Delete</span>
+                                            <span key="delete" className={styles.action} onClick={() => handleDeleteCaption(caption._id)}>Delete</span>
                                         ]}
                                     >
                                         <div>
@@ -364,6 +374,16 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         return dispatch({
             type: 'video/delete',
             payload: lectureId
+        });
+    };
+    const handleDeleteCaption = captionId => {
+        dispatch({
+            type: 'video/deleteCaption',
+            payload: {
+                captionId,
+                lectureId,
+                callback: () => message.success('Deleted caption successfully!')
+            }
         });
     };
     const handleSaveDescription = description => {
@@ -696,6 +716,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                                     captions={video.captions}
                                     onUpload={handleUploadVideo}
                                     onDelete={handleDeleteVideo}
+                                    onDeleteCaption={handleDeleteCaption}
                                 />
                             </Fade>
                         )}
