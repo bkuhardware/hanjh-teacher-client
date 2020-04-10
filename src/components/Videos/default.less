@@ -353,3 +353,39 @@
         }
     }
 }
+
+.captionsPopover {
+    z-index: 30;
+    width: 180px;
+    :global {
+        .ant-popover-inner-content {
+            padding: 0;
+        }
+        .ant-popover-arrow {
+            display: none;
+        }
+    }
+    .captionsMenu {
+        .caption {
+            padding: 8px;
+            cursor: pointer;
+            position: relative;
+            height: 37px;
+            .tick {
+                position: absolute;
+                display: inline-block;
+                height: 8px;
+                width: 8px;
+                background: #FADA5E;
+                border-radius: 50%;
+                top: 50%;
+                right: 12px;
+                transform: translate(0%, -50%);
+            }
+            &:hover {
+                background: rgb(20, 20, 20);
+                opacity: 0.8;
+            }
+        }
+    }
+}

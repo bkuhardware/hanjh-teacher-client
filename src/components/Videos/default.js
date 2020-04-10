@@ -342,6 +342,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
                 key='off'
                 className={styles.caption}
                 onClick={() => handleSelectCaption('off')}
+                style={{ color: caption === 'off' ? '#fada5e' : 'inherit' }}
             >
                 Off
                 {caption === 'off' && (<span className={styles.tick} />)}
@@ -351,6 +352,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
                     key={captionItem._id}
                     className={styles.caption}
                     onClick={() => handleSelectCaption(captionItem._id)}
+                    style={{ color: caption === captionItem._id ? '#fada5e' : 'inherit' }}
                 >
                     {captionItem.label}
                     {caption === captionItem._id && (<span className={styles.tick} />)}
@@ -515,8 +517,11 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
                                                             visible={captionVisible}
                                                             onVisibleChange={handleCaptionVisibleChange}
                                                             popupClassName={styles.captionsPopover}
+                                                            trigger="click"
                                                         >
-                                                            <Caption />
+                                                            <span>
+                                                                <Caption />
+                                                            </span>
                                                         </Popover>
                                                     </Tooltip>
                                                 </Col>
