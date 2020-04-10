@@ -4,7 +4,7 @@ import moment from 'moment';
 import classNames from 'classnames';
 import { connect } from 'dva';
 import { Row, Col, Drawer, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message, Popover } from 'antd';
-import { SaveOutlined, FileTextFilled, InfoCircleFilled, ClockCircleFilled, EditFilled, SettingFilled } from '@ant-design/icons';
+import { SaveOutlined, FileTextFilled, InfoCircleFilled, ClockCircleFilled, EditFilled, SettingFilled, LoadingOutlined } from '@ant-design/icons';
 import Video from '@/components/Videos/default';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
 import { EditorState, ContentState, convertFromHTML, convertFromRaw, convertToRaw } from 'draft-js';
@@ -54,34 +54,6 @@ const EstimateTime = ({ estimateHour, estimateMinute, loading, onSave }) => {
                 <Button className={styles.btn} type="primary" disabled={loading} loading={loading} onClick={() => onSave(hour, minute)}>Save</Button>
             </div>
         </React.Fragment>
-    )
-};
-
-const Content = ({ content, onSave, loading }) => {
-    const [saveVisible, setSaveVisible] = useState(false);
-    const [lectureContent, setLectureContent] = useState(() => {
-        if (!content) return EditorState.createEmpty();
-        const contentState = convertFromRaw(content);
-        return EditorState.createWithContent(contentState);
-    });
-    const handleSave = () => {
-        const contentState = lectureContent.getCurrentContent();
-        const rawData = convertToRaw(contentState);
-        onSave(rawData);
-    };
-    return (
-        <Spin spinning={loading}>
-            <MainEditor
-                placeholder="Enter content..."
-                editorState={lectureContent}
-                onChange={editorState => {
-                    const curContent = lectureContent.getCurrentContent();
-                    const newContent = editorState.getCurrentContent();
-                    if (curContent !== newContent) setSaveVisible(true);
-                    setLectureContent(editorState);
-                }}
-            />
-        </Spin>
     )
 };
 
@@ -231,12 +203,18 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             }
         });
     };
-    const handleSaveContent = content => {
+    const handleSaveContent = () => {
+        const contentState = lectureContent.getCurrentContent();
+        const rawData = convertToRaw(contentState);
         dispatch({
             type: 'article/updateContent',
             payload: {
                 lectureId,
-                content
+                content: rawData,
+                callback: () => {
+                    message.success('Your article is saved successfully!');
+                    setSaveStatus(0);
+                }
             }
         });
     };
@@ -433,8 +411,12 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                         {article && !loading && (
                             <>
                                 <span className={styles.saveBtn}>
-                                    <Button type="primary" disabled={!saveStatus}>
-                                        <SaveOutlined />Save
+                                    <Button
+                                        type="primary"
+                                        disabled={!saveStatus} 
+                                        onClick={handleSaveContent}
+                                    >
+                                        {!contentLoading ? <SaveOutlined /> : <LoadingOutlined />}Save
                                     </Button>
                                 </span>
                                 <span className={styles.estimateTime}>
@@ -490,7 +472,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                 </div>
                             </div>
                         ) : (
-                            <Spin spinning={contentLoading}>
+                            <Spin spinning={contentLoading} tip="Saving...">
                                 <MainEditor
                                     placeholder="Enter content..."
                                     editorState={lectureContent}

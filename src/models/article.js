@@ -66,12 +66,13 @@ export default {
             });
         },
         *updateContent({ payload }, { call, put }) {
-            const { lectureId, content } = payload;
+            const { lectureId, content, callback } = payload;
             yield delay(2000);
             yield put({
                 type: 'saveContent',
                 payload: content
             });
+            if (callback) callback();
         },
         *addDownloadable({ payload }, { call, put }) {
             const {
