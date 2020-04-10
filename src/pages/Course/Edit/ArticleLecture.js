@@ -190,7 +190,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                 const contentState = convertFromRaw(content);
                 return EditorState.createWithContent(contentState);
             };
-            setLectureContent(getLectureContentState());
+            setLectureContent(getLectureContentState(article.content));
         }
     }, [article]);
     const handleOpenSettings = () => {
