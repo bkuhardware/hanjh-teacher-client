@@ -52,7 +52,7 @@ export default {
             })
         },
         *updateEstimateTime({ payload }, { call, put }) {
-            const { hour, minute } = payload;
+            const { hour, minute, callback } = payload;
             yield delay(1200);
             yield put({
                 type: 'saveEstimateTime',
@@ -61,6 +61,7 @@ export default {
                     minute
                 }
             });
+            if (callback) callback();
         },
         *updateDescription({ payload }, { call, put }) {
             const { lectureId, content } = payload;

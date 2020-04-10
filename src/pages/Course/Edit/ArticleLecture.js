@@ -28,7 +28,7 @@ const EstimateTime = ({ estimateHour, estimateMinute, loading, onSave }) => {
         if (estimateMinute !== null) setMinute(estimateMinute);
     }, [estimateHour, estimateMinute]);
     return (
-        <React.Fragment>
+        <Spin spinning={loading} tip="Saving..." size="small">
             <div className={styles.title}>Estimate time</div>
             <div className={styles.main}>
                 <InputNumber
@@ -51,9 +51,9 @@ const EstimateTime = ({ estimateHour, estimateMinute, loading, onSave }) => {
                     step={5}
                 />
                 <span className={styles.unit}>{minute > 1 ? 'minutes' : 'minute'}</span>
-                <Button className={styles.btn} type="primary" disabled={loading} loading={loading} onClick={() => onSave(hour, minute)}>Save</Button>
+                <Button className={styles.btn} size="small" type="primary" disabled={loading} onClick={() => onSave(hour, minute)}>Save</Button>
             </div>
-        </React.Fragment>
+        </Spin>
     )
 };
 
@@ -119,6 +119,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     const [resourcesData, setResourcesData] = useState(null);
     const [lectureContent, setLectureContent] = useState(null);
     const [saveStatus, setSaveStatus] = useState(0);
+    const [estimateVisible, setEstimateVisible] = useState(false);
     const [tabKey, setTabKey] = useState("editContent");
     //external states
     const [title, setTitle] = useState({
@@ -190,7 +191,11 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             payload: {
                 lectureId,
                 hour,
-                minute
+                minute,
+                callback: () => {
+                    setEstimateVisible(false);
+                    message.success('Update estimated time successfully!');
+                }
             }
         });
     };
@@ -423,6 +428,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             </Descriptions>
         )
     };
+
     return (
         <div className={styles.article}>
             <div className={styles.header}>
@@ -459,9 +465,27 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                     </Button>
                                 </span>
                                 <span className={styles.estimateTime}>
-                                    <Tooltip placement="top" title="Add estimates time" mouseEnterDelay={1}>
-                                        <ClockCircleFilled />
-                                    </Tooltip>
+                                    <Popover
+                                        trigger="click"
+                                        popupClassName={styles.estimateTimePopover}
+                                        placement="bottomRight"
+                                        content={(
+                                            <EstimateTime
+                                                estimateHour={article && article.estimateHour}
+                                                estimateMinute={article && article.estimateMinute}
+                                                loading={estimateLoading}
+                                                onSave={handleSaveEstimateTime}
+                                            />
+                                        )}
+                                        arrowPointAtCenter
+                                        popupAlign={{ offset: [12, 6] }}
+                                        visible={estimateVisible}
+                                        onVisibleChange={visible => setEstimateVisible(visible)}
+                                    >
+                                        <Tooltip placement="top" title="Add estimates time" mouseEnterDelay={1}>
+                                            <ClockCircleFilled />
+                                        </Tooltip>
+                                    </Popover>
                                 </span>
                                 <span className={styles.metadata}>
                                     <Popover
