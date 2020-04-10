@@ -139,7 +139,7 @@
                         top: 32px;
                         right: 32px;
                         color: white;
-                        font-size: 1.4em;
+                        font-size: 1.2em;
                         display: inline-block;
                         cursor: pointer;
                         &:hover {
@@ -249,6 +249,22 @@
                         overflow: auto;
                         &::-webkit-scrollbar {
                             display: none;
+                        }
+                        .icon {
+                            display: inline-block;
+                            margin-right: 6px;
+                            font-size: 0.9em;
+                        }
+                        .label {
+                            color: @primary-color;
+                        }
+                        .action {
+                            cursor: pointer;
+                            font-size: 0.9em;
+                            &:hover {
+                                color: #fada5e;
+                                text-decoration: underline;
+                            }
                         }
                     }
                     .add {

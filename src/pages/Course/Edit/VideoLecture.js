@@ -9,6 +9,7 @@ import Player from '@/components/Videos/default';
 import UserAvatar from '@/components/Avatar';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
 import Fade from 'react-reveal/Fade';
+import Caption from '@/elements/icon/caption';
 import Editor from '@/components/Editor/DescriptionEditor';
 import { EditorState, convertFromHTML, ContentState } from 'draft-js';
 import TimeAgo from 'react-timeago';
@@ -19,17 +20,6 @@ import styles from './VideoLecture.less';
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
-
-const Caption = () => {
-    return (
-        <React.Fragment>
-            <div className={styles.title}>Caption</div>
-            <div className={styles.main}>
-
-            </div>
-        </React.Fragment>
-    )
-};
 
 const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete }) => {
     const [file, setFile] = useState(null);
@@ -195,19 +185,27 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete }) => {
                                 dataSource={captions}
                                 renderItem={caption => (
                                     <List.Item
-                                        key={caption.key}
+                                        key={caption.srclang}
                                         actions={[
                                             <span key="test" className={styles.action}>Test</span>,
-                                            <span key="delete" className={styles.action} onClick={() => handleDeleteCaption(caption.key)}>Delete</span>
+                                            <span key="download" className={styles.action}>Download</span>,
+                                            <span key="delete" className={styles.action} onClick={() => handleDeleteCaption(caption.srclang)}>Delete</span>
                                         ]}
                                     >
-                                        {caption.label}
+                                        <div>
+                                            <span className={styles.icon}>
+                                                <Caption />
+                                            </span>
+                                            <span className={styles.label}>
+                                                {caption.label}
+                                            </span>
+                                        </div>
                                     </List.Item>
                                 )}
                             />
                         </div>
                         <div className={styles.add}>
-                            <Button type="primary" icon="plus" onClick={handleAddCaption}>
+                            <Button type="primary" size="small" icon="plus" onClick={handleAddCaption}>
                                 Add caption
                             </Button>
                         </div>
@@ -299,7 +297,6 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         description,
         resources,
         loading,
-        captions,
         resourcesInitLoading,
         descriptionInitLoading,
         descriptionLoading,
@@ -696,7 +693,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                                 <Video
                                     videoUrl={video.videoUrl}
                                     captionsLoading={captionsLoading}
-                                    captions={captions}
+                                    captions={video.captions}
                                     onUpload={handleUploadVideo}
                                     onDelete={handleDeleteVideo}
                                 />
@@ -903,7 +900,6 @@ export default connect(
         video: video.info,
         description: video.description,
         resources: video.resources,
-        captions: video.captions,
         loading: !!loading.effects['video/fetch'],
         resourcesInitLoading: !!loading.effects['video/fetchResources'],
         resourcesLoading: !!loading.effects['video/moreResources'],
