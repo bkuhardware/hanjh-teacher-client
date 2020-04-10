@@ -397,6 +397,120 @@
                     }
                 }
             }
+            .resources {
+                .main {
+                    .btn {
+                        margin-top: 24px;
+                        button {
+                            min-width: 120px;
+                        }
+                    }
+                    .addResource {
+                        margin-top: 24px;
+                        position: relative;
+                        .close {
+                            position: absolute;
+                            top: 12px;
+                            right: 0;
+                            z-index: 9000;
+                            display: inline-block;
+                            cursor: pointer;
+                            &:hover {
+                                color: white;
+                            }
+                        }
+                        .browse {
+                            border-radius: 5px;
+                            border: 0.5px dashed rgba(255, 255, 255, 0.2);
+                            background: rgba(30, 30, 30, 0.6);
+                            padding: 65px 0 60px;
+                            :global(.ant-upload-list) {
+                                width: 80%;
+                                margin: auto;
+                            }
+                            .inline {
+                                .previewImage {
+                                    width: 50%;
+                                    margin: auto;
+                                    text-align: center;
+                                    margin-top: 16px;
+                                }
+                                .previewVideo {
+                                    width: 80%;
+                                    margin: auto;
+                                    margin-top: 16px;
+                                    background: black;
+                                    max-height: 360px;
+                                    video {
+                                        max-height: 360px;
+                                        margin: auto;
+                                    }
+                                }
+                                .previewPdf {
+                                    width: 250px;
+                                    margin: auto;
+                                    margin-top: 16px;
+                                    .document {
+                                        width: 100%;
+                                    }
+                                }
+                                .warning {
+                                    color: white;
+                                    line-height: 21px;
+                                }
+                                .error {
+                                    color: tomato;
+                                    font-size: 0.9em;
+                                    transition: opacity .25s ease-in-out;
+                                    -moz-transition: opacity .25s ease-in-out;
+                                    -webkit-transition: opacity .25s ease-in-out;
+                                }
+                                text-align: center;
+                                width: 75%;
+                                margin: auto;
+                            }
+                        }
+                        .externalTab {
+                            padding-left: 15%;
+                            padding-right: 15%;
+                            .btn {
+                                text-align: right;
+                                button {
+                                    min-width: 100px;
+                                }
+                            }
+                        }
+                    }
+                    .list {
+                        .resource {
+                            margin-bottom: 12px;
+                            &::last-child {
+                                margin-bottom: 0;
+                            }
+                            .info {
+                                .icon {
+                                    color: #fada5e;
+                                }
+                                .name {
+                                    margin-left: 10px;
+                                    &:hover {
+                                        color: white;
+                                    }
+                                }
+                            }
+                            .action {
+                                text-align: right;
+                                .icon {
+                                    cursor: pointer;
+                                    &:hover {
+                                        color: white;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

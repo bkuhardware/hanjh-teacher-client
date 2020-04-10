@@ -610,7 +610,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                     <React.Fragment>
                                         <div className={styles.list}>
                                             {_.isEmpty(resourcesData.downloadable) && _.isEmpty(resourcesData.external) ? null : (
-                                                <Spin spinning={deleteLoading}>
+                                                <Spin spinning={deleteLoading} tip="Removing...">
                                                     <Collapse defaultActiveKey={['downloadable', 'external']} expandIconPosition="right">
                                                         {!_.isEmpty(resourcesData.downloadable) && (
                                                             <Panel key="downloadable" header="Downloadable materials">
