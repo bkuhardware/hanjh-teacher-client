@@ -8,6 +8,7 @@ import {
     FileTextFilled, SettingFilled, CheckOutlined, InfoCircleOutlined, QuestionCircleOutlined, SoundFilled, StopOutlined
 } from '@ant-design/icons';
 import Slide from 'react-reveal/Slide';
+import Fade from 'react-reveal/Fade';
 import Caption from '@/elements/icon/caption';
 import { videoRates as rates, videoResolutions as resolutions, videoCaptions as captions } from '@/config/constants';
 import { secondsToTime } from '@/utils/utils';
@@ -58,6 +59,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
     const [rateVisible, setRateVisible] = useState(false);
     const [resolution, setResolution] = useState('720');
     const [caption, setCaption] = useState('off');
+    const [captionText, setCaptionText] = useState([]);
     const [captionVisible, setCaptionVisible] = useState(false);
     const [settingsVisible, setSettingsVisible] = useState(false);
     useEffect(() => {
@@ -172,6 +174,30 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
             setSrcObj(null);
         };
     }, [videoUrl]);
+    // useEffect(() => {
+    //     const videoEle = videoRef.current;
+    //     if (videoEle) {
+    //         for (let i = 0; i < videoEle.textTracks.length; ++i) {
+    //             const track = videoEle.textTracks[i];
+    //             track.oncuechange = () => {
+    //                 const cues = track.activeCues;
+    //                 for (let j = 0; j < cues.length; ++j) {
+    //                     for (let k = 0; k < j; ++k) 
+    //                         cues[k].line -= 1;
+    //                     cues[j].line = 18;
+    //                     cues[j].size = 60;
+    //                     cues[j].align = "center";
+    //                 }
+    //             }
+    //         }
+    //         return () => {
+    //             for (let i = 0; i < videoEle.textTracks.length; ++i) {
+    //                 const track = videoEle.textTracks[i];
+    //                 track.oncuechange = null;
+    //             }
+    //         }
+    //     }
+    // }, [captions]);
     const handleError = messageText => {
         setError({
             status: 1,
@@ -323,15 +349,29 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
             if (captionLang === 'off') {
                 if (caption !== 'off') {
                     const idx = _.findIndex(videoEle.textTracks, track => track.language === caption);
-                    videoEle.textTracks[idx].mode = 'hidden';
+                    videoEle.textTracks[idx].mode = 'disabled';
+                    videoEle.textTracks[idx].oncuechange = null;
                 }
             }
             else if (captionLang !== caption) {
                 for (let i = 0; i < videoEle.textTracks.length; ++i) {
-                    if (videoEle.textTracks[i].language === caption)
-                        videoEle.textTracks[i].mode = 'hidden';
-                    if (videoEle.textTracks[i].language === captionLang)
-                        videoEle.textTracks[i].mode = 'showing';
+                    const track = videoEle.textTracks[i];
+                    if (track.language === caption) {
+                        track.mode = 'disabled';
+                        track.oncuechange = null;
+                    }
+                    if (track.language === captionLang) {
+                        track.mode = 'hidden';
+                        track.oncuechange = () => {
+                            const cues = track.activeCues;
+                            let ret = [];
+                            _.forEach(cues, cue => ret.push({
+                                key: cue.startTime,
+                                val: cue.text
+                            }));
+                            setCaptionText(ret);
+                        };
+                    }
                 }
             }
             setCaption(captionLang);
@@ -432,7 +472,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
                             <track
                                 key={captionItem._id}
                                 label={captionItem.label}
-                                kind="Subtitles"
+                                kind="subtitles"
                                 srcLang={captionItem.srcLang}
                                 src={captionItem.src}
                             />
@@ -608,6 +648,22 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
                                 </Col>
                             </Row>
                         </div>
+                        {!_.isEmpty(captionText) && (
+                            <div className={controlVisible ? classNames(styles.captionTexts, styles.moveCaptionTexts) : styles.captionTexts}>
+                                <div className={styles.inner}>
+                                    {_.map(captionText, (text, i) => (
+                                        <React.Fragment key={text.key}>
+                                            {i > 0 && <br />}
+                                            <Fade duration={200} bottom>
+                                                <span className={styles.text}>
+                                                    {text.val}
+                                                </span>
+                                            </Fade>
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                         {playingStatus === 2 && (
                             <div className={classNames(styles.overlay, styles.replay)}>
                                 <div className={styles.outer}>

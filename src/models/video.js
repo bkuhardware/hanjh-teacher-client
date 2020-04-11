@@ -45,7 +45,7 @@ export default {
                             src: testVttvn
                         }
                     ],
-                    videoUrl: 'https://mp4-a.udemycdn.com/2018-05-11_11-14-45-8469d1761758f153fa31634801ff8d12/WebHD_480.mp4?GgeA7EtNEw7Mv2j2uZgLulw8fQrBedZ6sI4Pm5fJ5NWrK-BvNE3JbiM1zZMUsalrv00EhLRSvEIfCXwQOwAN_SNcLQ1Wwd37t2f2bFrKCnaCC6X-OUDG03QipdagGxF11nPcvbYoi_ol9j5fVpKGDcFNY5Bf2Nor2GXTSpsK1AY5'
+                    videoUrl: 'https://mp4-a.udemycdn.com/2018-05-11_11-14-45-8469d1761758f153fa31634801ff8d12/WebHD_480.mp4?-lKlhXAfkcECiD00N1eGzeB_mcFftXcJ8478Gb4ML7UXGbTHvXIRxwoqT2FiSExHY-LmlD2Xz8_Y9e29BYwil5rlg0nBIC4tuF2JDevEuhbSzfEEazhqCCFuJbqLcyHUt-NVEklVq3Sca8vJGoPvF8HWyxs3wigm5uDHTowrqvVS'
                 }
             });
         },
