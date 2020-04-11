@@ -36,7 +36,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
     const [bufferTime, setBufferTime] = useState(0);
-    const [playingStatus, setPlayingStatus] = useState(0);
+    const [playingStatus, setPlayingStatus] = useState(1);
     const [waiting, setWaiting] = useState(false);
     const [error, setError] = useState({
         status: 0,
@@ -56,7 +56,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
     const [menuOpen, setMenuOpen] = useState(false);
     const [playbackRate, setPlaybackRate] = useState("1.0");
     const [rateVisible, setRateVisible] = useState(false);
-    const [resolution, setResolution] = useState('720');
+    const [oldCurTime, setOldCurTime] = useState(null);
     const [caption, setCaption] = useState('off');
     const [captionText, setCaptionText] = useState([]);
     const [captionVisible, setCaptionVisible] = useState(false);
@@ -91,7 +91,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
                 setHeight(realHeight);
             };
             videoEle.onloadeddata = () => {
-                setPlayingStatus(videoEle.autoplay ? 0 : 1);
+                //setPlayingStatus(videoEle.autoplay ? 0 : 1);
                 setVolume(videoEle.volume);
                 if (videoEle.volume === 0) setOldVolume(1); else setOldVolume(videoEle.volume);
 
@@ -173,6 +173,23 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
             setSrcObj(null);
         };
     }, [resolutions]);
+    useEffect(() => {
+        if (oldCurTime !== null) {
+            setBufferTime(0);
+            setSrcObj(resolutions[videoRes].src);
+        }
+    }, [videoRes]);
+    useEffect(() => {
+        if (srcObj && oldCurTime  !== null) {
+            const videoEle = videoRef.current;
+            if (videoEle) {
+                videoEle.currentTime = oldCurTime;
+                if (playingStatus === 0) videoEle.play();
+                handleSelectRate(playbackRate);
+                setOldCurTime(null);
+            }
+        }
+    }, [srcObj]);
     const handleError = messageText => {
         setError({
             status: 1,
@@ -359,8 +376,14 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
         setCaptionVisible(visible);
     };
     const handleSelectResolution = resolution => {
-        onSelectResolution(resolution);
-        handleSettingsVisibleChange(false);
+        const videoEle = videoRef.current;
+        if (videoEle && videoRes !== resolution) {
+            const curTime = videoEle.currentTime;
+            setOldCurTime(curTime);
+            onSelectResolution(resolution);
+            handleSettingsVisibleChange(false);
+        }
+        
     };
     const handleSettingsVisibleChange = visible => {
         processVisibleWithTimeout(visible);

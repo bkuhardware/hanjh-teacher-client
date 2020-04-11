@@ -24,7 +24,7 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const InputGroup = Input.Group;
 
-const Video = ({ videoRes, resolutions, captionsLoading, captions, onUpload, onDelete, onDeleteCaption, onUploadVtt }) => {
+const Video = ({ videoRes, resolutions, captionsLoading, captions, onSelectResolution, onUpload, onDelete, onDeleteCaption, onUploadVtt }) => {
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -378,6 +378,7 @@ const Video = ({ videoRes, resolutions, captionsLoading, captions, onUpload, onD
                             baseHeight={550}
                             captions={captions || []}
                             onSelectCaption={setCurCaption}
+                            onSelectResolution={onSelectResolution}
                         />
                     </div>
                 </div>
@@ -635,6 +636,12 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         playerRef.current = null;
         resetError();
     };
+    const handleSelectResolution = resolution => {
+        dispatch({
+            type: 'video/saveResolution',
+            payload: resolution
+        });
+    };
     const handleBeforeUpload = (file, fileList) => {
         const fileSize = file.size;
         const fileType = file.type;
@@ -846,6 +853,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                                     videoRes={video.videoRes}
                                     captionsLoading={captionsLoading}
                                     captions={video.captions}
+                                    onSelectResolution={handleSelectResolution}
                                     onUpload={handleUploadVideo}
                                     onDelete={handleDeleteVideo}
                                     onDeleteCaption={handleDeleteCaption}
