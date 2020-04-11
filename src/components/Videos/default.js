@@ -27,6 +27,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
     const [fullScreen, setFullScreen] = useState(false);
     const [loop, setLoop] = useState(false);
     const [controlVisible, setControlVisible] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
     const [controlTimer, setControlTimer] = useState(null);
     const [duration, setDuration] = useState(null);
     const [currentTime, setCurrentTime] = useState({
@@ -53,7 +54,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
     const [volume, setVolume] = useState(0);
     const [oldVolume, setOldVolume] = useState(0);
     const [volumeVisible, setVolumeVisible] = useState(false);
-    const [menuOpen, setMenuOpen] = useState(false);
+    
     const [playbackRate, setPlaybackRate] = useState("1.0");
     const [rateVisible, setRateVisible] = useState(false);
     const [oldCurTime, setOldCurTime] = useState(null);
@@ -185,7 +186,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
             if (videoEle) {
                 videoEle.currentTime = oldCurTime;
                 if (playingStatus === 0) videoEle.play();
-                handleSelectRate(playbackRate);
+                handleSelectRate(playbackRate, true);
                 setOldCurTime(null);
             }
         }
@@ -247,6 +248,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
         });
     };
     const handleMouseMove = () => {
+
         if (!menuOpen) {
             setControlVisible(true);
             if (controlTimer) 
@@ -320,12 +322,12 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
         processVisibleWithTimeout(visible);
         setRateVisible(visible);
     };
-    const handleSelectRate = rateKey => {
+    const handleSelectRate = (rateKey, fromEffect = false) => {
         const videoEle = videoRef.current;
         if (videoEle) {
             videoEle.playbackRate = _.toNumber(rateKey);
             setPlaybackRate(rateKey);
-            handleRateVisibleChange(false);
+            if (!fromEffect) handleRateVisibleChange(false);
         }
     };
     const handleSelectOption = ({ key }) => {
@@ -381,7 +383,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
             const curTime = videoEle.currentTime;
             setOldCurTime(curTime);
             onSelectResolution(resolution);
-            handleSettingsVisibleChange(false);
+            //handleSettingsVisibleChange(false);
         }
         
     };
@@ -436,7 +438,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
                         onClick={() => handleSelectResolution(resObj.resolution)}
                         style={{ color: resObj.resolution === videoRes ? '#fada5e' : 'inherit' }}
                     >
-                        {resObj.resolution}
+                        {`${resObj.resolution}p`}
                         {resObj.resolution === videoRes && (<span className={styles.tick} />)}
                     </div>
                 ))}
