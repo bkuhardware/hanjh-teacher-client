@@ -45,7 +45,21 @@ export default {
                         //     src: testVttvn
                         // }
                     ],
-                    videoUrl: 'https://mp4-a.udemycdn.com/2020-02-20_09-58-28-0f53cead3f09ab469fbc2c6f4041e824/WebHD_480.mp4?1-iFVONRli1r66T14p6y4s_Qildf90vqrkE1xJluIaipxJISwYNopnX45im4FCSu1r9bFngXh2fpFh_7NO6Q-sPMAdVdbqmCKcsHfqmMA4Vh2450dl72jpHQEhzL_GCjbSF4xJ2ycUye49osiEtTQ5AWY9eoi74XsrUXJeKlj_7o'
+                    resolutions: {
+                        '720p': {
+                            resolution: '720p',
+                            src: 'https://mp4-a.udemycdn.com/2020-02-20_09-58-28-0f53cead3f09ab469fbc2c6f4041e824/WebHD_480.mp4?1-iFVONRli1r66T14p6y4s_Qildf90vqrkE1xJluIaipxJISwYNopnX45im4FCSu1r9bFngXh2fpFh_7NO6Q-sPMAdVdbqmCKcsHfqmMA4Vh2450dl72jpHQEhzL_GCjbSF4xJ2ycUye49osiEtTQ5AWY9eoi74XsrUXJeKlj_7o'
+                        },
+                        '480p': {
+                            resolution: '480p',
+                            src: 'https://mp4-a.udemycdn.com/2018-02-26_01-07-48-8ea68d1162f9fb279ab124ea4ed195c2/WebHD_480.mp4?r3HiDOdaZ2V13Q_F6AKi1Gw6CkfIfFBVqYaIlFJ-PwOJhZG0krcpYIsbqwvba5DnQkKITlgG3mvRgyeawy-aI8H9PR77rg9EYVbiUkgUgVHXo4itSUVCTwHlBhuMZF12dxsyjK65clLdNADVxdWNZdu8xWozNKu_MWvTJDbGwLcZ'
+                        },
+                        '360p' : {
+                            resolution: '360p',
+                            src: 'https://mp4-a.udemycdn.com/2020-02-20_09-58-28-0f53cead3f09ab469fbc2c6f4041e824/WebHD_480.mp4?1-iFVONRli1r66T14p6y4s_Qildf90vqrkE1xJluIaipxJISwYNopnX45im4FCSu1r9bFngXh2fpFh_7NO6Q-sPMAdVdbqmCKcsHfqmMA4Vh2450dl72jpHQEhzL_GCjbSF4xJ2ycUye49osiEtTQ5AWY9eoi74XsrUXJeKlj_7o'
+                        }
+                    },
+                    videoRes: '720p'
                 }
             });
         },
@@ -66,7 +80,20 @@ export default {
             saveProgress(89);
             yield put({
                 type: 'saveVideo',
-                payload: file
+                payload: {
+                    videoUrl: file,
+                    resolutions: {
+                        '720p': {
+                            resolution: '720p',
+                            src: 'https://mp4-a.udemycdn.com/2020-02-20_09-58-28-0f53cead3f09ab469fbc2c6f4041e824/WebHD_480.mp4?1-iFVONRli1r66T14p6y4s_Qildf90vqrkE1xJluIaipxJISwYNopnX45im4FCSu1r9bFngXh2fpFh_7NO6Q-sPMAdVdbqmCKcsHfqmMA4Vh2450dl72jpHQEhzL_GCjbSF4xJ2ycUye49osiEtTQ5AWY9eoi74XsrUXJeKlj_7o'
+                        },
+                        '480p': {
+                            resolution: '480p',
+                            src: 'https://mp4-a.udemycdn.com/2018-02-26_01-07-48-8ea68d1162f9fb279ab124ea4ed195c2/WebHD_480.mp4?r3HiDOdaZ2V13Q_F6AKi1Gw6CkfIfFBVqYaIlFJ-PwOJhZG0krcpYIsbqwvba5DnQkKITlgG3mvRgyeawy-aI8H9PR77rg9EYVbiUkgUgVHXo4itSUVCTwHlBhuMZF12dxsyjK65clLdNADVxdWNZdu8xWozNKu_MWvTJDbGwLcZ'
+                        }
+                    }
+                }
+                //resolution nữa.
             });
             saveProgress(100);
             yield delay(1000); //delay for UI

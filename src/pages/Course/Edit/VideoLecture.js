@@ -24,7 +24,7 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const InputGroup = Input.Group;
 
-const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDeleteCaption, onUploadVtt }) => {
+const Video = ({ videoRes, resolutions, captionsLoading, captions, onUpload, onDelete, onDeleteCaption, onUploadVtt }) => {
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -79,6 +79,7 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
     };
     const handleCancelCaptions = () => {
         //remove caption file.
+        handleCancelAddCaption();
         setCaptioning(false);
     };
     const handleBeforeUpload = (file, fileList) => {
@@ -200,10 +201,10 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
     );
     return(
         <div className={styles.uploadVideoContainer}>
-            {(!videoUrl || editing) && (
+            {(!videoRes || _.isEmpty(resolutions) || editing) && (
                 <Fade duration={700}>
                     <>
-                        {!videoUrl && (
+                        {(!videoRes || _.isEmpty(resolutions)) && (
                             <div className={styles.empty}>
                                 <span className={styles.icon}>
                                     <CloseCircleFilled />
@@ -340,7 +341,7 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
                     </div>
                 </Fade>
             )}
-            {videoUrl && (
+            {videoRes && !_.isEmpty(resolutions) && (
                 <div className={styles.videoPlayer}>
                     <div className={styles.btns}>
                         {!editing && !captioning && (
@@ -371,7 +372,8 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
                     </div>
                     <div className={styles.player}>
                         <Player
-                            videoUrl={videoUrl}
+                            videoRes={videoRes}
+                            resolutions={resolutions}
                             baseWidth={"100%"}
                             baseHeight={550}
                             captions={captions || []}
@@ -840,7 +842,8 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                         ) : (
                             <Fade duration={500}>
                                 <Video
-                                    videoUrl={video.videoUrl}
+                                    resolutions={video.resolutions}
+                                    videoRes={video.videoRes}
                                     captionsLoading={captionsLoading}
                                     captions={video.captions}
                                     onUpload={handleUploadVideo}

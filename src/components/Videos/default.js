@@ -16,10 +16,9 @@ import logo from '@/assets/images/logo_trans.png';
 
 import styles from './default.less';
 
-const { SubMenu } = Menu;
 const MenuItem = Menu.Item;
 
-const Video = ({ videoUrl, baseWidth, baseHeight, captions, onSelectCaption, ...props }) => {
+const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelectCaption, onSelectResolution, ...props }) => {
     const divRef = useRef(null);
     const videoRef = useRef(null);
     const sliderRef = useRef(null);
@@ -165,7 +164,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, onSelectCaption, ...
         };
     }, []);
     useEffect(() => {
-        setSrcObj(videoUrl);
+        setSrcObj(resolutions[videoRes].src);
         return () => {
             setBufferTime(0);
             setWidth(0);
@@ -173,7 +172,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, onSelectCaption, ...
             setPlaybackRate('1.0');
             setSrcObj(null);
         };
-    }, [videoUrl]);
+    }, [resolutions]);
     const handleError = messageText => {
         setError({
             status: 1,
@@ -359,6 +358,14 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, onSelectCaption, ...
         processVisibleWithTimeout(visible);
         setCaptionVisible(visible);
     };
+    const handleSelectResolution = resolution => {
+        onSelectResolution(resolution);
+        handleSettingsVisibleChange(false);
+    };
+    const handleSettingsVisibleChange = visible => {
+        processVisibleWithTimeout(visible);
+        setSettingsVisible(visible);
+    };
     const playbackRateMenu = (
         <div className={styles.ratesMenu}>
             {_.map(_.orderBy(_.keys(rates), key => key, ['desc']), rateKey => (
@@ -395,7 +402,33 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, onSelectCaption, ...
                 </div>
             ))}
         </div>
-    )
+    );
+    const settingsMenu = (
+        <div className={styles.settingsMenu}>
+            <div className={styles.resolutionsMenu}>
+                {_.map(_.orderBy(_.toArrays(resolutions), ['resolution'], ['desc']), resObj => (
+                    <div
+                        key={resObj.resolution}
+                        className={styles.resolution}
+                        onClick={() => handleSelectResolution(resObj.resolution)}
+                        style={{ color: resObj.resolution === videoRes ? '#fada5e' : 'inherit' }}
+                    >
+                        {resObj.resolution}
+                        {resObj.resolution === videoRes && (<span className={styles.tick} />)}
+                    </div>
+                ))}
+            </div>
+            <Divider className={styles.divider} />
+            <div className={styles.actionsMenu}>
+                <div className={styles.action}>
+                    Rebort technical issue
+                </div>
+                <div className={styles.action}>
+                    Rebort abuse
+                </div>
+            </div>
+        </div>        
+    );
     const dropdownMenu = (
         <Menu className={styles.dropdownMenu} selectedKeys={[]} onClick={handleSelectOption}>
             <MenuItem key="loop">
@@ -572,7 +605,20 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, onSelectCaption, ...
                                                 </Col>
                                                 <Col span={5} className={styles.settings}>
                                                     <Tooltip placement="top" mouseEnterDelay={1} title="Setting">
-                                                        <SettingFilled />
+                                                        <Popover
+                                                            getPopupContainer={() => divRef.current}
+                                                            content={settingsMenu}
+                                                            placement="top"
+                                                            arrowPointAtCenter
+                                                            visible={settingsVisible}
+                                                            onVisibleChange={handleSettingsVisibleChange}
+                                                            popupClassName={styles.settingsPopover}
+                                                            trigger="click"
+                                                        >
+                                                            <span>
+                                                                <SettingFilled />
+                                                            </span>
+                                                        </Popover>
                                                     </Tooltip>
                                                 </Col>
                                                 <Col span={9} className={styles.logo}>
@@ -690,7 +736,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, onSelectCaption, ...
                         >
                             <div className={styles.inner}>
                                 <video muted ref={previewRef} className={styles.videoElement} width={previewWidth} height={previewHeight}>
-                                    <source src={videoUrl} type="video/mp4" />
+                                    <source src={srcObj} type="video/mp4" />
                                 </video>
                                 <span className={styles.time}>{`${secondsToTime(preview.time)}`}</span>
                             </div>
