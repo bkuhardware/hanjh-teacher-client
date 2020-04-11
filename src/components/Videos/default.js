@@ -19,7 +19,7 @@ import styles from './default.less';
 const { SubMenu } = Menu;
 const MenuItem = Menu.Item;
 
-const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
+const Video = ({ videoUrl, baseWidth, baseHeight, captions, onSelectCaption, ...props }) => {
     const divRef = useRef(null);
     const videoRef = useRef(null);
     const sliderRef = useRef(null);
@@ -174,30 +174,6 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
             setSrcObj(null);
         };
     }, [videoUrl]);
-    // useEffect(() => {
-    //     const videoEle = videoRef.current;
-    //     if (videoEle) {
-    //         for (let i = 0; i < videoEle.textTracks.length; ++i) {
-    //             const track = videoEle.textTracks[i];
-    //             track.oncuechange = () => {
-    //                 const cues = track.activeCues;
-    //                 for (let j = 0; j < cues.length; ++j) {
-    //                     for (let k = 0; k < j; ++k) 
-    //                         cues[k].line -= 1;
-    //                     cues[j].line = 18;
-    //                     cues[j].size = 60;
-    //                     cues[j].align = "center";
-    //                 }
-    //             }
-    //         }
-    //         return () => {
-    //             for (let i = 0; i < videoEle.textTracks.length; ++i) {
-    //                 const track = videoEle.textTracks[i];
-    //                 track.oncuechange = null;
-    //             }
-    //         }
-    //     }
-    // }, [captions]);
     const handleError = messageText => {
         setError({
             status: 1,
@@ -233,7 +209,6 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
     const handleMouseOnSlider = e => {
         const offsetX = e.nativeEvent.offsetX;
         const sliderWidth = sliderRef.current.clientWidth;
-        console.log(sliderWidth);
         const time = (offsetX / sliderWidth) * duration;
         const clientX = e.clientX;
         const clientY = e.clientY;
@@ -343,7 +318,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
         }
         else message.warning('Sorry, this function is not available!');
     };
-    const handleSelectCaption = captionLang => {
+    const handleSelectCaption = (captionId, captionLang) => {
         const videoEle = videoRef.current;
         if (videoEle) {
             if (captionLang === 'off') {
@@ -351,6 +326,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
                     const idx = _.findIndex(videoEle.textTracks, track => track.language === caption);
                     videoEle.textTracks[idx].mode = 'disabled';
                     videoEle.textTracks[idx].oncuechange = null;
+                    setCaptionText([]);
                 }
             }
             else if (captionLang !== caption) {
@@ -375,6 +351,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
                 }
             }
             setCaption(captionLang);
+            onSelectCaption(captionId);
             handleCaptionVisibleChange(false);
         }
     };
@@ -400,7 +377,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
             <div
                 key='off'
                 className={styles.caption}
-                onClick={() => handleSelectCaption('off')}
+                onClick={() => handleSelectCaption('off', 'off')}
                 style={{ color: caption === 'off' ? '#fada5e' : 'inherit' }}
             >
                 Off
@@ -410,7 +387,7 @@ const Video = ({ videoUrl, baseWidth, baseHeight, captions, ...props }) => {
                 <div
                     key={captionItem._id}
                     className={styles.caption}
-                    onClick={() => handleSelectCaption(captionItem.srcLang)}
+                    onClick={() => handleSelectCaption(captionItem._id, captionItem.srcLang)}
                     style={{ color: caption === captionItem.srcLang ? '#fada5e' : 'inherit' }}
                 >
                     {captionItem.label}

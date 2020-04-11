@@ -28,6 +28,7 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
     const [progress, setProgress] = useState(0);
     const [editing, setEditing] = useState(false);
     const [captioning, setCaptioning] = useState(false);
+    const [curCaption, setCurCaption] = useState(null);
     const resetUpload = () => {
         setFile(null);
         setFileName(null);
@@ -50,14 +51,20 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
 
     };
     const handleDeleteCaption = captionId => {
-        Modal.confirm({
-            content: 'Are you sure to delete this caption?',
-            okText: 'Yes',
-            cancelText: 'No',
-            onOk: () => {
-                onDeleteCaption(captionId);
-            }
-        })
+        if (curCaption !== captionId) {
+            Modal.confirm({
+                content: 'Are you sure to delete this caption?',
+                okText: 'Yes',
+                cancelText: 'No',
+                onOk: () => {
+                    onDeleteCaption(captionId);
+                }
+            });
+        }
+        else {
+            message.error('You can\'t remove this caption because it\'s running.');
+            message.error('Please set another caption or turn off caption before delete it!', 2.5);
+        }
     };
     const handleCancelCaptions = () => setCaptioning(false);
     const handleBeforeUpload = (file, fileList) => {
@@ -260,6 +267,7 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
                             baseWidth={"100%"}
                             baseHeight={550}
                             captions={captions || []}
+                            onSelectCaption={setCurCaption}
                         />
                     </div>
                 </div>
