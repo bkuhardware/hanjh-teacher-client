@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { connect } from 'dva';
 import moment from 'moment';
 import classNames from 'classnames';
-import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Popover, Descriptions, Divider, List } from 'antd';
+import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Popover, Descriptions, Divider, List, Select } from 'antd';
 import { VideoCameraFilled, InfoCircleFilled, YoutubeFilled, SettingFilled, DeleteFilled, EditFilled, CreditCardFilled, CloseCircleFilled, CloseOutlined } from '@ant-design/icons';
 import Player from '@/components/Videos/default';
 import UserAvatar from '@/components/Avatar';
@@ -13,6 +13,7 @@ import Caption from '@/elements/icon/caption';
 import Editor from '@/components/Editor/DescriptionEditor';
 import { EditorState, convertFromHTML, ContentState } from 'draft-js';
 import TimeAgo from 'react-timeago';
+import { captionLanguages } from '@/config/constants';
 import { exportToHTML } from '@/utils/editor';
 import { bytesToSize, checkValidLink, secondsToTime } from '@/utils/utils';
 import styles from './VideoLecture.less';
@@ -20,6 +21,8 @@ import styles from './VideoLecture.less';
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
+const { Option } = Select;
+const InputGroup = Input.Group;
 
 const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDeleteCaption }) => {
     const [file, setFile] = useState(null);
@@ -29,6 +32,8 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
     const [editing, setEditing] = useState(false);
     const [captioning, setCaptioning] = useState(false);
     const [curCaption, setCurCaption] = useState(null);
+    const [adding, setAdding] = useState(false);
+    const [newLang, setNewLang] = useState(undefined);
     const resetUpload = () => {
         setFile(null);
         setFileName(null);
@@ -47,7 +52,8 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
         resetUpload();
         setEditing(false);
     };
-    const handleAddCaption = () => {
+    const handleAddCaption = () => setAdding(true);
+    const handleCancelAddCaption = () => {
 
     };
     const handleDeleteCaption = captionId => {
@@ -66,7 +72,10 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
             message.error('Please set another caption or turn off caption before delete it!', 2.5);
         }
     };
-    const handleCancelCaptions = () => setCaptioning(false);
+    const handleCancelCaptions = () => {
+        //remove caption file.
+        setCaptioning(false);
+    };
     const handleBeforeUpload = (file, fileList) => {
         const fileSize = file.size;
         const fileType = file.type;
@@ -106,6 +115,10 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
         beforeUpload: handleBeforeUpload,
         openFileDialogOnClick: !file,
         showUploadList: false
+    };
+    const getLangsList = () => {
+        const curLangs = _.map(captions, caption => caption.srcLang);
+        return _.filter(captionLanguages, lang => _.indexOf(curLangs, lang.key) === -1);
     };
     const addOnAfter = uploading && file ? (
         <span className={styles.progress}>
@@ -221,11 +234,50 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
                                 )}
                             />
                         </div>
-                        <div className={styles.add}>
-                            <Button type="primary" size="small" icon="plus" onClick={handleAddCaption}>
-                                Add caption
-                            </Button>
-                        </div>
+                        {adding ? (
+                            <div className={styles.adding}>
+                                <Row>
+                                    <Col className={styles.uploader} span={20}>
+                                        <Input.Group compact >
+                                            <Select
+                                                placeholder="Language"
+                                                value={newLang}
+                                                style={{ width: '18%' }}
+                                                onChange={val => setNewLang(val)}
+                                                
+                                            >
+                                                {_.map(getLangsList(), lang => (
+                                                    <Option key={lang.key} value={lang.key}>
+                                                        {lang.label}
+                                                    </Option>
+                                                ))}
+                                            </Select>
+                                            <Input
+                                                type="text"
+                                                value={fileName || ''}
+                                                style={{ width: '82%' }}
+                                                placeholder="No file selected."
+                                                
+                                                addonAfter={(
+                                                    <span className={styles.addOnAfter}>
+                                                        {addOnAfter}
+                                                    </span>
+                                                )}
+                                            />
+                                        </Input.Group>
+                                    </Col>
+                                    <Col className={styles.cancel} span={4}>
+                                        <Button type="primary" size="small" icon="close" onClick={handleCancelAddCaption} shape="circle" />
+                                    </Col>
+                                </Row>
+                            </div>
+                        ) : (
+                            <div className={styles.add}>
+                                <Button type="primary" size="small" icon="plus" onClick={handleAddCaption}>
+                                    Add caption
+                                </Button>
+                            </div>
+                        )}
                         <div className={styles.close} onClick={handleCancelCaptions}>
                             <CloseOutlined />
                         </div>

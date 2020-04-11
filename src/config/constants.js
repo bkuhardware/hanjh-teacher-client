@@ -37,3 +37,34 @@ export const videoResolutions = {
     '360': '360p',
     '240': '240p'
 };
+
+export const captionLanguages = [
+    {
+        key: 'en',
+        label: 'English'
+    },
+    {
+        key: 'vi',
+        label: 'Vietnamese'
+    },
+    {
+        key: 'fr',
+        label: 'French'
+    },
+    {
+        key: 'es',
+        label: 'Spanish'
+    },
+    {
+        key: 'cn',
+        label: 'Chinese'
+    },
+    {
+        key: 'jp',
+        label: 'Japanese'
+    },
+    {
+        key: 'ge',
+        label: 'German'
+    },
+]
