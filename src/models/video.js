@@ -32,20 +32,20 @@ export default {
                         avatar: null
                     },
                     captions: [
-                        {
-                            _id: 'caption_1',
-                            srcLang: 'en',
-                            label: 'English',
-                            src: testVtt
-                        },
-                        {
-                            _id: 'caption_3',
-                            srcLang: 'vi',
-                            label: 'Vietnamese',
-                            src: testVttvn
-                        }
+                        // {
+                        //     _id: 'caption_1',
+                        //     srcLang: 'en',
+                        //     label: 'English',
+                        //     src: testVtt
+                        // },
+                        // {
+                        //     _id: 'caption_3',
+                        //     srcLang: 'vi',
+                        //     label: 'Vietnamese',
+                        //     src: testVttvn
+                        // }
                     ],
-                    videoUrl: 'https://mp4-a.udemycdn.com/2018-05-11_11-14-45-8469d1761758f153fa31634801ff8d12/WebHD_480.mp4?-lKlhXAfkcECiD00N1eGzeB_mcFftXcJ8478Gb4ML7UXGbTHvXIRxwoqT2FiSExHY-LmlD2Xz8_Y9e29BYwil5rlg0nBIC4tuF2JDevEuhbSzfEEazhqCCFuJbqLcyHUt-NVEklVq3Sca8vJGoPvF8HWyxs3wigm5uDHTowrqvVS'
+                    videoUrl: 'https://mp4-a.udemycdn.com/2020-02-20_09-58-28-0f53cead3f09ab469fbc2c6f4041e824/WebHD_480.mp4?1-iFVONRli1r66T14p6y4s_Qildf90vqrkE1xJluIaipxJISwYNopnX45im4FCSu1r9bFngXh2fpFh_7NO6Q-sPMAdVdbqmCKcsHfqmMA4Vh2450dl72jpHQEhzL_GCjbSF4xJ2ycUye49osiEtTQ5AWY9eoi74XsrUXJeKlj_7o'
                 }
             });
         },
@@ -79,6 +79,30 @@ export default {
                 type: 'saveVideo',
                 payload: null
             });
+        },
+        *addCaption({ payload }, { call, put }) {
+            const {
+                lectureId,
+                lang,
+                name,
+                file,
+                callback
+            } = payload;
+            //call cloud api for upload vtt file
+            yield delay(1340);
+            //call api for add caption to lecture use lectureId, url, lang.
+            yield delay(1100);
+            //then get return value is new caption object
+            yield put({
+                type: 'pushCaption',
+                payload: {
+                    _id: _.uniqueId('caption_'),
+                    srcLang: lang.key,
+                    label: lang.label,
+                    src: testVtt
+                }
+            });
+            if (callback) callback();
         },
         *deleteCaption({ payload }, { call, put }) {
             const { captionId, lectureId, callback } = payload;
@@ -181,6 +205,18 @@ export default {
                 info: {
                     ...state.info,
                     videoUrl
+                }
+            };
+        },
+        pushCaption(state, { payload }) {
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    captions: [
+                        ...state.info.captions,
+                        { ...payload }
+                    ]
                 }
             };
         },

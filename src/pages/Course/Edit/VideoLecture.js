@@ -24,7 +24,7 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const InputGroup = Input.Group;
 
-const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDeleteCaption }) => {
+const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDeleteCaption, onUploadVtt }) => {
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -34,6 +34,9 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
     const [curCaption, setCurCaption] = useState(null);
     const [adding, setAdding] = useState(false);
     const [newLang, setNewLang] = useState(undefined);
+    const [vttFile, setVttFile] = useState(null);
+    const [vttFileName, setVttFileName] = useState(null);
+    const [vttUploading, setVttUploading] = useState(false);
     const resetUpload = () => {
         setFile(null);
         setFileName(null);
@@ -54,7 +57,9 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
     };
     const handleAddCaption = () => setAdding(true);
     const handleCancelAddCaption = () => {
-
+        handleRemoveVttFile();
+        setNewLang(undefined);
+        setAdding(false);
     };
     const handleDeleteCaption = captionId => {
         if (curCaption !== captionId) {
@@ -91,7 +96,6 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
     const handleRemoveFile = () => resetUpload();
 
     const handleUploadFile = () => {
-
         setUploading(true);
         const fileReader = new FileReader();
         fileReader.readAsDataURL(file);
@@ -116,6 +120,40 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
         openFileDialogOnClick: !file,
         showUploadList: false
     };
+    const handleBeforeUploadVtt = file => {
+        setVttFile(file);
+        setVttFileName(file.name);
+        return false;
+    };
+    const handleRemoveVttFile = () => {
+        setVttFile(null);
+        setVttFileName(null);
+    };
+    const handleUploadVttFile = () => {
+        if (newLang) {
+            setVttUploading(true);
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(vttFile);
+            fileReader.onload = () => {
+                const result = fileReader.result;
+                console.log(newLang);
+                onUploadVtt(newLang, vttFileName, result, () => {
+                    handleCancelAddCaption();
+                    setVttUploading(false);
+                })
+            }
+        }
+        else {
+            message.error('Please select language.');
+        }
+    };
+    const uploadVttProps = {
+        accept: '.vtt',
+        name: 'vttFile',
+        beforeUpload: handleBeforeUploadVtt,
+        openFileDialogOnClick: !vttFile,
+        showUploadList: false
+    };
     const getLangsList = () => {
         const curLangs = _.map(captions, caption => caption.srcLang);
         return _.filter(captionLanguages, lang => _.indexOf(curLangs, lang.key) === -1);
@@ -135,6 +173,26 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
         </span>
     ) : (
         <Upload {...uploadProps}>
+            <span className={styles.suffix}>
+                <Icon type="upload" />
+            </span>
+        </Upload>
+    );
+    const addOnAfterVtt = vttUploading && vttFile ? (
+        <span className={styles.progress}>
+            <Icon type="loading" style={{ color: '#fada5e' }} />
+        </span>
+    ) : vttFile ? (
+        <span>
+            <span className={styles.suffix} onClick={handleUploadVttFile} style={{ marginRight: '6px' }}>
+                <Icon type="cloud-upload" />
+            </span>
+            <span className={styles.suffix} onClick={handleRemoveVttFile}>
+                <Icon type="delete" />
+            </span>
+        </span>
+    ) : (
+        <Upload {...uploadVttProps}>
             <span className={styles.suffix}>
                 <Icon type="upload" />
             </span>
@@ -241,26 +299,24 @@ const Video = ({ videoUrl, captionsLoading, captions, onUpload, onDelete, onDele
                                         <Input.Group compact >
                                             <Select
                                                 placeholder="Language"
-                                                value={newLang}
+                                                value={newLang && newLang.key}
                                                 style={{ width: '18%' }}
-                                                onChange={val => setNewLang(val)}
-                                                
+                                                onChange={(val, opt) => setNewLang({ key: val, label: opt.props.label })}
                                             >
                                                 {_.map(getLangsList(), lang => (
-                                                    <Option key={lang.key} value={lang.key}>
+                                                    <Option key={lang.key} value={lang.key} label={lang.label}>
                                                         {lang.label}
                                                     </Option>
                                                 ))}
                                             </Select>
                                             <Input
                                                 type="text"
-                                                value={fileName || ''}
+                                                value={vttFileName || ''}
                                                 style={{ width: '82%' }}
                                                 placeholder="No file selected."
-                                                
                                                 addonAfter={(
                                                     <span className={styles.addOnAfter}>
-                                                        {addOnAfter}
+                                                        {addOnAfterVtt}
                                                     </span>
                                                 )}
                                             />
@@ -435,6 +491,18 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         return dispatch({
             type: 'video/delete',
             payload: lectureId
+        });
+    };
+    const handleUploadCaption = (lang, name, file, callback) => {
+        dispatch({
+            type: 'video/addCaption',
+            payload: {
+                lectureId,
+                lang,
+                name, 
+                file,
+                callback
+            }
         });
     };
     const handleDeleteCaption = captionId => {
@@ -778,6 +846,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                                     onUpload={handleUploadVideo}
                                     onDelete={handleDeleteVideo}
                                     onDeleteCaption={handleDeleteCaption}
+                                    onUploadVtt={handleUploadCaption}
                                 />
                             </Fade>
                         )}
