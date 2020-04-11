@@ -406,7 +406,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
     const settingsMenu = (
         <div className={styles.settingsMenu}>
             <div className={styles.resolutionsMenu}>
-                {_.map(_.orderBy(_.toArrays(resolutions), ['resolution'], ['desc']), resObj => (
+                {_.map(_.orderBy(_.toArray(resolutions), ['resolution'], ['desc']), resObj => (
                     <div
                         key={resObj.resolution}
                         className={styles.resolution}

@@ -415,7 +415,7 @@
 
 .settingsPopover {
     z-index: 30;
-    width: 120px;
+    width: auto;
     :global {
         .ant-popover-inner-content {
             padding: 0;
@@ -425,14 +425,34 @@
         }
     }
     .settingsMenu {
+        .resolutionsMenu .resolution, .actionsMenu .action {
+            padding: 8px 16px;
+            cursor: pointer;
+            position: relative;
+            height: 37px;
+            &:hover {
+                background: rgb(20, 20, 20);
+                opacity: 0.8;
+            }
+        }
         .resolutionsMenu {
-
+            .resolution {
+                .tick {
+                    position: absolute;
+                    display: inline-block;
+                    height: 8px;
+                    width: 8px;
+                    background: #FADA5E;
+                    border-radius: 50%;
+                    top: 50%;
+                    right: 12px;
+                    transform: translate(0%, -50%);
+                }
+            }
         }
         .divider {
-
-        }
-        .actionsMenu {
-            
+            background: rgba(255, 255, 255, 0.6);
+            margin: 8px 0;
         }
     }
 }
