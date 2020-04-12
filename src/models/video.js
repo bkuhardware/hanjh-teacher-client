@@ -146,6 +146,15 @@ export default {
             });
             if (callback) callback();
         },
+        *preview({ payload }, { call, put }) {
+            const { lectureId, value, callback } = payload;
+            yield delay(1000);
+            yield put({
+                type: 'savePreview',
+                payload: value
+            });
+            if (callback) callback();
+        },
         *fetchDescription({ payload }, { call, put }) {
             const { courseId, lectureId } = payload;
             yield delay(1000);
@@ -270,6 +279,15 @@ export default {
                     videoRes: resolution
                 }
             };
+        },
+        savePreview(state, { payload: value }) {
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    isPreviewed: value
+                }
+            }
         },
         saveDescription(state, { payload }) {
             return {

@@ -433,7 +433,9 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         downloadableLoading,
         externalLoading,
         deleteLoading,
-        captionsLoading
+        captionsLoading,
+        previewLoading,
+        downloadLoading
     } = props;
     const playerRef = useRef(null);
     const [error, setError] = useState({
@@ -723,7 +725,14 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
     };
 
     const handleSetPreviewStatus = checked => {
-
+        dispatch({
+            type: 'video/preview',
+            payload: {
+                lectureId,
+                value: checked,
+                callback: () => message.success('Preview status has been updated')
+            }
+        });
     };
 
     const handleSetDownloadableStatus = checked => {
@@ -772,7 +781,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         )
     };
 
-    const getConfig = (isPreviewed, isDownloadable) => (
+    const getConfig = (isPreviewed, previewLoading, isDownloadable, downloadLoading) => (
         <div className={styles.menu}>
             <Row className={styles.preview}>
                 <Col span={16} className={styles.left}>
@@ -786,7 +795,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                     </span>
                 </Col>
                 <Col span={8} className={styles.right}>
-                    <Switch checked={isPreviewed} onChange={handleSetPreviewStatus} />
+                    <Switch checked={isPreviewed} onChange={handleSetPreviewStatus} loading={previewLoading} />
                 </Col>
             </Row>
             <Row className={styles.download}>
@@ -801,7 +810,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                     </span>
                 </Col>
                 <Col span={8} className={styles.right}>
-                    <Switch checked={isDownloadable} onChange={handleSetDownloadableStatus} />
+                    <Switch checked={isDownloadable} onChange={handleSetDownloadableStatus} loading={downloadLoading} />
                 </Col>
             </Row>
         </div>
@@ -838,7 +847,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                                         trigger="click"
                                         popupClassName={styles.configsPopover}
                                         placement="bottomRight"
-                                        content={getConfig(video.isPreviewed, video.isDownloadable)}
+                                        content={getConfig(video.isPreviewed, previewLoading, video.isDownloadable, downloadLoading)}
                                         arrowPointAtCenter
                                         popupAlign={{ offset: [21, 6] }}
                                     >
@@ -1129,6 +1138,8 @@ export default connect(
         downloadableLoading: !!loading.effects['video/addDownloadable'],
         externalLoading: !!loading.effects['video/addExternal'],
         deleteLoading: !!loading.effects['video/deleteResource'],
-        captionsLoading: !!loading.effects['video/addCaption'] || !!loading.effects['video/deleteCaption']
+        captionsLoading: !!loading.effects['video/addCaption'] || !!loading.effects['video/deleteCaption'],
+        previewLoading: !!loading.effects['video/preview'],
+        downloadLoading: !!loading.effects['video/downloadale']
     })
 )(VideoLecture);
