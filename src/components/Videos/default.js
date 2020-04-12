@@ -735,7 +735,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
                             <div className={styles.overlay}>
                                 <div className={styles.outer}>
                                     <div className={styles.inlineDiv}>
-                                        <Loading3QuartersOutlined style={{ fontSize: '84px', cursor: 'pointer' }} spin/>
+                                        <Loading3QuartersOutlined style={{ fontSize: '84px', cursor: 'pointer', color: 'white' }} spin/>
                                     </div>
                                 </div>
                             </div>

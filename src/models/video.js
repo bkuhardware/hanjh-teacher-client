@@ -50,15 +50,15 @@ export default {
                     resolutions: {
                         720: {
                             resolution: 720,
-                            src: 'https://mp4-a.udemycdn.com/2020-02-20_09-58-28-0f53cead3f09ab469fbc2c6f4041e824/WebHD_720p.mp4?f7LJEukMlLXv6ikJ3slEFcPaZ9tt44haoWFlQnl-ZaVVmjiPSt8hSy7eUgkHg9d35X4i18yO3K0hMybfMuenUDLzpNqNolG2mcLqGLS9oCqkSoM0TrvzmaQaAXzGs9wMOX1iP8Rq-CpFOoWAJujNyO6YCo1sc0ZE5WhHbc8cc4I9oA'
+                            src: 'http://media.w3.org/2010/05/bunny/movie.mp4'
                         },
                         480: {
                             resolution: 480,
-                            src: 'https://mp4-a.udemycdn.com/2019-05-29_10-45-02-5709a84e9579bf6d1a24c9a5de9a8978/WebHD_720p.mp4?TUNw0RPn6eZYXxxxm_FISAqlnATZ_LsEYKb6aBbUi4L76qLzuk8TaJMqyc0ieTZqVKp6BlW1vCP5ZX0mfkt6P4qObVqucDvgoEhH1z9qvEjNG7bewP0hl5Nz_gQlMcHJc1nVYtr4P4MCuZcxtoRplKU9zKID6COxZcTVIo0g0oFynw'
+                            src: 'http://www.peach.themazzone.com/durian/movies/sintel-1024-surround.mp4'
                         },
                         360 : {
                             resolution: 360,
-                            src: 'https://mp4-a.udemycdn.com/2020-02-20_09-58-28-0f53cead3f09ab469fbc2c6f4041e824/WebHD_720p.mp4?f7LJEukMlLXv6ikJ3slEFcPaZ9tt44haoWFlQnl-ZaVVmjiPSt8hSy7eUgkHg9d35X4i18yO3K0hMybfMuenUDLzpNqNolG2mcLqGLS9oCqkSoM0TrvzmaQaAXzGs9wMOX1iP8Rq-CpFOoWAJujNyO6YCo1sc0ZE5WhHbc8cc4I9oA'
+                            src: 'http://media.w3.org/2010/05/bunny/movie.mp4'
                         }
                     },
                     videoRes: 720
@@ -91,11 +91,11 @@ export default {
                         },
                         720: {
                             resolution: 720,
-                            src: 'https://mp4-a.udemycdn.com/2020-02-20_09-58-28-0f53cead3f09ab469fbc2c6f4041e824/WebHD_720p.mp4?f7LJEukMlLXv6ikJ3slEFcPaZ9tt44haoWFlQnl-ZaVVmjiPSt8hSy7eUgkHg9d35X4i18yO3K0hMybfMuenUDLzpNqNolG2mcLqGLS9oCqkSoM0TrvzmaQaAXzGs9wMOX1iP8Rq-CpFOoWAJujNyO6YCo1sc0ZE5WhHbc8cc4I9oA'
+                            src: 'http://media.w3.org/2010/05/bunny/movie.mp4'
                         },
                         480: {
                             resolution: 480,
-                            src: 'https://mp4-a.udemycdn.com/2019-05-29_10-45-02-5709a84e9579bf6d1a24c9a5de9a8978/WebHD_720p.mp4?TUNw0RPn6eZYXxxxm_FISAqlnATZ_LsEYKb6aBbUi4L76qLzuk8TaJMqyc0ieTZqVKp6BlW1vCP5ZX0mfkt6P4qObVqucDvgoEhH1z9qvEjNG7bewP0hl5Nz_gQlMcHJc1nVYtr4P4MCuZcxtoRplKU9zKID6COxZcTVIo0g0oFynw'
+                            src: 'http://www.peach.themazzone.com/durian/movies/sintel-1024-surround.mp4'
                         }
                     }
                 }
