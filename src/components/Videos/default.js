@@ -760,9 +760,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
                             }}
                         >
                             <div className={styles.inner}>
-                                <video muted ref={previewRef} className={styles.videoElement} width={previewWidth} height={previewHeight}>
-                                    <source src={srcObj} type="video/mp4" />
-                                </video>
+                                <video muted ref={previewRef} className={styles.videoElement} width={previewWidth} height={previewHeight} src={srcObj} />
                                 <span className={styles.time}>{`${secondsToTime(preview.time)}`}</span>
                             </div>
                         </div>

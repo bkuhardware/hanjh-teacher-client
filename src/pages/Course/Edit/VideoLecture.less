@@ -36,7 +36,7 @@
             }
             .options {
                 text-align: right;
-                .metadata {
+                .metadata, .configs {
                     font-size: 1.75em;
                     cursor: pointer;
                     color: white;
@@ -48,6 +48,10 @@
                         opacity: 0.8;
                     }
                 }
+            }
+            .configs {
+                display: inline-block;
+                margin-right: 12px;
             }
         }
         .tabs {
@@ -458,5 +462,40 @@
     .userName {
         display: inline-block;
         margin-right: 12px;
+    }
+}
+
+.configsPopover {
+    z-index: 1000;
+    width: 300px;
+    :global {
+        .ant-popover-inner-content {
+            padding: 12px 16px;
+        }
+    }
+    .menu {
+        .preview, .download {
+            padding: 6px 3px;
+            .left {
+                .icon {
+                    color: #fada5e;
+                }
+                .text {
+                    display: inline-block;
+                    margin-left: 8px;
+                    font-size: 1.1em;
+                    font-weight: 400;
+                }
+            }
+            .right {
+                text-align: right;
+            }
+        }
+        .preview {
+
+        }
+        .download {
+
+        }
     }
 }

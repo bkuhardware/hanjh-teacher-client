@@ -22,6 +22,8 @@ export default {
                     title: 'The Vue instance',
                     createdAt: 1578813445900,
                     updatedAt: 1578813445900,
+                    isPreviewed: false,
+                    isDownloadable: false,
                     chapter: {
                         _id: 1,
                         title: 'ES6 Javscript'

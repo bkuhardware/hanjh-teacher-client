@@ -3,8 +3,8 @@ import _ from 'lodash';
 import { connect } from 'dva';
 import moment from 'moment';
 import classNames from 'classnames';
-import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Popover, Descriptions, Divider, List, Select } from 'antd';
-import { VideoCameraFilled, InfoCircleFilled, YoutubeFilled, SettingFilled, DeleteFilled, EditFilled, CreditCardFilled, CloseCircleFilled, CloseOutlined } from '@ant-design/icons';
+import { Row, Col, Icon, Collapse, Form, Upload, Button, Spin, Skeleton, Tooltip, Input, Tabs, Modal, message, Popover, Descriptions, Divider, List, Select, Switch } from 'antd';
+import { VideoCameraFilled, InfoCircleFilled, YoutubeFilled, SettingFilled, DeleteFilled, EditFilled, CreditCardFilled, CloseCircleFilled, CloseOutlined, CompassFilled, QuestionCircleFilled } from '@ant-design/icons';
 import Player from '@/components/Videos/default';
 import UserAvatar from '@/components/Avatar';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
@@ -722,6 +722,14 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         setTabKey(tabKey);
     };
 
+    const handleSetPreviewStatus = checked => {
+
+    };
+
+    const handleSetDownloadableStatus = checked => {
+
+    };
+
     const getMetadata = video => {
         return (
             <Descriptions
@@ -764,6 +772,41 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         )
     };
 
+    const getConfig = (isPreviewed, isDownloadable) => (
+        <div className={styles.menu}>
+            <Row className={styles.preview}>
+                <Col span={16} className={styles.left}>
+                    <span className={styles.icon}>
+                        <Tooltip placement="bottom" title="Students can view this lecture although they haven't register">
+                            <QuestionCircleFilled />
+                        </Tooltip>
+                    </span>
+                    <span className={styles.text}>
+                        Can preview?
+                    </span>
+                </Col>
+                <Col span={8} className={styles.right}>
+                    <Switch checked={isPreviewed} onChange={handleSetPreviewStatus} />
+                </Col>
+            </Row>
+            <Row className={styles.download}>
+                <Col span={16} className={styles.left}>
+                    <span className={styles.icon}>
+                        <Tooltip placement="bottom" title="Students can download the video">
+                            <QuestionCircleFilled />
+                        </Tooltip>
+                    </span>
+                    <span className={styles.text}>
+                        Download
+                    </span>
+                </Col>
+                <Col span={8} className={styles.right}>
+                    <Switch checked={isDownloadable} onChange={handleSetDownloadableStatus} />
+                </Col>
+            </Row>
+        </div>
+    )
+
     return (
         <div className={styles.videoLecture}>
             <div className={styles.header}>
@@ -789,20 +832,36 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                     </Col>
                     <Col span={5} className={styles.options}>
                         {video && !loading && (
-                            <span className={styles.metadata}>
-                                <Popover
-                                    trigger="click"
-                                    popupClassName={styles.metadataPopover}
-                                    placement="bottomRight"
-                                    content={getMetadata(video)}
-                                    arrowPointAtCenter
-                                    popupAlign={{ offset: [21, 6] }}
-                                >
-                                    <Tooltip placement="top" title="View video metadata" mouseEnterDelay={1}>
-                                        <InfoCircleFilled />
-                                    </Tooltip>
-                                </Popover>
-                            </span>
+                            <>
+                                <span className={styles.configs}>
+                                    <Popover
+                                        trigger="click"
+                                        popupClassName={styles.configsPopover}
+                                        placement="bottomRight"
+                                        content={getConfig(video.isPreviewed, video.isDownloadable)}
+                                        arrowPointAtCenter
+                                        popupAlign={{ offset: [21, 6] }}
+                                    >
+                                        <Tooltip placement="top" title="Config video" mouseEnterDelay={1}>
+                                            <CompassFilled />
+                                        </Tooltip>
+                                    </Popover>
+                                </span>
+                                <span className={styles.metadata}>
+                                    <Popover
+                                        trigger="click"
+                                        popupClassName={styles.metadataPopover}
+                                        placement="bottomRight"
+                                        content={getMetadata(video)}
+                                        arrowPointAtCenter
+                                        popupAlign={{ offset: [21, 6] }}
+                                    >
+                                        <Tooltip placement="top" title="View video metadata" mouseEnterDelay={1}>
+                                            <InfoCircleFilled />
+                                        </Tooltip>
+                                    </Popover>
+                                </span>
+                            </>
                         )}
                     </Col>
                 </Row>
