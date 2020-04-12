@@ -391,7 +391,14 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
     };
 
     const handleSetPreviewStatus = checked => {
-
+        dispatch({
+            type: 'article/preview',
+            payload: {
+                lectureId,
+                value: checked,
+                callback: () => message.success('Preview status has been updated!')
+            }
+        });
     };
 
     const uploadProps = {
@@ -466,7 +473,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             </Row>
         </div>
     );
-    
+
     return (
         <div className={styles.article}>
             <div className={styles.header}>

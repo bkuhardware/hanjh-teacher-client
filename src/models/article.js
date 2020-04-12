@@ -52,6 +52,15 @@ export default {
                 payload: RESOURCES
             })
         },
+        *preview({ payload }, { call, put }) {
+            const { lectureId, value, callback } = payload;
+            yield delay(1000);
+            yield put({
+                type: 'savePreview',
+                payload: value
+            });
+            if (callback) callback();
+        },
         *updateEstimateTime({ payload }, { call, put }) {
             const { hour, minute, callback } = payload;
             yield delay(1200);
@@ -141,6 +150,15 @@ export default {
             return {
                 ...state,
                 info: { ...payload }
+            };
+        },
+        savePreview(state, { payload: value }) {
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    isPreviewed: value
+                }
             };
         },
         saveDescription(state, { payload }) {
