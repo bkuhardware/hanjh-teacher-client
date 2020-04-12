@@ -155,6 +155,15 @@ export default {
             });
             if (callback) callback();
         },
+        *downloadable({ payload }, { call, put }) {
+            const { lectureId, value, callback } = payload;
+            yield delay(1200);
+            yield put({
+                type: 'saveDownload',
+                payload: value
+            });
+            if (callback) callback();
+        },
         *fetchDescription({ payload }, { call, put }) {
             const { courseId, lectureId } = payload;
             yield delay(1000);
@@ -288,6 +297,15 @@ export default {
                     isPreviewed: value
                 }
             }
+        },
+        saveDownload(state, { payload: value }) {
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    isDownloadable: value
+                }
+            };
         },
         saveDescription(state, { payload }) {
             return {

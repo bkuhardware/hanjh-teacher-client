@@ -730,13 +730,20 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             payload: {
                 lectureId,
                 value: checked,
-                callback: () => message.success('Preview status has been updated')
+                callback: () => message.success('Preview status has been updated!')
             }
         });
     };
 
     const handleSetDownloadableStatus = checked => {
-
+        dispatch({
+            type: 'video/downloadable',
+            payload: {
+                lectureId,
+                value: checked,
+                callback: () => message.success('Download status has been updated!')
+            }
+        })
     };
 
     const getMetadata = video => {
@@ -1140,6 +1147,6 @@ export default connect(
         deleteLoading: !!loading.effects['video/deleteResource'],
         captionsLoading: !!loading.effects['video/addCaption'] || !!loading.effects['video/deleteCaption'],
         previewLoading: !!loading.effects['video/preview'],
-        downloadLoading: !!loading.effects['video/downloadale']
+        downloadLoading: !!loading.effects['video/downloadable']
     })
 )(VideoLecture);
