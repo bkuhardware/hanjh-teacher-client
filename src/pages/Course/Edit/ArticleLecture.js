@@ -3,8 +3,8 @@ import _ from 'lodash';
 import moment from 'moment';
 import classNames from 'classnames';
 import { connect } from 'dva';
-import { Alert, Row, Col, Divider, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message, Popover, Descriptions } from 'antd';
-import { SaveOutlined, FileTextFilled, InfoCircleFilled, ClockCircleFilled, EditFilled, SettingFilled, LoadingOutlined } from '@ant-design/icons';
+import { Alert, Row, Col, Divider, Icon, Button, Tabs, Select, InputNumber, Skeleton, Spin, Collapse, Tooltip, Upload, Form, Input, message, Popover, Descriptions, Switch } from 'antd';
+import { SaveOutlined, FileTextFilled, InfoCircleFilled, ClockCircleFilled, EditFilled, SettingFilled, LoadingOutlined, CompassFilled, QuestionCircleFilled } from '@ant-design/icons';
 import UserAvatar from '@/components/Avatar';
 import { Document, Page } from 'react-pdf/dist/entry.webpack';
 import { EditorState, ContentState, convertFromHTML, convertFromRaw, convertToRaw } from 'draft-js';
@@ -113,7 +113,8 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         descriptionInitLoading,
         downloadableLoading,
         externalLoading,
-        deleteLoading
+        deleteLoading,
+        previewLoading
     } = props;
     const playerRef = useRef(null);
     const [visible, setVisible] = useState(false);
@@ -389,6 +390,10 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         setTabKey(tabKey);
     };
 
+    const handleSetPreviewStatus = checked => {
+
+    };
+
     const uploadProps = {
         name: 'avatarfile',
         beforeUpload: handleBeforeUpload,
@@ -442,6 +447,26 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         );
     };
 
+    const getConfig = (isPreviewed, loading) => (
+        <div className={styles.menu}>
+            <Row className={styles.preview}>
+                <Col span={16} className={styles.left}>
+                    <span className={styles.icon}>
+                        <Tooltip placement="bottom" title="Students can view this lecture although they haven't register">
+                            <QuestionCircleFilled />
+                        </Tooltip>
+                    </span>
+                    <span className={styles.text}>
+                        Can preview?
+                    </span>
+                </Col>
+                <Col span={8} className={styles.right}>
+                    <Switch checked={isPreviewed} onChange={handleSetPreviewStatus} loading={loading} />
+                </Col>
+            </Row>
+        </div>
+    );
+    
     return (
         <div className={styles.article}>
             <div className={styles.header}>
@@ -449,7 +474,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     <Col span={1} className={styles.iconCol}>
                         <FileTextFilled className={styles.icon} />
                     </Col>
-                    <Col span={18} className={styles.textInfo}>
+                    <Col span={17} className={styles.textInfo}>
                         {!article || loading ? (
                             <div className={styles.loading}>
                                 <Skeleton active title={null} paragraph={{ rows: 2, width: ['62%', '42%'] }} />
@@ -465,7 +490,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                             </div>
                         )}
                     </Col>
-                    <Col span={5} className={styles.options}>
+                    <Col span={6} className={styles.options}>
                         {article && !loading && (
                             <>
                                 <span className={styles.saveBtn}>
@@ -476,6 +501,20 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                                     >
                                         {!contentLoading ? <SaveOutlined /> : <LoadingOutlined />}Save
                                     </Button>
+                                </span>
+                                <span className={styles.configs}>
+                                    <Popover
+                                        trigger="click"
+                                        popupClassName={styles.configsPopover}
+                                        placement="bottomRight"
+                                        content={getConfig(article.isPreviewed, previewLoading)}
+                                        arrowPointAtCenter
+                                        popupAlign={{ offset: [21, 6] }}
+                                    >
+                                        <Tooltip placement="top" title="Config video" mouseEnterDelay={1}>
+                                            <CompassFilled />
+                                        </Tooltip>
+                                    </Popover>
                                 </span>
                                 <span className={styles.estimateTime}>
                                     <Popover
@@ -784,6 +823,7 @@ export default connect(
         estimateLoading: !!loading.effects['article/updateEstimateTime'],
         downloadableLoading: !!loading.effects['article/addDownloadable'],
         externalLoading: !!loading.effects['article/addExternal'],
-        deleteLoading: !!loading.effects['article/deleteResource']
+        deleteLoading: !!loading.effects['article/deleteResource'],
+        previewLoading: !!loading.effects['article/preview']
     })
 )(ArticleLecture)

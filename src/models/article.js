@@ -22,6 +22,7 @@ export default {
                     estimateMinute: 15,
                     createdAt: 1578813445900,
                     updatedAt: 1578813445900,
+                    isPreviewed: false,
                     chapter: {
                         _id: 1,
                         title: 'The Vue Router'
