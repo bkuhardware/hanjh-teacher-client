@@ -74,7 +74,7 @@ const Announcements = ({ match, dispatch, ...props }) => {
         return () => dispatch({
             type: 'manage/resetAnnouncements'
         });
-    }, [courseId]);
+    }, [courseId, dispatch]);
     const handleMoreAnnouncements = () => {
         dispatch({
             type: 'manage/moreAnnouncements',

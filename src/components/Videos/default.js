@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { Button, message, Slider, Row, Col, Menu, Tooltip, Popover, Dropdown, Spin, Divider } from 'antd';
@@ -147,7 +147,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
                 videoEle.onabort = null;
             };
         }
-    }, []);
+    }, [baseHeight]);
     useEffect(() => {
         const fullscreenFn = e => setFullScreen(!!document.fullscreenElement);
         const webkitFullScreenFn = e => setFullScreen(!!document.webkitFullscreenElement);
@@ -173,13 +173,13 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
             setPlaybackRate('1.0');
             setSrcObj(null);
         };
-    }, [resolutions]);
+    }, [resolutions, videoRes]);
     useEffect(() => {
         if (oldCurTime !== null) {
             setBufferTime(0);
             setSrcObj(resolutions[videoRes].src);
         }
-    }, [videoRes]);
+    }, [oldCurTime, resolutions, videoRes]);
     useEffect(() => {
         if (srcObj && oldCurTime  !== null) {
             const videoEle = videoRef.current;
@@ -190,7 +190,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
                 setOldCurTime(null);
             }
         }
-    }, [srcObj]);
+    }, [handleSelectRate, oldCurTime, playbackRate, playingStatus, srcObj]);
     const handleError = messageText => {
         setError({
             status: 1,
@@ -322,14 +322,14 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
         processVisibleWithTimeout(visible);
         setRateVisible(visible);
     };
-    const handleSelectRate = (rateKey, fromEffect = false) => {
+    const handleSelectRate = useCallback((rateKey, fromEffect = false) => {
         const videoEle = videoRef.current;
         if (videoEle) {
             videoEle.playbackRate = _.toNumber(rateKey);
             setPlaybackRate(rateKey);
             if (!fromEffect) handleRateVisibleChange(false);
         }
-    };
+    });
     const handleSelectOption = ({ key }) => {
         if (key === "loop") {
             setLoop(!loop);

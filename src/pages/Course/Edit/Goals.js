@@ -248,7 +248,7 @@ const Goals = ({ dispatch, match, ...props }) => {
         return () => dispatch({
             type: 'course/resetGoals'
         });
-    }, [courseId]);
+    }, [courseId, dispatch]);
     const handleSaveWhatLearn = (change) => {
         dispatch({
             type: 'course/changeWhatLearn',

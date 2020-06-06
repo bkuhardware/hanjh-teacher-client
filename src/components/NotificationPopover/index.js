@@ -16,7 +16,7 @@ const Notifications = ({ dispatch, ...props }) => {
         return () => dispatch({
             type: 'notifications/reset'
         });
-    }, []);
+    }, [dispatch]);
     const getContent = () => {
         const {
             notifications,

@@ -473,7 +473,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             }
         });
         return () => dispatch({ type: 'video/reset '});
-    }, [courseId, lectureId]);
+    }, [courseId, dispatch, lectureId]);
     useEffect(() => {
         if (resources !== null) {
             setResourcesData({ ...resources });

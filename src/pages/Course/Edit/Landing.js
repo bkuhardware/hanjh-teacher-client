@@ -45,7 +45,7 @@ const Landing = ({ form, match, dispatch, ...props }) => {
             payload: courseId
         });
         return () => dispatch({ type: 'course/resetLanding' });
-    }, [courseId]);
+    }, [courseId, dispatch]);
     useEffect(() => {
         if (!previousLanding && landing) {
             const blocksFromHTML = convertFromHTML(landing.description);
@@ -57,7 +57,7 @@ const Landing = ({ form, match, dispatch, ...props }) => {
             setTopics([...landing.topics]);
             setPrimaryTopic(landing.primaryTopic);
         }
-    }, [landing]);
+    }, [landing, previousLanding]);
     const handleChangeArea = val => {
         form.setFieldsValue({
             category: undefined
