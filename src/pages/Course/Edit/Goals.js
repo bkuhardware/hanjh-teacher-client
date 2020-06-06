@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Alert, Input, Icon, Collapse, Badge, Skeleton, Spin, Avatar, Tooltip, Button, Row, Col, Modal, message } from 'antd';
+import { Alert, Input, Icon, Collapse, Avatar, Tooltip, Button, Row, Col, Modal, message } from 'antd';
 import styles from './Goals.less';
 
 const { Panel } = Collapse;

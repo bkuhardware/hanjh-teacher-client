@@ -169,7 +169,7 @@ export default {
             yield delay(1000);
             yield put({
                 type: 'saveDescription',
-                payload: '<div>con c</div>'
+                payload: '<div>Đại bàng tung cánh</div>'
             });
         },
         *fetchResources({ payload }, { call, put }) {

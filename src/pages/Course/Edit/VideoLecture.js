@@ -22,7 +22,6 @@ const { Panel } = Collapse;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
-const InputGroup = Input.Group;
 
 const Video = ({ videoRes, resolutions, captionsLoading, captions, onSelectResolution, onUpload, onDelete, onDeleteCaption, onUploadVtt }) => {
     const [file, setFile] = useState(null);

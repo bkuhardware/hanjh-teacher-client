@@ -88,12 +88,12 @@ export default {
             const { courseId, type } = payload;
             //call api with courseId, type, response return permission value
             let permission;
-            if (type === 'announcement') permission = 1;
+            if (type === 'announcements') permission = 1;
             else if (type === 'settings') permission = {
                 privacy: 1,
                 members: 2,
             };
-            else if (type === 'reviews') permission = 1;
+            else if (type === 'reviews') permission = 0;
             yield delay(800);
             yield put({
                 type: 'savePermission',

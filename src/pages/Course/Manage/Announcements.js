@@ -261,11 +261,11 @@ const Announcements = ({ match, dispatch, ...props }) => {
                     {loadMore}
                 </React.Fragment>
             )}
-            {!permission || permissionLoading ? (
+            {permission === null || permissionLoading ? (
                 <div className={styles.permissionLoading}>
                     <Spin indicator={<Icon type="loading" style={{ fontSize: '32px' }} />}/>
                 </div>
-            ) : permission === 2 && (
+            ) : permission === 1 && (
                 <div className={styles.newAnnouncement}>
                     <div className={styles.editor}>
                         <Spin spinning={addAnnounceLoading} tip="Submitting...">

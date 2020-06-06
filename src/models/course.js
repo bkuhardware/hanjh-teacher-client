@@ -187,6 +187,7 @@ export default {
         },
         *changeWhatLearn({ payload }, { call, put }) {
             const { courseId, change } = payload;
+            //console.log(change);
             yield delay(1500);
             //full data returned in response;
             yield put({

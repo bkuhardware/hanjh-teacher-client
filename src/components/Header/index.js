@@ -2,10 +2,9 @@ import React from 'react';
 import Link from 'umi/link';
 import router from 'umi/router';
 import { connect } from 'dva';
-import { Layout, Row, Col, Avatar, Popover, Divider, Icon } from 'antd';
+import { Layout, Row, Col, Popover, Divider, Icon } from 'antd';
 import UserAvatar from '@/components/Avatar';
 import Notifications from '@/components/NotificationPopover';
-import { capitalText } from '@/utils/utils';
 import logo from '@/assets/images/logo_white.png';
 import styles from './index.less';
 

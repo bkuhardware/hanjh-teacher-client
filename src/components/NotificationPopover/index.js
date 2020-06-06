@@ -45,7 +45,7 @@ const Notifications = ({ dispatch, ...props }) => {
                                             size={36}
                                             textSize={36}
                                             style={{ background: 'white', color: 'black' }}
-                                            src={item.user.src}
+                                            src={item.user.avatar}
                                             text={item.user.name}
                                             alt="user-avatar"
                                             borderWidth={0}

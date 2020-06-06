@@ -10,7 +10,7 @@ import {
 import Slide from 'react-reveal/Slide';
 import Fade from 'react-reveal/Fade';
 import Caption from '@/elements/icon/caption';
-import { videoRates as rates, videoResolutions as resolutions, videoCaptions as captions } from '@/config/constants';
+import { videoRates as rates } from '@/config/constants';
 import { secondsToTime } from '@/utils/utils';
 import logo from '@/assets/images/logo_trans.png';
 

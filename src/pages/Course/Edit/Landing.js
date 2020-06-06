@@ -9,7 +9,6 @@ import { EditorState, ContentState, convertFromHTML } from 'draft-js';
 import Editor from '@/components/Editor/DescriptionEditor';
 import { TweenOneGroup } from 'rc-tween-one';
 import { exportToHTML } from '@/utils/editor';
-import defaultCourseAvatar from '@/assets/images/course_default.png';
 import styles from './Landing.less';
 
 const FormItem = Form.Item;
