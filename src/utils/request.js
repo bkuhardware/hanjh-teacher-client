@@ -16,6 +16,7 @@ const codeMessage = {
 	401: 'Người dùng không có quyền (mã thông báo, tên người dùng, lỗi mật khẩu).',
 	403: 'Người dùng được ủy quyền nhưng quyền truy cập bị cấm.',
 	404: 'Không thấy trang yêu cầu',
+	405: 'Phương thức không được phép',
 	406: 'Định dạng được yêu cầu không khả dụng.',
 	409: 'Lỗi conflict dữ liệu.',
 	410: 'Tài nguyên được yêu cầu sẽ bị xóa vĩnh viễn và sẽ không còn khả dụng nữa.',

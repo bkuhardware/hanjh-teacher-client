@@ -403,37 +403,25 @@ export default {
                 type,
                 callback
             } = payload;
-            yield delay(1500);
-            //call api, response return updated lecture, chapterId
-            yield put({
-                type: 'changeLecture',
-                payload: {
-                    chapterId,
-                    lecture: {
-                        _id: lectureId,
-                        title,
-                        type,
-                        owner: {
-                            _id: 1,
-                            name: 'Tiger',
-                            avatar: 'https://scontent.fsgn3-1.fna.fbcdn.net/v/t1.0-9/85144026_2793484880746288_1142991351239933952_n.jpg?_nc_cat=109&_nc_sid=85a577&_nc_oc=AQlJDP9T9y1poO8QvEkIk9Jki0k2WnVKcEU4d6tENErUiejEoAEo2s4Yk99frVwI_yA&_nc_ht=scontent.fsgn3-1.fna&oh=e6b00df474760cd111c9c2f00f7b7358&oe=5E99D0E9'
-                        },
-                        updatedAt: Date.now()
+            const response = yield call(courseService.updateLecture, courseId, chapterId, lectureId, type, title);
+            if (response) {
+                const lecture = response.data;
+                yield put({
+                    type: 'changeLecture',
+                    payload: {
+                        chapterId,
+                        lecture
                     }
-                }
-            });
-            yield put({
-                type: 'changeLectureInCourseInfo',
-                payload: {
-                    chapterId,
-                    lecture: {
-                        _id: lectureId, 
-                        title,
-                        type
+                });
+                yield put({
+                    type: 'changeLectureInCourseInfo',
+                    payload: {
+                        chapterId,
+                        lecture: _.pick(lecture, ['_id', 'title', 'type'])
                     }
-                }
-            });
-            if (callback) callback();
+                });
+                if (callback) callback();
+            }
         },
         *deleteLecture({ payload }, { call, put }) {
             const { courseId, chapterId, lectureId } = payload;

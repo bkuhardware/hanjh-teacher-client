@@ -86,3 +86,12 @@ export async function addLecture(courseId, chapterId, type, title) {
         }
     });
 }
+
+export async function updateLecture(courseId, chapterId, lectureId, type, title) {
+    return apiPut(`${COURSE_API_URL}/${courseId}/chapters/${chapterId}/lectures/${lectureId}`, {
+        body: {
+            title,
+            type
+        }
+    });
+}
