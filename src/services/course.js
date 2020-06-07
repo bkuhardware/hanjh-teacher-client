@@ -17,3 +17,7 @@ export async function create(title, area) {
 export async function fetchInfo(courseId) {
     return apiGet(`${COURSE_API_URL}/${courseId}/info`);
 }
+
+export async function fetchGoals(courseId) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/goals`);
+}

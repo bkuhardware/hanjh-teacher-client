@@ -226,16 +226,16 @@ const Subject = ({ field, onSave, currentUser, loading }) => {
 };
 
 const Goals = ({ dispatch, match, ...props }) => {
-    const [activeKeys, setActiveKeys] = useState(['whatLearn', 'target', 'requirements']);
+    const [activeKeys, setActiveKeys] = useState(['whatLearns', 'target', 'requirements']);
     const { courseId } = match.params;
     const {
         goals: {
-            whatLearn,
+            whatLearns,
             targetStudents,
             requirements
         },
         initLoading,
-        whatLearnLoading,
+        whatLearnsLoading,
         requirementsLoading,
         targetStudentsLoading,
         user
@@ -248,10 +248,10 @@ const Goals = ({ dispatch, match, ...props }) => {
         return () => dispatch({
             type: 'course/resetGoals'
         });
-    }, [courseId, dispatch]);
-    const handleSaveWhatLearn = (change) => {
+    }, [courseId]);
+    const handleSaveWhatLearns = (change) => {
         dispatch({
-            type: 'course/changeWhatLearn',
+            type: 'course/changeWhatLearns',
             payload: {
                 courseId,
                 change
@@ -288,7 +288,7 @@ const Goals = ({ dispatch, match, ...props }) => {
                 />
             </div>
             <div className={styles.main}>
-                {!whatLearn || initLoading ? (
+                {!whatLearns || initLoading ? (
                     <Collapse
                         className={styles.collapse}
                         activeKey={[]}
@@ -296,7 +296,7 @@ const Goals = ({ dispatch, match, ...props }) => {
                         expandIconPosition="right"
                         bordered={false}
                     >
-                        <Panel key="whatLearn" header="What will students learn in your course?" className={styles.panel}/>
+                        <Panel key="whatLearns" header="What will students learn in your course?" className={styles.panel}/>
                         <Panel key="requirements" header="Are there any course requirements or prerequisites?" className={styles.panel}/>
                         <Panel key="target" header="Who are your target students?" className={styles.panel}/>
                     </Collapse>
@@ -307,12 +307,12 @@ const Goals = ({ dispatch, match, ...props }) => {
                         expandIconPosition="right"
                         bordered={false}
                     >
-                        <Panel key="whatLearn" header="What will students learn in your course?" className={styles.panel}>
+                        <Panel key="whatLearns" header="What will students learn in your course?" className={styles.panel}>
                             <Subject
                                 currentUser={currentUser}
-                                field={whatLearn}
-                                onSave={handleSaveWhatLearn}
-                                loading={whatLearnLoading}
+                                field={whatLearns}
+                                onSave={handleSaveWhatLearns}
+                                loading={whatLearnsLoading}
                             />
                         </Panel>
                         <Panel key="requirements" header="Are there any course requirements or prerequisites?" className={styles.panel}>
@@ -342,7 +342,7 @@ export default connect(
     ({ user, course, loading }) => ({
         goals: course.goals,
         initLoading: !!loading.effects['course/fetchGoals'],
-        whatLearnLoading: !!loading.effects['course/changeWhatLearn'],
+        whatLearnsLoading: !!loading.effects['course/changeWhatLearns'],
         requirementsLoading: !!loading.effects['course/changeRequirements'],
         targetStudentsLoading: !!loading.effects['course/changeTargetStudents'],
         user: user

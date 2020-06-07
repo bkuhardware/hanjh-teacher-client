@@ -131,7 +131,6 @@ export default {
     effects: {
         *fetchInfo({ payload: courseId }, { call, put }) {
             const response = yield call(courseService.fetchInfo, courseId);
-            console.log(response);
             if (response) {
                 const courseInfo = response.data;
                 yield put({
@@ -184,13 +183,16 @@ export default {
             });
         },
         *fetchGoals({ payload: courseId }, { call, put }) {
-            yield delay(2000);
-            yield put({
-                type: 'saveGoals',
-                payload: GOALS
-            });
+            const response = yield call(courseService.fetchGoals, courseId);
+            if (response) {
+                const goals = response.data;
+                yield put({
+                    type: 'saveGoals',
+                    payload: goals
+                });
+            }
         },
-        *changeWhatLearn({ payload }, { call, put }) {
+        *changeWhatLearns({ payload }, { call, put }) {
             const { courseId, change } = payload;
             //console.log(change);
             yield delay(1500);
