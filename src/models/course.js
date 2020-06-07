@@ -520,18 +520,24 @@ export default {
         },
         *changePrice({ payload }, { call, put }) {
             const { courseId, value } = payload;
-            yield delay(1200);
-            yield put({
-                type: 'savePrice',
-                payload: value
-            });
-            yield put({
-                type: 'saveCompleteStatus',
-                payload: {
-                    type: 'price',
-                    status: true
-                }
-            });
+            const response = yield call(courseService.updatePrice, courseId, value);
+            if (response) {
+                const {
+                    progress,
+                    data: price
+                } = response.data;
+                yield put({
+                    type: 'savePrice',
+                    payload: price
+                });
+                yield put({
+                    type: 'saveCompleteStatus',
+                    payload: {
+                        type: 'price',
+                        status: progress === 100
+                    }
+                });
+            }
         },
         *fetchMessages({ payload: courseId }, { call, put }) {
             yield delay(1200);

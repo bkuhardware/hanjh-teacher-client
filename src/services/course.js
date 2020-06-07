@@ -121,3 +121,11 @@ export async function updateAvatar(courseId, avatarUrl) {
 export async function fetchPrice(courseId) {
     return apiGet(`${COURSE_API_URL}/${courseId}/price`);
 }
+
+export async function updatePrice(courseId, value) {
+    return apiPut(`${COURSE_API_URL}/${courseId}/price`, {
+        body: {
+            price: value
+        }
+    });
+}
