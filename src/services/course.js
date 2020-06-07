@@ -103,3 +103,17 @@ export async function deleteLecture(courseId, chapterId, lectureId) {
 export async function fetchLanding(courseId) {
     return apiGet(`${COURSE_API_URL}/${courseId}/landing`);
 }
+
+export async function updateBasicInfo(courseId, params) {
+    return apiPut(`${COURSE_API_URL}/${courseId}/landing`, {
+        body: params
+    });
+}
+
+export async function updateAvatar(courseId, avatarUrl) {
+    return apiPut(`${COURSE_API_URL}/${courseId}/avatar`, {
+        body: {
+            url: avatarUrl
+        }
+    });
+}

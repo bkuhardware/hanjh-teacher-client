@@ -461,42 +461,53 @@ export default {
             }
         },
         *changeBasicInfo({ payload }, { call, put }) {
-            yield delay(1600);
-            //call api with params in payload;
-            yield put({
-                type: 'pushLanding',
-                payload: { ...payload }
-            });
-            //get Landing complete status in response. yield put for update status
-            yield put({
-                type: 'saveCompleteStatus',
-                payload: {
-                    type: 'landing',
-                    status: true
-                }
-            });
+            const {
+                courseId,
+                ...params
+            } = payload;
+            const response = yield call(courseService.updateBasicInfo, courseId, params);
+            if (response) {
+                const {
+                    progress,
+                    data: updatedData
+                } = response.data;
+                yield put({
+                    type: 'pushLanding',
+                    payload: updatedData
+                });
+                yield put({
+                    type: 'saveCompleteStatus',
+                    payload: {
+                        type: 'landing',
+                        status: progress === 100
+                    }
+                });
+            }
         },
         *changeAvatar({ payload }, { call, put }) {
-            const { file, callback } = payload;
+            const { courseId, file, callback } = payload;
             //call cloud api for upload avatar
             yield delay(1000);
-            //after upload, get image url, call next api for change avatar for course
-            //get response with object with avatar field: url of avatar. and complete status
-            yield delay(1200);
-            yield put({
-                type: 'pushLanding',
-                payload: {
-                    avatar: file
-                }
-            });
-            yield put({
-                type: 'saveCompleteStatus',
-                payload: {
-                    type: 'landing',
-                    status: false
-                }
-            });
-            if (callback) callback();
+            const avatarUrl = 'https://images.pexels.com/photos/4352247/pexels-photo-4352247.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260';
+            const response = yield call(courseService.updateAvatar, courseId, avatarUrl);
+            if (response) {
+                const {
+                    progress,
+                    data
+                } = response.data;
+                yield put({
+                    type: 'pushLanding',
+                    payload: data
+                });
+                yield put({
+                    type: 'saveCompleteStatus',
+                    payload: {
+                        type: 'landing',
+                        status: progress === 100
+                    }
+                });
+                if (callback) callback();
+            }
         },
         *fetchPrice({ payload: courseId }, { call, put }) {
             yield delay(800);
