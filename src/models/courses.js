@@ -2,6 +2,7 @@ import { delay } from '@/utils/utils';
 import _ from 'lodash';
 import COURSES from '@/assets/fakers/courses';
 import * as courseService from '@/services/course';
+import router from 'umi/router';
 
 export default {
     namespace: 'courses',
@@ -60,10 +61,12 @@ export default {
         },
         *create({ payload }, { call, put }) {
             const { title, area, callback } = payload;
-            yield delay(2000);
-            //call api with area, title
-            //after create, router.push(....) after call callback()
-            if (callback) callback();
+            const response = yield call(courseService.create, title, area);
+            if (response) {
+                const courseId = response.data._id;
+                if (callback) callback();
+                router.push(`/course/${courseId}/edit/goals`);
+            }
         }
     },
     reducers: {

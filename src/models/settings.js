@@ -1,5 +1,4 @@
-import { delay } from '@/utils/utils';
-import AREAS_MENU from '@/assets/fakers/areasMenu';
+import * as settingsService from '@/services/settings';
 
 export default {
     namespace: 'settings',
@@ -8,13 +7,16 @@ export default {
     },
     effects: {
         *fetch(action, { call, put }) {
-            yield delay(1200);
-            yield put({
-                type: 'save',
-                payload: {
-                    areasMenu: AREAS_MENU
-                }
-            });
+            const response = yield call(settingsService.fetchAreasMenu);
+            if (response) {
+                const menu = response.data;
+                yield put({
+                    type: 'save',
+                    payload: {
+                        areasMenu: menu
+                    }
+                });
+            }  
         }
     },
     reducers: {
