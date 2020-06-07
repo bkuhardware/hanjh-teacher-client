@@ -361,7 +361,7 @@ const EditLayout = ({ children, dispatch, match, location, ...props }) => {
                                 </div>
                             ) : _.map(commitHistory, history => (
                                 <div
-                                    key={history._id + _.uniqueId('history_')}
+                                    key={history._id}
                                     onClick={() => handleViewHistoryItem(history)}
                                     className={history.seen ? styles.history : classNames(styles.history, styles.unseen)}
                                 >

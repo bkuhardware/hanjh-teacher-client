@@ -425,21 +425,31 @@ export default {
         },
         *deleteLecture({ payload }, { call, put }) {
             const { courseId, chapterId, lectureId } = payload;
-            yield delay(1000);
-            yield put({
-                type: 'removeLecture',
-                payload: {
-                    chapterId,
-                    lectureId
-                }
-            });
-            yield put({
-                type: 'removeLectureInCourseInfo',
-                payload: {
-                    chapterId,
-                    lectureId
-                }
-            });
+            const response = yield call(courseService.deleteLecture, courseId, chapterId, lectureId);
+            if (response) {
+                const progress = response.data & response.data.progress;
+                yield put({
+                    type: 'removeLecture',
+                    payload: {
+                        chapterId,
+                        lectureId
+                    }
+                });
+                yield put({
+                    type: 'removeLectureInCourseInfo',
+                    payload: {
+                        chapterId,
+                        lectureId
+                    }
+                });
+                yield put({
+                    type: 'saveCompleteStatus',
+                    payload: {
+                        type: 'syllabus',
+                        status: progress === 100
+                    }
+                });
+            }
         },
         *fetchLanding({ payload: courseId }, { call, put }) {
             yield delay(1500);

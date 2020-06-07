@@ -95,3 +95,7 @@ export async function updateLecture(courseId, chapterId, lectureId, type, title)
         }
     });
 }
+
+export async function deleteLecture(courseId, chapterId, lectureId) {
+    return apiDelete(`${COURSE_API_URL}/${courseId}/chapters/${chapterId}/lectures/${lectureId}`);
+}
