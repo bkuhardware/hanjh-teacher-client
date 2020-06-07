@@ -42,9 +42,7 @@ export default {
             const { file, callback } = payload;
             yield delay(1200);
             const avatarUrl = 'https://images.pexels.com/photos/4321944/pexels-photo-4321944.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260';
-            const response = yield call(userService.updateAvatar, {
-                avatar: avatarUrl
-            });
+            const response = yield call(userService.updateAvatar, avatarUrl);
             if (response) {
                 yield put({
                     type: 'update',
@@ -66,14 +64,14 @@ export default {
         },
         *changeSocial({ payload }, { call, put }) {
             const { data, callback } = payload;
-            yield delay(1200);
-            yield put({
-                type: 'update',
-                payload: {
-                    ...data
-                }
-            });
-            if (callback) callback();
+            const response = yield call(userService.updateSocials, data);
+            if (response) {
+                yield put({
+                    type: 'update',
+                    payload: response.data
+                });
+                if (callback) callback();
+            }
         },
         *changePassword({ payload }, { call, put }) {
             const {
@@ -82,10 +80,14 @@ export default {
                 onOk,
                 onIncorrect
             } = payload;
-            yield delay(2000);
-            const status = 0;
-            if (status === 0) onOk();
-            else onIncorrect();
+            const response = yield call(userService.changePassword, oldPassword, newPassword);
+            console.log(response);
+            if (response) {
+                const errorCode = 1 * response.errorCode;
+                if (errorCode === 1)
+                    onIncorrect();
+                else onOk();
+            }
         },
         *login({ from, payload }, { call, put }) {
             const response = yield call(userService.signIn, payload);

@@ -57,13 +57,11 @@ function checkErrorCode(response) {
 	if (typeof response === 'object' && typeof response.errorCode !== 'undefined') {
 		const errorCode = 1 * response.errorCode;
 		if (errorCode !== 0) {
-			const errortext = response.data || response.message;
+			const errortext = response.message || 'Máy chủ báo rằng yêu cầu có lỗi';
 			notification.error({
 				message: 'Lỗi yêu cầu:',
 				description: errortext,
 			});
-			const error = new ErrorWithReponse(errortext, response);
-			throw error;
 		}
 	}
 	return response;
