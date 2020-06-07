@@ -291,35 +291,34 @@ export default {
         },
         *addChapter({ payload }, { call, put }) {
             const { courseId, title, description, callback } = payload;
-            yield delay(1500);
-            //call api post new chapter to server, response return new chapter, complete status.
-            yield put({
-                type: 'pushChapter',
-                payload: {
-                    ...NEW_CHAPTER,
-                    title: title,
-                    description
-                }
-            });
-            yield put({
-                type: 'pushChapterInCourseInfo',
-                payload: {
-                    ..._.pick(NEW_CHAPTER, ['_id', 'lectures']),
-                    title: title,
-                }
-            });
-            yield put({
-                type: 'saveCompleteStatus',
-                payload: {
-                    type: 'syllabus',
-                    status: false
-                }
-            });
-            if (callback) callback();
-            //update courseInfo.syllabus, update syllabus complete status.
+            const response = yield call(courseService.addChapter, courseId, title, description);
+            if (response) {
+                const {
+                    progress,
+                    data: newChapter
+                } = response.data;
+                yield put({
+                    type: 'pushChapter',
+                    payload: newChapter
+                });
+                yield put({
+                    type: 'pushChapterInCourseInfo',
+                    payload: _.pick(newChapter, ['_id', 'lectures', 'title'])
+                });
+                yield put({
+                    type: 'saveCompleteStatus',
+                    payload: {
+                        type: 'syllabus',
+                        status: progress === 100
+                    }
+                });
+                if (callback) callback();
+            }
         },
         *updateChapter({ payload }, { call, put }) {
             const { courseId, chapterId, title, description, callback } = payload;
+            const response = yield call(courseService.updateChapter, courseId, chapterId, title, description);
+            
             yield delay(1500);
             //call api, response return update chapter data, with owner...,
             yield put({

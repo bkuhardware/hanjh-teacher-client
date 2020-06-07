@@ -55,3 +55,21 @@ export async function updateTargetStudents(courseId, change) {
 export async function fetchSyllabus(courseId) {
     return apiGet(`${COURSE_API_URL}/${courseId}/syllabus`);
 }
+
+export async function addChapter(courseId, title, description) {
+    return apiPost(`${COURSE_API_URL}/${courseId}/chapters`, {
+        body: {
+            title,
+            description
+        }
+    });
+}
+
+export async function updateChapter(courseId, chapterId, title, description) {
+    return apiPut(`${COURSE_API_URL}/${courseId}/chapters/${chapterId}`, {
+        body: {
+            title,
+            description
+        }
+    })
+}
