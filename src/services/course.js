@@ -41,3 +41,13 @@ export async function updateRequirements(courseId, change) {
         }
     });
 }
+
+export async function updateTargetStudents(courseId, change) {
+    return apiPut(`${COURSE_API_URL}/update/${courseId}/target-students`, {
+        body: {
+            add: change.add,
+            delete: change.delete,
+            update: change.update
+        }
+    });
+}

@@ -227,17 +227,21 @@ export default {
             }
         },
         *changeTargetStudents({ payload }, { call, put }) {
-            const { courseId, change } = payload;
-            yield delay(1200);
-            //full data returned in response;
-            yield put({
-                type: 'updateGoals',
-                payload: {
-                    type: 'targetStudents',
-                    data: FOO
-                }
-            });
-
+            const {
+                courseId,
+                change
+            } = payload;
+            const response = yield call(courseService.updateTargetStudents, courseId, change);
+            if (response) {
+                const updatedData = response.data;
+                yield put({
+                    type: 'updateGoals',
+                    payload: {
+                        type: 'targetStudents',
+                        data: updatedData
+                    }
+                });
+            }
         },
         *fetchSyllabus({ payload: courseId }, { call, put }) {
             yield delay(1300);
