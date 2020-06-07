@@ -5,7 +5,7 @@ import { Steps, Button, Row, Col, Upload, Icon, Form, Input, message } from 'ant
 import FinishLayout from '@/layouts/FinishLayout';
 import UserAvatar from '@/components/Avatar';
 import Editor from '@/components/Editor/SimpleEditor';
-import { EditorState } from 'draft-js';
+import { EditorState, convertFromHTML, ContentState } from 'draft-js';
 import { checkEmail } from '@/utils/utils';
 import { exportToHTML } from '@/utils/editor';
 import styles from './index.less';
@@ -27,7 +27,19 @@ const FinishInfo = ({ dispatch, callback, ...props }) => {
         }
         return 0;
     };
-
+    const getBiographyDoc = () => {
+        if (user) {
+            const bio = user.biography || '';
+            const blocksFromHTML = convertFromHTML(bio);
+            return EditorState.createWithContent(
+                ContentState.createFromBlockArray(
+                    blocksFromHTML.contentBlocks,
+                    blocksFromHTML.entityMap
+                )
+            );
+        }
+        return EditorState.createEmpty();
+    };
     const initialCurrent = getInitialCurrent();
     const [current, setCurrent] = useState(initialCurrent);
     const [next, setNext] = useState([0, 0, 0]);
@@ -35,24 +47,24 @@ const FinishInfo = ({ dispatch, callback, ...props }) => {
     const [fileList, setFileList] = useState([]);
     const [uploadLoading, setUploadLoading] = useState(false);
     const [email, setEmail] = useState({
-        value: '',
+        value: user.email || '',
         validateStatus: 'success',
         help: ''
     });
     const [headline, setHeadline] = useState({
-        value: '',
+        value: user.headline || '',
         validateStatus: 'success',
         help: ''
     });
     const [biography, setBiography] = useState({
-        value: EditorState.createEmpty(),
+        value: getBiographyDoc(),
         validateStatus: 'success',
         help: ''
     });
-    const [twitter, setTwitter] = useState('');
-    const [facebook, setFacebook] = useState('');
-    const [youtube, setYoutube] = useState('');
-    const [instagram, setInstagram] = useState('');
+    const [twitter, setTwitter] = useState(user.twitter || '');
+    const [facebook, setFacebook] = useState(user.facebook || '');
+    const [youtube, setYoutube] = useState(user.youtube || '');
+    const [instagram, setInstagram] = useState(user.instagram || '');
     const handleChangeEmail = e => {
         const val = e.target.value;
         saveNext(1, 1);

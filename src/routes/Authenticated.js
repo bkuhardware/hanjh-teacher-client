@@ -21,7 +21,7 @@ const Authenticated = ({ user, children, location, dispatch }) => {
                 })
             else setStatus('not-authenticated');
         }
-    }, [dispatch, user]);
+    }, []);
     const check = user => {
         return user && user.avatar && user.email && user.headline && user.biography;
     };

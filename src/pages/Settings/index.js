@@ -5,8 +5,6 @@ import { Tabs, Form, Input, Upload, Icon, Button, message } from 'antd';
 import UserAvatar from '@/components/Avatar';
 import { EditorState, ContentState, convertFromHTML } from 'draft-js';
 import Editor from '@/components/Editor/SimpleEditor';
-import Wrapper from '@/components/PageWrapper';
-import { capitalText } from '@/utils/utils';
 import { exportToHTML } from '@/utils/editor';
 import styles from './index.less';
 
@@ -25,7 +23,7 @@ const Settings = ({ dispatch, form, ...props }) => {
     const [avatar, setAvatar] = useState(null);
     const [avatarLoading, setAvatarLoading] = useState(false);
     const [fileList, setFileList] = useState([]);
-    const blocksFromHTML = convertFromHTML(user.biography);
+    const blocksFromHTML = convertFromHTML(user.biography || '');
     const bio = ContentState.createFromBlockArray(
         blocksFromHTML.contentBlocks,
         blocksFromHTML.entityMap,
@@ -66,6 +64,7 @@ const Settings = ({ dispatch, form, ...props }) => {
             type: 'user/changeInfo',
             payload: {
                 info: {
+                    phone: user.phone,
                     name, email, headline, 
                     biography: biographyText
                 },
@@ -204,7 +203,7 @@ const Settings = ({ dispatch, form, ...props }) => {
                                                 message: 'You must enter your name!'
                                             }
                                         ],
-                                        initialValue: user.name
+                                        initialValue: user.name || ''
                                     })(<Input placeholder="Name" size="large"/>)}
                                 </FormItem>
                                 <FormItem label="Email" required>
@@ -219,7 +218,7 @@ const Settings = ({ dispatch, form, ...props }) => {
                                                 message: 'Your email is invalid!'
                                             }
                                         ],
-                                        initialValue: user.email
+                                        initialValue: user.email || ''
                                     })(<Input placeholder="email" size="large" />)}
                                 </FormItem>
                                 <FormItem label="Headline" required>
@@ -234,7 +233,7 @@ const Settings = ({ dispatch, form, ...props }) => {
                                                 message: 'Your headline must has at least 60 characters!'
                                             }
                                         ],
-                                        initialValue: user.headline
+                                        initialValue: user.headline || ''
                                     })(<Input placeholder="Headline (Job)" size="large" addonAfter={form.getFieldValue('headline').length < 60 ? `(${60 - form.getFieldValue('headline').length})` : <Icon type="check" />}/>)}
                                 </FormItem>
                                 <FormItem
@@ -261,22 +260,22 @@ const Settings = ({ dispatch, form, ...props }) => {
                             <Form className={styles.social}>
                                 <FormItem label="Twitter">
                                     {getFieldDecorator('twitter', {
-                                        initialValue: user.twitter
+                                        initialValue: user.twitter || ''
                                     })(<Input type="text" placeholder="twitter" addonAfter={<Icon type="twitter" />} addonBefore={"https://twitter.com/"} size="large" />)}
                                 </FormItem>
                                 <FormItem label="Facebook">
                                     {getFieldDecorator('facebook', {
-                                        initialValue: user.facebook
+                                        initialValue: user.facebook || ''
                                     })(<Input type="text" placeholder="facebook" addonAfter={<Icon type="facebook" />} addonBefore={"https://fb.com/"} size="large" />)}
                                 </FormItem>
                                 <FormItem label="Youtube">
                                     {getFieldDecorator('youtube', {
-                                        initialValue: user.youtube
+                                        initialValue: user.youtube || ''
                                     })(<Input type="text" placeholder="youtube" addonAfter={<Icon type="youtube" />} addonBefore={"https://youtube.com/"} size="large" />)}
                                 </FormItem>
                                 <FormItem label="Instagram">
                                     {getFieldDecorator('instagram', {
-                                        initialValue: user.instagram
+                                        initialValue: user.instagram || ''
                                     })(<Input type="text" placeholder="instagram" addonAfter={<Icon type="instagram" />} addonBefore={"https://instagram.com/"} size="large" />)}
                                 </FormItem>
                                 <FormItem style={{ textAlign: 'center' }}>

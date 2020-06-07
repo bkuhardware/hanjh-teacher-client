@@ -1,5 +1,5 @@
 /* eslint-disable  */
-import { apiPost, apiPut } from '@/utils/request';
+import { apiPost, apiPut, apiGet } from '@/utils/request';
 
 export async function signIn(params) {
     return apiPost(`${AUTH_API_URL}/login/teacher`, {
@@ -17,4 +17,8 @@ export async function update(params) {
     return apiPut(`${TEACHER_API_URL}/update`, {
         body: params
     })
+}
+
+export async function fetch() {
+    return apiGet(`${TEACHER_API_URL}/me`);
 }

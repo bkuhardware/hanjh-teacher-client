@@ -4,24 +4,24 @@ import storage from '@/utils/storage';
 import router from 'umi/router';
 import * as userService from '@/services/user';
 
-const USER = {
-    _id: 'user_1',
-    token: 'foo-token',
-    name: 'Thuy Huyen',
-    avatar: "https://scontent.fsgn5-1.fna.fbcdn.net/v/t1.0-9/70005438_1611468775661921_503861777637834752_o.jpg?_nc_cat=101&_nc_sid=13bebb&_nc_oc=AQktln7NCl0pBtLXwz9EFKx-2k2mYglGrFh2JLK6NcHjMq9z011rrU9SROHlNTMVyWg&_nc_ht=scontent.fsgn5-1.fna&oh=30cbb1d86a1102457c64a64a1f354026&oe=5E802CD0",
-    headline: 'Frontend developer at Google Inc. Passionate with Javasript, React, Angular and Vue.',
-    biography: '<div><div>Frontend developer at Google Inc. Passionate with Javasript, React, Angular and Vue.</div><div>Frontend developer at Google Inc. Passionate with Javasript, React, Angular and Vue.</div></div>',
-    email: 'luannguyentrong98@gmail.com',
-    noOfUsNotification: 22,
-    twitter: '',
-    facebook: 'bkuhardware',
-    youtube: '',
-    instagram: ''
-};
+// const USER = {
+//     _id: 'user_1',
+//     token: 'foo-token',
+//     name: 'Thuy Huyen',
+//     avatar: "https://scontent.fsgn5-1.fna.fbcdn.net/v/t1.0-9/70005438_1611468775661921_503861777637834752_o.jpg?_nc_cat=101&_nc_sid=13bebb&_nc_oc=AQktln7NCl0pBtLXwz9EFKx-2k2mYglGrFh2JLK6NcHjMq9z011rrU9SROHlNTMVyWg&_nc_ht=scontent.fsgn5-1.fna&oh=30cbb1d86a1102457c64a64a1f354026&oe=5E802CD0",
+//     headline: 'Frontend developer at Google Inc. Passionate with Javasript, React, Angular and Vue.',
+//     biography: '<div><div>Frontend developer at Google Inc. Passionate with Javasript, React, Angular and Vue.</div><div>Frontend developer at Google Inc. Passionate with Javasript, React, Angular and Vue.</div></div>',
+//     email: 'luannguyentrong98@gmail.com',
+//     noOfUsNotification: 22,
+//     twitter: '',
+//     facebook: 'bkuhardware',
+//     youtube: '',
+//     instagram: ''
+// };
 
-const response = {
-    data: USER
-}
+// const response = {
+//     data: USER
+// }
 
 export default {
     namespace: 'user',
@@ -29,12 +29,14 @@ export default {
     effects: {
         *fetch({ payload }, { call, put }) {
             const { callback } = payload;
-            yield delay(1200);
-            yield put({
-                type: 'save',
-                payload: USER
-            });
-            if (callback) callback();
+            const response = yield call(userService.fetch);
+            if (response) {
+                yield put({
+                    type: 'save',
+                    payload: response.data
+                });
+                if (callback) callback();
+            }
         },
         *changeAvatar({ payload }, { call, put }) {
             const { file, callback } = payload;
