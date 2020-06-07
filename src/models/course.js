@@ -452,11 +452,13 @@ export default {
             }
         },
         *fetchLanding({ payload: courseId }, { call, put }) {
-            yield delay(1500);
-            yield put({
-                type: 'saveLanding',
-                payload: LANDING
-            });
+            const response = yield call(courseService.fetchLanding, courseId);
+            if (response) {
+                yield put({
+                    type: 'saveLanding',
+                    payload: response.data
+                });
+            }
         },
         *changeBasicInfo({ payload }, { call, put }) {
             yield delay(1600);

@@ -45,10 +45,10 @@ const Landing = ({ form, match, dispatch, ...props }) => {
             payload: courseId
         });
         return () => dispatch({ type: 'course/resetLanding' });
-    }, [courseId, dispatch]);
+    }, [courseId]);
     useEffect(() => {
         if (!previousLanding && landing) {
-            const blocksFromHTML = convertFromHTML(landing.description);
+            const blocksFromHTML = convertFromHTML(landing.description || '');
             const description = ContentState.createFromBlockArray(
                 blocksFromHTML.contentBlocks,
                 blocksFromHTML.entityMap,
@@ -312,7 +312,7 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                                             onDropdownVisibleChange={open => setCategoryOpen(open)}
                                         >
                                             {(areasMenu && landing && form.getFieldValue('area')) && 
-                                            _.map(_.find(areasMenu, area => area._id === form.getFieldValue('area')).children, category => (
+                                            _.map(_.find(areasMenu, area => area._id === form.getFieldValue('area')).categories, category => (
                                                 <Option key={category._id}>{category.title}</Option>
                                             ))}
                                         </Select>

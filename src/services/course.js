@@ -99,3 +99,7 @@ export async function updateLecture(courseId, chapterId, lectureId, type, title)
 export async function deleteLecture(courseId, chapterId, lectureId) {
     return apiDelete(`${COURSE_API_URL}/${courseId}/chapters/${chapterId}/lectures/${lectureId}`);
 }
+
+export async function fetchLanding(courseId) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/landing`);
+}
