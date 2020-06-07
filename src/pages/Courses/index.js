@@ -45,17 +45,17 @@ const Progress = ({ value }) => {
             '100%': 'yellow'
         }}
         strokeWidth={6}
-        percent={value}
+        percent={_.round(value, 2)}
     />;
 };
 
 const columns = [
     {
-        title: 'Name',
-        dataIndex: 'name',
-        key: 'name',
+        title: 'Title',
+        dataIndex: 'title',
+        key: 'title',
         width: '40%',
-        render: name => <span className={styles.name}>{name}</span>
+        render: title => <span className={styles.name}>{title}</span>
     },
     {
         title: 'Privacy',

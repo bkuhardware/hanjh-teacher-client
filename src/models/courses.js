@@ -1,7 +1,7 @@
 import { delay } from '@/utils/utils';
 import _ from 'lodash';
-import router from 'umi/router';
 import COURSES from '@/assets/fakers/courses';
+import * as courseService from '@/services/course';
 
 export default {
     namespace: 'courses',
@@ -15,15 +15,19 @@ export default {
         *fetch(action, { call, put }) {
             yield delay(1500);
             //call api with sort newest, page = 1.
-            yield put({
-                type: 'save',
-                payload: {
-                    total: 20,
-                    currentPage: 1,
-                    sortBy: 'newest',
-                    list: COURSES
-                }
-            });
+            const response = yield call(courseService.fetch, 'newest');
+            if (response) {
+                const { total, list } = response.data;
+                yield put({
+                    type: 'save',
+                    payload: {
+                        total,
+                        list,
+                        sortBy: 'newest',
+                        currentPage: 1
+                    }
+                });
+            }
         },
         *sort({ payload: sortBy }, { call, put }) {
             //call api with sortBy and page = 1
