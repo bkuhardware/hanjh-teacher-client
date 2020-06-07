@@ -1,112 +1,8 @@
 import { delay } from '@/utils/utils';
 import _ from 'lodash';
 import * as courseService from '@/services/course';
-import COURSE_INFO from '@/assets/fakers/courseInfo';
-import GOALS from '@/assets/fakers/goals';
-import LANDING from '@/assets/fakers/landing';
-import MESSAGES from '@/assets/fakers/messages';
 import HISTORY from '@/assets/fakers/history';
-import SYLLABUS from '@/assets/fakers/syllabus';
-
-const NEW_CHAPTER = {
-    _id: 'chapter-X',
-    title: 'Introduction',
-    owner: {
-        //last owner
-        _id: 1,
-        name: 'Thuy Huyen',
-        avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
-    },
-    updatedAt: Date.now(),
-    lectures: []
-};
-
-const FOO = [
-    {
-        _id: 'what_learn_1',
-        content: 'tình yêu là ánh sáng, đến xua đi mịt mờ mấy đêm',
-        owner: {
-            //last owner
-            _id: 1,
-            name: 'Thuy Huyen',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
-        },
-        updatedAt: 1582426452944,
-        editable: false
-    },
-    {
-        _id: 'what_learn_2',
-        content: 'Làm gì cũng phải nghĩ đến cả 2 đứa',
-        owner: {
-            //last owner
-            _id: 1,
-            name: 'Thuý Huyền',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
-        },
-        updatedAt: 1582426452844,
-        editable: true
-    },
-    {
-        _id: 'what_learn_3',
-        content: 'Learn about & implement Firebase authentication into Vue JS web apps',
-        owner: {
-            //last owner
-            _id: 1,
-            name: 'Thuy Huyen',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
-        },
-        updatedAt: 1567476499584,
-        editable: false
-    },
-    {
-        _id: 'what_learn_4',
-        content: 'Luân yêu Huyền!',
-        owner: {
-            //last owner
-            _id: 1,
-            name: 'Thuy Huyen',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
-        },
-        updatedAt: 1567476499584,
-        editable: false
-    },
-    {
-        _id: 'what_learn_5',
-        content: 'Understand how using frameworks like Django will save you a ton of time in web development',
-        owner: {
-            //last owner
-            _id: 2,
-            name: 'Trong Luan',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-9/83558548_2290286491264377_331290296627232768_n.jpg?_nc_cat=107&_nc_oc=AQnpLi8nWGbC-08nBlYjhCuZyGVkcZMFHaqWTcBFbEZK1GzrkY73FWhSwonUwq-m0aE&_nc_ht=scontent.fsgn5-2.fna&oh=84246739e4ba3279ce49566f8f59bb01&oe=5EC49D12'
-        },
-        updatedAt: 1567476499584,
-        editable: true
-    },
-    {
-        _id: 'what_learn_6',
-        content: 'Huyen love Luan',
-        owner: {
-            //last owner
-            _id: 1,
-            name: 'Thuy Huyen',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
-        },
-        updatedAt: 1567476499584,
-        editable: true
-    },
-    {
-        _id: 'what_learn_7',
-        content: 'Luân miss Huyền!',
-        owner: {
-            //last owner
-            _id: 1,
-            name: 'Thuy Huyen',
-            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-1/83644753_1765496750259122_7261950568300544000_n.jpg?_nc_cat=105&_nc_oc=AQl7P3ybDMEUjJF6QEXVNp8UrrWIa57YPrTPfWqVDNFlBf7cCmOyX7Re115oUGS88EA&_nc_ht=scontent.fsgn5-2.fna&oh=cb09c64994cffa8ab83c09f0e199440a&oe=5EC33792'
-        },
-        updatedAt: 1567476499584,
-        editable: false
-    },
-];
+import { message } from 'antd';
 
 const initialState = {
     info: null,
@@ -580,11 +476,13 @@ export default {
                 onInvalidCourse,
                 onInvalidStudent
             } = payload;
-            yield delay(1400);
-            const validStatus = 0;
-            if (validStatus === 0) onOk();
-            else if (validStatus === 1) onInvalidCourse();
-            else onInvalidStudent();
+            const response = yield call(courseService.validate, courseId);
+            if (response) {
+                const validStatus = response.data;
+                if (validStatus === 0) onOk();
+                else if (validStatus === 1) onInvalidCourse();
+                else onInvalidStudent();
+            }
         }
     },
     reducers: {

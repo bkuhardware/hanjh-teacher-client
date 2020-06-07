@@ -142,3 +142,7 @@ export async function updateMessages(courseId, welcome, congratulation) {
         }
     });
 }
+
+export async function validate(courseId) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/validate`);
+}
