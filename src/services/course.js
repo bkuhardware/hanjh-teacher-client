@@ -31,3 +31,13 @@ export async function updateWhatLearns(courseId, change) {
         }
     });
 }
+
+export async function updateRequirements(courseId, change) {
+    return apiPut(`${COURSE_API_URL}/update/${courseId}/requirements`, {
+        body: {
+            add: change.add,
+            delete: change.delete,
+            update: change.update
+        }
+    });
+}

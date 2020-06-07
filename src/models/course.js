@@ -210,17 +210,21 @@ export default {
             }
         },
         *changeRequirements({ payload }, { call, put }) {
-            const { courseId, change } = payload;
-            yield delay(1400);
-            //full data returned in response;
-            yield put({
-                type: 'updateGoals',
-                payload: {
-                    type: 'requirements',
-                    data: FOO
-                }
-            });
-
+            const {
+                courseId,
+                change
+            } = payload;
+            const response = yield call(courseService.updateRequirements, courseId, change);
+            if (response) {
+                const updatedData = response.data;
+                yield put({
+                    type: 'updateGoals',
+                    payload: {
+                        type: 'requirements',
+                        data: updatedData
+                    }
+                });
+            }
         },
         *changeTargetStudents({ payload }, { call, put }) {
             const { courseId, change } = payload;
