@@ -510,11 +510,13 @@ export default {
             }
         },
         *fetchPrice({ payload: courseId }, { call, put }) {
-            yield delay(800);
-            yield put({
-                type: 'savePrice',
-                payload: 'tier1'
-            });
+            const response = yield call(courseService.fetchPrice, courseId);
+            if (response) {
+                yield put({
+                    type: 'savePrice',
+                    payload: response.data
+                });
+            }
         },
         *changePrice({ payload }, { call, put }) {
             const { courseId, value } = payload;

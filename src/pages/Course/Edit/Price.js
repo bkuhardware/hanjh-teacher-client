@@ -53,8 +53,8 @@ const Price = ({ dispatch, match, ...props }) => {
                                 })(
                                     <Select
                                         placeholder="Price"
-                                        disabled={loading || !price}
-                                        loading={loading || !price}
+                                        disabled={loading}
+                                        loading={loading}
                                         onChange={() => setDisabled(false)}
                                     >
                                         <Option value="free">Free</Option>
