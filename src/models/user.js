@@ -53,14 +53,14 @@ export default {
         },
         *changeInfo({ payload }, { call, put }) {
             const { info, callback } = payload;
-            yield delay(2500);
-            yield put({
-                type: 'update',
-                payload: {
-                    ...info
-                }
-            });
-            if (callback) callback();
+            const response = yield call(userService.update, info);
+            if (response) {
+                yield put({
+                    type: 'update',
+                    payload: response.data
+                });
+                if (callback) callback();
+            }
         },
         *changeSocial({ payload }, { call, put }) {
             const { data, callback } = payload;

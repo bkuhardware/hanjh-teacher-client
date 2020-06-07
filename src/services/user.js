@@ -12,3 +12,9 @@ export async function updateAvatar(params) {
         body: params
     });
 }
+
+export async function update(params) {
+    return apiPut(`${TEACHER_API_URL}/update`, {
+        body: params
+    })
+}
