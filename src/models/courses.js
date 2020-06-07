@@ -31,16 +31,19 @@ export default {
         },
         *sort({ payload: sortBy }, { call, put }) {
             //call api with sortBy and page = 1
-            yield delay(1600);
-            yield put({
-                type: 'save',
-                payload: {
-                    total: 20,
-                    currentPage: 1,
-                    sortBy,
-                    list: _.shuffle(COURSES)
-                }
-            });
+            const response = yield call(courseService.fetch, sortBy);
+            if (response) {
+                const { total, list } = response.data;
+                yield put({
+                    type: 'save',
+                    payload: {
+                        total,
+                        list,
+                        sortBy,
+                        currentPage: 1
+                    }
+                });
+            }
         },
         *page({ payload: pageVal }, { call, put, select }) {
             const { sortBy } = yield select(state => state.courses);
