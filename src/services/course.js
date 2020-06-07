@@ -51,3 +51,7 @@ export async function updateTargetStudents(courseId, change) {
         }
     });
 }
+
+export async function fetchSyllabus(courseId) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/syllabus`);
+}

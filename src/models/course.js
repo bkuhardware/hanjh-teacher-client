@@ -280,11 +280,14 @@ export default {
             }
         },
         *fetchSyllabus({ payload: courseId }, { call, put }) {
-            yield delay(1300);
-            yield put({
-                type: 'saveSyllabus',
-                payload: SYLLABUS
-            });
+            const response = yield call(courseService.fetchSyllabus, courseId);
+            if (response) {
+                const syllabus = response.data;
+                yield put({
+                    type: 'saveSyllabus',
+                    payload: syllabus
+                });
+            }
         },
         *addChapter({ payload }, { call, put }) {
             const { courseId, title, description, callback } = payload;

@@ -348,7 +348,7 @@ const Chapter = ({ chapter, currentUser, onAddNewLecture, onUpdateLecture, onDel
 };
 
 const Syllabus = ({ dispatch, match, ...props }) => {
-    const { courseId } = match;
+    const { courseId } = match.params;
     const {
         user,
         syllabus,
