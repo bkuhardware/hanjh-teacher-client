@@ -13,3 +13,7 @@ export async function create(title, area) {
         }
     });
 }
+
+export async function fetchInfo(courseId) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/info`);
+}

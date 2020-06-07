@@ -1,5 +1,6 @@
 import { delay } from '@/utils/utils';
 import _ from 'lodash';
+import * as courseService from '@/services/course';
 import COURSE_INFO from '@/assets/fakers/courseInfo';
 import GOALS from '@/assets/fakers/goals';
 import LANDING from '@/assets/fakers/landing';
@@ -129,11 +130,15 @@ export default {
     state: initialState,
     effects: {
         *fetchInfo({ payload: courseId }, { call, put }) {
-            yield delay(1600);
-            yield put({
-                type: 'saveInfo',
-                payload: COURSE_INFO
-            });
+            const response = yield call(courseService.fetchInfo, courseId);
+            console.log(response);
+            if (response) {
+                const courseInfo = response.data;
+                yield put({
+                    type: 'saveInfo',
+                    payload: courseInfo
+                });
+            }
         },
         *fetchHistory({ payload: courseId }, { call, put }) {
             yield delay(1500);

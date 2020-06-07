@@ -53,7 +53,7 @@ const Header = ({ courseInfo, loading, handlePreview, handleViewHistory }) => {
                         <div className={styles.infoContent}>
                             <Icon type="arrow-left" style={{ fontSize: '2.0em', color: '#FADA5E', cursor: 'pointer' }} onClick={() => router.push('/courses')} />
                             <span className={styles.name}>
-                                {courseInfo.name}
+                                {courseInfo.title}
                             </span>
                             <span className={styles.privacy}>
                                 {`(${getPrivacy(courseInfo.privacy)})`}
@@ -162,7 +162,7 @@ const Sider = ({ courseId, syllabus, completeStatus, loading, selectedKeys }) =>
                                 title={chapter.title}
                                 popupClassName={styles.subMenuPopup}
                             >
-                                {_.map(chapter.lectures, lecture => lecture.type === 0 ? (
+                                {_.map(chapter.lectures, lecture => lecture.type === 'Video' ? (
                                     <MenuItem key={`/lecture/video/${lecture._id}`}>
                                         <Link to={`/course/${courseId}/edit/lecture/video/${lecture._id}`}>
                                             {lecture.title}
