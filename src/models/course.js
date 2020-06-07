@@ -336,15 +336,25 @@ export default {
         },
         *deleteChapter({ payload }, { call, put }) {
             const { courseId, chapterId } = payload;
-            yield delay(1500);
-            yield put({
-                type: 'removeChapter',
-                payload: chapterId
-            });
-            yield put({
-                type: 'removeChapterInCourseInfo',
-                payload: chapterId
-            });
+            const response = yield call(courseService.deleteChapter, courseId, chapterId);
+            if (response) {
+                const progress = response.data && response.data.progress;
+                yield put({
+                    type: 'removeChapter',
+                    payload: chapterId
+                });
+                yield put({
+                    type: 'removeChapterInCourseInfo',
+                    payload: chapterId
+                });
+                yield put({
+                    type: 'saveCompleteStatus',
+                    payload: {
+                        type: 'syllabus',
+                        status: progress === 100
+                    }
+                });
+            }
         },
         *addLecture({ payload }, { call, put }) {
             const {

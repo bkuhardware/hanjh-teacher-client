@@ -1,5 +1,5 @@
 /* eslint-disable  */
-import { apiGet, apiPost, apiPut } from '@/utils/request';
+import { apiGet, apiPost, apiPut, apiDelete } from '@/utils/request';
 
 export async function fetch(sort, page = 1, limit = 8) {
     return apiGet(`${COURSE_API_URL}/my/teacher?page=${page}&limit=${limit}&sort=${sort}`);
@@ -72,4 +72,8 @@ export async function updateChapter(courseId, chapterId, title, description) {
             description
         }
     })
+}
+
+export async function deleteChapter(courseId, chapterId) {
+    return apiDelete(`${COURSE_API_URL}/${courseId}/chapters/${chapterId}`);
 }
