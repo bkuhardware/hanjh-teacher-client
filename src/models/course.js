@@ -199,7 +199,19 @@ export default {
             } = payload;
             const response = yield call(courseService.updateWhatLearns, courseId, change);
             if (response) {
-                const updatedData = response.data;
+                const {
+                    data: {
+                        progress,
+                        data: updatedData
+                    }
+                } = response;
+                yield put({
+                    type: 'saveCompleteStatus',
+                    payload: {
+                        type: 'goals',
+                        status: progress === 100
+                    }
+                });
                 yield put({
                     type: 'updateGoals',
                     payload: {
@@ -216,7 +228,19 @@ export default {
             } = payload;
             const response = yield call(courseService.updateRequirements, courseId, change);
             if (response) {
-                const updatedData = response.data;
+                const {
+                    data: {
+                        progress,
+                        data: updatedData
+                    }
+                } = response;
+                yield put({
+                    type: 'saveCompleteStatus',
+                    payload: {
+                        type: 'goals',
+                        status: progress === 100
+                    }
+                });
                 yield put({
                     type: 'updateGoals',
                     payload: {
@@ -233,7 +257,19 @@ export default {
             } = payload;
             const response = yield call(courseService.updateTargetStudents, courseId, change);
             if (response) {
-                const updatedData = response.data;
+                const {
+                    data: {
+                        progress,
+                        data: updatedData
+                    }
+                } = response;
+                yield put({
+                    type: 'saveCompleteStatus',
+                    payload: {
+                        type: 'goals',
+                        status: progress === 100
+                    }
+                });
                 yield put({
                     type: 'updateGoals',
                     payload: {
