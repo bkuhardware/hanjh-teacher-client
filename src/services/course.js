@@ -129,3 +129,16 @@ export async function updatePrice(courseId, value) {
         }
     });
 }
+
+export async function fetchMessages(courseId) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/messages`);
+}
+
+export async function updateMessages(courseId, welcome, congratulation) {
+    return apiPut(`${COURSE_API_URL}/${courseId}/messages`, {
+        body: {
+            welcome,
+            congratulation
+        }
+    });
+}

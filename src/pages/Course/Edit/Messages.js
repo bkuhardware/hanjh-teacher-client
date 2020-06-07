@@ -34,8 +34,8 @@ const Messages = ({ dispatch, match, ...props }) => {
     }, [courseId]);
     useEffect(() => {
         if (!previousMessages && messages) {
-            const welcomeContent = getContentStateFromHTML(messages.welcome);
-            const congratulationContent = getContentStateFromHTML(messages.congratulation);
+            const welcomeContent = getContentStateFromHTML(messages.welcome || '');
+            const congratulationContent = getContentStateFromHTML(messages.congratulation || '');
             setWelcome({
                 value: EditorState.createWithContent(welcomeContent),
                 validateStatus: 'success',

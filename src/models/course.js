@@ -540,11 +540,13 @@ export default {
             }
         },
         *fetchMessages({ payload: courseId }, { call, put }) {
-            yield delay(1200);
-            yield put({
-                type: 'saveMessages',
-                payload: MESSAGES
-            });
+            const response = yield call(courseService.fetchMessages, courseId);
+            if (response) {
+                yield put({
+                    type: 'saveMessages',
+                    payload: response.data
+                })
+            }
         },
         *changeMessages({ payload }, { call, put }) {
             const {
@@ -552,21 +554,24 @@ export default {
                 welcome,
                 congratulation
             } = payload;
-            yield delay(1500);
-            yield put({
-                type: 'saveMessages',
-                payload: {
-                    welcome,
-                    congratulation
-                }
-            });
-            yield put({
-                type: 'saveCompleteStatus',
-                payload: {
-                    type: 'messages',
-                    status: true
-                }
-            });
+            const response = yield call(courseService.updateMessages, courseId, welcome, congratulation);
+            if (response) {
+                const {
+                    progress,
+                    data: updatedData
+                } = response.data;
+                yield put({
+                    type: 'saveMessages',
+                    payload: updatedData
+                });
+                yield put({
+                    type: 'saveCompleteStatus',
+                    payload: {
+                        type: 'messages',
+                        status: progress === 100
+                    }
+                });
+            }
         },
         *validate({ payload }, { call, put }) {
             const {
