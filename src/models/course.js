@@ -115,7 +115,7 @@ const initialState = {
         hasMore: true
     },
     goals: {
-        whatLearn: null,
+        whatLearns: null,
         requirements: null,
         targetStudents: null
     },
@@ -193,17 +193,21 @@ export default {
             }
         },
         *changeWhatLearns({ payload }, { call, put }) {
-            const { courseId, change } = payload;
-            //console.log(change);
-            yield delay(1500);
-            //full data returned in response;
-            yield put({
-                type: 'updateGoals',
-                payload: {
-                    type: 'whatLearn',
-                    data: FOO
-                }
-            });
+            const {
+                courseId,
+                change
+            } = payload;
+            const response = yield call(courseService.updateWhatLearns, courseId, change);
+            if (response) {
+                const updatedData = response.data;
+                yield put({
+                    type: 'updateGoals',
+                    payload: {
+                        type: 'whatLearns',
+                        data: updatedData
+                    }
+                });
+            }
         },
         *changeRequirements({ payload }, { call, put }) {
             const { courseId, change } = payload;
@@ -725,7 +729,7 @@ export default {
             return {
                 ...state,
                 goals: {
-                    whatLearn: null,
+                    whatLearns: null,
                     requirements: null,
                     targetStudents: null
                 }

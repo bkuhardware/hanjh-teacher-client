@@ -1,5 +1,5 @@
 /* eslint-disable  */
-import { apiGet, apiPost } from '@/utils/request';
+import { apiGet, apiPost, apiPut } from '@/utils/request';
 
 export async function fetch(sort, page = 1, limit = 8) {
     return apiGet(`${COURSE_API_URL}/my/teacher?page=${page}&limit=${limit}&sort=${sort}`);
@@ -20,4 +20,14 @@ export async function fetchInfo(courseId) {
 
 export async function fetchGoals(courseId) {
     return apiGet(`${COURSE_API_URL}/${courseId}/goals`);
+}
+
+export async function updateWhatLearns(courseId, change) {
+    return apiPut(`${COURSE_API_URL}/update/${courseId}/what-learns`, {
+        body: {
+            add: change.add,
+            delete: change.delete,
+            update: change.update
+        }
+    });
 }

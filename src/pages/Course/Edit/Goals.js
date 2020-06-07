@@ -189,7 +189,10 @@ const Subject = ({ field, onSave, currentUser, loading }) => {
         }
     };
     const handleSave = () => {
-        onSave(change);
+        onSave({
+            ...change,
+            add: _.values(change.add)
+        });
         setChange({
             add: {},
             delete: [],
