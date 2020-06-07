@@ -52,7 +52,7 @@ const StaticLecture = ({ lecture, currentUser, onEditLecture, onDeleteLecture })
                 avatar={(
                     <Avatar
                         size={16}
-                        icon={lecture.type === 0 ? <YoutubeFilled /> : <ReadOutlined />}
+                        icon={lecture.type === 'Video' ? <YoutubeFilled /> : <ReadOutlined />}
                         style={{
                             background: lecture.type === 1 ? "white" : '#fada5e',
                             color: 'black',
@@ -100,8 +100,8 @@ const Lecture = ({
                             </FormItem>
                             <FormItem label="Select lecture type" required>
                                 <div
-                                    className={editLectureType === 0 ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
-                                    onClick={() => onEditLectureTypeChange(0)}
+                                    className={editLectureType === 'Video' ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
+                                    onClick={() => onEditLectureTypeChange('Video')}
                                 >
                                     <div className={styles.inlineDiv}>
                                         <PlayCircleFilled style={{ fontSize: '2.5em', position: 'relative', top: '6px' }}/>
@@ -111,8 +111,8 @@ const Lecture = ({
                                     </div>
                                 </div>
                                 <div
-                                    className={editLectureType === 1 ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
-                                    onClick={() => onEditLectureTypeChange(1)}
+                                    className={editLectureType === 'Article' ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
+                                    onClick={() => onEditLectureTypeChange('Article')}
                                 >
                                     <div className={styles.inlineDiv}>
                                         <ReadFilled style={{ fontSize: '2.5em', position: 'relative', top: '6px' }}/>
@@ -153,7 +153,7 @@ const Chapter = ({ chapter, currentUser, onAddNewLecture, onUpdateLecture, onDel
         validateStatus: 'success',
         help: ''
     });
-    const [newLectureType, setNewLectureType] = useState(0);
+    const [newLectureType, setNewLectureType] = useState('Video');
     const [newLectureLoading, setNewLectureLoading] = useState(false);
     const [editLectureId, setEditLectureId] = useState(null);
     const [editLectureType, setEditLectureType] = useState(null);
@@ -196,7 +196,7 @@ const Chapter = ({ chapter, currentUser, onAddNewLecture, onUpdateLecture, onDel
             help: '',
             validateStatus: 'success'
         });
-        setNewLectureType(0);
+        setNewLectureType('Video');
         setNewLecture(false);
     };
     const handleEditLecture = lecture => {
@@ -297,8 +297,8 @@ const Chapter = ({ chapter, currentUser, onAddNewLecture, onUpdateLecture, onDel
                                     </FormItem>
                                     <FormItem label="Select lecture type" required>
                                         <div
-                                            className={newLectureType === 0 ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
-                                            onClick={() => setNewLectureType(0)}
+                                            className={newLectureType === 'Video' ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
+                                            onClick={() => setNewLectureType('Video')}
                                         >
                                             <div className={styles.inlineDiv}>
                                                 <PlayCircleFilled style={{ fontSize: '2.5em', position: 'relative', top: '6px' }}/>
@@ -308,8 +308,8 @@ const Chapter = ({ chapter, currentUser, onAddNewLecture, onUpdateLecture, onDel
                                             </div>
                                         </div>
                                         <div
-                                            className={newLectureType === 1 ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
-                                            onClick={() => setNewLectureType(1)}
+                                            className={newLectureType === 'Article' ? classNames(styles.lectureType, styles.selectedLectureType) : styles.lectureType}
+                                            onClick={() => setNewLectureType('Article')}
                                         >
                                             <div className={styles.inlineDiv}>
                                                 <ReadFilled style={{ fontSize: '2.5em', position: 'relative', top: '6px' }}/>

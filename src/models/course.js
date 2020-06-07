@@ -364,45 +364,35 @@ export default {
                 type,
                 callback
             } = payload;
-            yield delay(1600);
-            //call api, response return new lecture, complete Status,
-            yield put({
-                type: 'pushLecture',
-                payload: {
-                    chapterId,
-                    lecture: {
-                        _id: _.uniqueId('lecture_'),
-                        title,
-                        type,
-                        owner: {
-                            //last owner
-                            _id: 2,
-                            name: 'Trong Luan',
-                            avatar: 'https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.0-9/83558548_2290286491264377_331290296627232768_n.jpg?_nc_cat=107&_nc_oc=AQnpLi8nWGbC-08nBlYjhCuZyGVkcZMFHaqWTcBFbEZK1GzrkY73FWhSwonUwq-m0aE&_nc_ht=scontent.fsgn5-2.fna&oh=84246739e4ba3279ce49566f8f59bb01&oe=5EC49D12'
-                        },
-                        updatedAt: Date.now(),
+            const response = yield call(courseService.addLecture, courseId, chapterId, type, title);
+            if (response) {
+                const {
+                    progress,
+                    data: newLecture
+                } = response.data;
+                yield put({
+                    type: 'pushLecture',
+                    payload: {
+                        chapterId,
+                        lecture: newLecture
                     }
-                }
-            });
-            yield put({
-                type: 'pushLectureInCourseInfo',
-                payload: {
-                    lecture: {
-                        _id: _.uniqueId('lecture_'),
-                        title,
-                        type
-                    },
-                    chapterId
-                }
-            });
-            yield put({
-                type: 'saveCompleteStatus',
-                payload: {
-                    type: 'syllabus',
-                    status: true
-                }
-            });
-            if (callback) callback();
+                });
+                yield put({
+                    type: 'pushLectureInCourseInfo',
+                    payload: {
+                        chapterId,
+                        lecture: _.pick(newLecture, ['_id', 'type', 'title'])
+                    }
+                });
+                yield put({
+                    type: 'saveCompleteStatus',
+                    payload: {
+                        type: 'syllabus',
+                        status: progress === 100
+                    }
+                });
+                if (callback) callback();
+            }
         },
         *updateLecture({ payload }, { call, put }) {
             const {

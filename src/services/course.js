@@ -77,3 +77,12 @@ export async function updateChapter(courseId, chapterId, title, description) {
 export async function deleteChapter(courseId, chapterId) {
     return apiDelete(`${COURSE_API_URL}/${courseId}/chapters/${chapterId}`);
 }
+
+export async function addLecture(courseId, chapterId, type, title) {
+    return apiPost(`${COURSE_API_URL}/${courseId}/chapters/${chapterId}/lectures`, {
+        body: {
+            type,
+            title
+        }
+    });
+}
