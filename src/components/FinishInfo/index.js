@@ -39,7 +39,7 @@ const FinishInfo = ({ dispatch, callback, ...props }) => {
         validateStatus: 'success',
         help: ''
     });
-    const [job, setJob] = useState({
+    const [headline, setHeadline] = useState({
         value: '',
         validateStatus: 'success',
         help: ''
@@ -78,12 +78,12 @@ const FinishInfo = ({ dispatch, callback, ...props }) => {
         const val = e.target.value;
         saveNext(1, 1);
         if (_.isEmpty(val))
-            return setJob({
+            return setHeadline({
                 value: val,
                 help: 'You must enter headline!',
                 validateStatus: 'error'
             });
-        setJob({
+        setHeadline({
             value: val,
             help: '',
             validateStatus: 'success'
@@ -163,7 +163,7 @@ const FinishInfo = ({ dispatch, callback, ...props }) => {
                             name: user.name,
                             phone: user.phone, 
                             email: email.value,
-                            job: job.value,
+                            headline: headline.value,
                             biography: biographyText
                         },
                         callback: () => {
@@ -200,8 +200,8 @@ const FinishInfo = ({ dispatch, callback, ...props }) => {
         else if (current === 1) {
             return _.isEmpty(email.value)
                 || !checkEmail(email.value)
-                || _.isEmpty(job.value)
-                || job.value.length < 60
+                || _.isEmpty(headline.value)
+                || headline.value.length < 60
                 || !biography.value.getCurrentContent().hasText()
                 || biography.value.getCurrentContent().getPlainText('').length < 100;
         }
@@ -276,8 +276,8 @@ const FinishInfo = ({ dispatch, callback, ...props }) => {
                                 </FormItem>
                             </Col>
                             <Col span={12}>
-                                <FormItem label="Headline" help={job.help} validateStatus={job.validateStatus} required>
-                                    <Input value={job.value} onChange={handleChangeJob} placeholder="Headline (Job)" size="large" addonAfter={job.value.length < 60 ? `(${60 - job.value.length})` : <Icon type="check" />}/>
+                                <FormItem label="Headline" help={headline.help} validateStatus={headline.validateStatus} required>
+                                    <Input value={headline.value} onChange={handleChangeJob} placeholder="Headline (Job)" size="large" addonAfter={headline.value.length < 60 ? `(${60 - headline.value.length})` : <Icon type="check" />}/>
                                 </FormItem>
                             </Col>
                         </Row>

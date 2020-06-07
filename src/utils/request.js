@@ -3,6 +3,7 @@ import { notification } from 'antd';
 import router from 'umi/router';
 import storage from '@/utils/storage';
 import { toQueryString } from '@/utils/utils';
+import styles from './index.less';
 
 const { NODE_ENV } = process.env;
 
@@ -44,8 +45,9 @@ function checkStatus(response) {
 	}
 	const errortext = codeMessage[response.status] || response.statusText;
 	notification.error({
-		message: `Lỗi yêu cầu ${response.status}: ${NODE_ENV !== 'production' ? response.url : ''}`,
-		description: errortext,
+		className: styles.notification,
+		message: `${response.status}: ${NODE_ENV !== 'production' ? response.url : ''}`,
+		description: errortext
 	});
 	const error = new ErrorWithReponse(errortext, response);
 	throw error;

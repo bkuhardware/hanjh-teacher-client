@@ -56,17 +56,17 @@ const Settings = ({ dispatch, form, ...props }) => {
     };
     
     const handleUpdateInformation = () => {
-        const errors = form.getFieldsError(['name', 'email', 'job']);
+        const errors = form.getFieldsError(['name', 'email', 'headline']);
         if (_.some(errors, err => err)) return message.error('Your inputs is invalid!');
         const content = biography.value.getCurrentContent();
         if (content.getPlainText('').length < 100) return message.error('Your biography must has at least 100 characters!');
-        const { name, email, job } = form.getFieldsValue();
+        const { name, email, headline } = form.getFieldsValue();
         const biographyText = exportToHTML(biography.value);
         dispatch({
             type: 'user/changeInfo',
             payload: {
                 info: {
-                    name, email, job, 
+                    name, email, headline, 
                     biography: biographyText
                 },
                 callback: () => message.success('Update information successfully!') 
@@ -223,7 +223,7 @@ const Settings = ({ dispatch, form, ...props }) => {
                                     })(<Input placeholder="email" size="large" />)}
                                 </FormItem>
                                 <FormItem label="Headline" required>
-                                    {getFieldDecorator('job', {
+                                    {getFieldDecorator('headline', {
                                         rules: [
                                             {
                                                 required: true,
@@ -234,8 +234,8 @@ const Settings = ({ dispatch, form, ...props }) => {
                                                 message: 'Your headline must has at least 60 characters!'
                                             }
                                         ],
-                                        initialValue: user.job
-                                    })(<Input placeholder="Headline (Job)" size="large" addonAfter={form.getFieldValue('job').length < 60 ? `(${60 - form.getFieldValue('job').length})` : <Icon type="check" />}/>)}
+                                        initialValue: user.headline
+                                    })(<Input placeholder="Headline (Job)" size="large" addonAfter={form.getFieldValue('headline').length < 60 ? `(${60 - form.getFieldValue('headline').length})` : <Icon type="check" />}/>)}
                                 </FormItem>
                                 <FormItem
                                     label="Biography"
