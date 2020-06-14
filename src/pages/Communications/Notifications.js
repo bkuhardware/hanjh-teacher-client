@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import { connect } from 'dva';
 import { List, Button, Avatar, Skeleton } from 'antd';
 import UserAvatar from '@/components/Avatar';
@@ -77,7 +78,7 @@ const Notifications = ({ dispatch, ...props }) => {
                         dataSource={!notifications ? [] : notifications}
                         itemLayout="horizontal"
                         loadMore={loadMore}
-                        rowKey={item => (item._id || item.key) + _.uniqueId('noti_')}
+                        rowKey={item => item._id}
                         renderItem={item => (
                             <div className={!item.loading ? styles.notiItem : styles.loadingItem} onClick={!item.loading ? () => handleViewNotify(item) : () => {}}>
                                     <List.Item style={{ background: (item.seen ? 'inherit' : 'rgba(255, 255, 255, 0.05)'), paddingLeft: 12, paddingRight: 12 }}>
@@ -88,7 +89,7 @@ const Notifications = ({ dispatch, ...props }) => {
                                             }}
                                         >
                                             <List.Item.Meta
-                                                avatar={(
+                                                avatar={item.user ? (
                                                     <UserAvatar
                                                         size={36}
                                                         textSize={36}
@@ -98,9 +99,15 @@ const Notifications = ({ dispatch, ...props }) => {
                                                         alt="user-avatar"
                                                         borderWidth={0}
                                                     />
+                                                ) : (
+                                                    <Avatar
+                                                        size={36}
+                                                        src={item.avatar}
+                                                        alt="avatar"
+                                                    />
                                                 )}
-                                                title={<span>{item.content}</span>}
-                                                description={<span style={{ fontSize: 13, color: 'gray'}}>{ fromNow(item.createdAt) }</span>}
+                                                title={<span>{item.user ? `${item.user.name} ${item.content}` : item.content }</span>}
+                                                description={<span style={{ fontSize: 13, color: 'gray'}}>{ fromNow(moment(item.createdAt)) }</span>}
                                             />
                                         </Skeleton>
                                     </List.Item>

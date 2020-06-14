@@ -93,6 +93,12 @@ export default {
         save(state, { payload }) {
             return { ...payload };
         },
+        saveNoUsNotification(state, { payload: value }) {
+            return {
+                ...state,
+                noOfUsNotification: value
+            };
+        },
         update(state, { payload }) {
             return {
                 ...state,

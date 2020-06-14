@@ -91,6 +91,15 @@ export default {
                 list: data
             };
         },
+        shift(state, { payload: notification }) {
+            return {
+                ...state,
+                list: [
+                    notification,
+                    ...state.list
+                ]
+            };
+        },
         push(state, { payload }) {
             const { data, hasMore } = payload;
             if (!state.list) return { ...state };

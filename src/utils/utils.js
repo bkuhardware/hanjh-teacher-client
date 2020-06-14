@@ -118,3 +118,10 @@ export const secondsToTime = time => {
     const padTime = val => val < 10 ? `0${val}` : val;
     return `${padTime(minutes)}:${padTime(seconds)}`;
 };
+
+export const mapNotificationTypeToTitle = type => {
+    const maps = {
+        'follow': 'Theo dõi'
+    };
+    return maps[type] || 'Huyefen';
+}

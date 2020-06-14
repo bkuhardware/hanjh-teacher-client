@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { Popover, List, Badge, Avatar, Icon, Empty, Spin as Loading } from 'antd';
@@ -35,12 +36,12 @@ const Notifications = ({ dispatch, ...props }) => {
             <Scrollbars ref={scrollEleRef} autoHeight autoHeightMax={474} onScroll={handleScroll} className={styles.scrollEle}>
                 <List
                     dataSource={notifications}
-                    rowKey={item => item._id + _.uniqueId("notification_")}
+                    rowKey={item => item._id}
                     renderItem={item => (
                         <div className={styles.notiItem} onClick={() => handleViewNotify(item)}>
                             <List.Item style={{ background: (item.seen ? 'inherit' : 'rgba(255, 255, 255, 0.05)')}}>
                                 <List.Item.Meta
-                                    avatar={(
+                                    avatar={item.user ? (
                                         <UserAvatar
                                             size={36}
                                             textSize={36}
@@ -50,9 +51,15 @@ const Notifications = ({ dispatch, ...props }) => {
                                             alt="user-avatar"
                                             borderWidth={0}
                                         />
+                                    ) : (
+                                        <Avatar
+                                            size={36}
+                                            src={item.avatar}
+                                            alt="avatar"
+                                        />
                                     )}
-                                    title={<span>{truncate(item.content, 92)}</span>}
-                                    description={<span style={{ fontSize: 13, color: 'gray'}}>{ fromNow(item.createdAt) }</span>}
+                                    title={<span>{truncate(item.user ? `${item.user.name} ${item.content}` : item.content, 92)}</span>}
+                                    description={<span style={{ fontSize: 13, color: 'gray'}}>{ fromNow(moment(item.createdAt)) }</span>}
                                 />
                             </List.Item>
                         </div>
