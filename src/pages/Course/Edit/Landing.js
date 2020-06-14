@@ -312,7 +312,7 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                                             onDropdownVisibleChange={open => setCategoryOpen(open)}
                                         >
                                             {(areasMenu && landing && form.getFieldValue('area')) && 
-                                            _.map(_.find(areasMenu, area => area._id === form.getFieldValue('area')).categories, category => (
+                                            _.map((_.find(areasMenu, area => area._id === form.getFieldValue('area')) || { categories: [] }).categories, category => (
                                                 <Option key={category._id}>{category.title}</Option>
                                             ))}
                                         </Select>

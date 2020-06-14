@@ -81,7 +81,6 @@ export default {
                 onIncorrect
             } = payload;
             const response = yield call(userService.changePassword, oldPassword, newPassword);
-            console.log(response);
             if (response) {
                 const errorCode = 1 * response.errorCode;
                 if (errorCode === 1)

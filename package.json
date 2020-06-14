@@ -24,6 +24,7 @@
     "draft-js-video-plugin": "^2.0.2",
     "dva": "^2.6.0-beta.6",
     "es6-shim": "^0.35.5",
+    "firebase": "^7.15.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "os": "^0.1.1",

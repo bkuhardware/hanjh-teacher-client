@@ -73,9 +73,9 @@ const columns = [
         render: val => <Progress value={val} />
     },
     {
-        title: 'Last updated',
-        dataIndex: 'updatedAt',
-        key: 'lastUpdated',
+        title: 'Created at',
+        dataIndex: 'createdAt',
+        key: 'createdAt',
         width: '15%',
         align: 'center',
         render: val => <span className={styles.lastUpdated}>{moment(val).format('MM/YYYY')}</span>
