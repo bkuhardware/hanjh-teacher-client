@@ -1,6 +1,7 @@
 import { delay } from '@/utils/utils';
 import _ from 'lodash';
 import router from 'umi/router';
+import * as questionService from '@/services/question';
 import QUESTIONS from '@/assets/fakers/questions';
 import LECTURE_OPTIONS from '@/assets/fakers/syllabus';
 import THREAD from '@/assets/fakers/thread';
@@ -104,15 +105,22 @@ export default {
             });
         },
         *fetchQuestions({ payload: courseId }, { call, put }) {
-            yield delay(2000);
-            yield put({
-                type: 'saveQuestions',
-                payload: {
-                    hasMore: true,
-                    total: 4197,
-                    data: QUESTIONS
-                }
+            const response = yield call(questionService.fetch, courseId, {
+                sort: 'relevance',
+                lecture: 'all',
+                questionTypes: []
             });
+            if (response) {
+                const { hasMore, total, list } = response.data;
+                yield put({
+                    type: 'saveQuestions',
+                    payload: {
+                        hasMore,
+                        total,
+                        data: list
+                    }
+                });
+            }
         },
         *moreQuestions({ payload: courseId }, { call, put, select }) {
             const { forum } = yield select(state => state.manage);
@@ -124,15 +132,23 @@ export default {
                 },
                 list
             } = forum;
-            //base on list and filters values.
-            yield delay(1500);
-            yield put({
-                type: 'pushQuestions',
-                payload: {
-                    hasMore: false,
-                    data: QUESTIONS
-                }
-            });
+            const currentPage = _.size(list) / 10;
+            const response = yield call(questionService.fetch, courseId, {
+                sortBy,
+                lecture,
+                questionTypes
+            }, currentPage + 1);
+            if (response) {
+                const { hasMore, total, list } = response.data;
+                yield put({
+                    type: 'pushQuestions',
+                    payload: {
+                        hasMore,
+                        total,
+                        data: list
+                    }
+                });
+            }
         },
         *fetchLectureOpts({ payload: courseId }, { call, put }) {
             yield delay(1200);

@@ -189,7 +189,7 @@ const Forum = ({ location, match, dispatch, ...props }) => {
                                             <div className={styles.content}>{thread.content}</div>
                                             <div className={styles.extra}>
                                                 <span className={styles.name}>{thread.user.name}</span>
-                                                <span className={styles.order}>{`Lecture ${thread.lecture.order}`}</span>
+                                                <span className={styles.order}>{`Lecture ${thread.lectureIndex}`}</span>
                                                 <span className={styles.time}>
                                                     <TimeAgo date={thread.createdAt}/>
                                                 </span>
@@ -197,7 +197,7 @@ const Forum = ({ location, match, dispatch, ...props }) => {
                                         </Col>
                                         <Col span={4} className={styles.statistic}>
                                             <div className={styles.votings}>
-                                                <span className={styles.value}>{thread.numOfVotings}</span>
+                                                <span className={styles.value}>{thread.numOfVotes}</span>
                                                 <Icon type="arrow-up" />
                                             </div>
                                             <div className={styles.answers}>
