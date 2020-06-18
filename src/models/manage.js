@@ -335,12 +335,30 @@ export default {
                 });
             }
         },
-        *toggleAnswerVote({ payload: answerId }, { call, put }) {
+        *toggleAnswerVote({ payload }, { call, put }) {
+            const {
+                threadId,
+                courseId,
+                answerId,
+                value
+            } = payload;
             yield put({
                 type: 'toggleAnswerVoting',
                 payload: answerId
             });
-            yield delay(900);
+            let response;
+            if (value) {
+                response = yield call(questionService.unvoteAnswer, courseId, threadId, answerId);
+            }
+            else {
+                response = yield call(questionService.voteAnswer, courseId, threadId, answerId);
+            }
+            if (!response) {
+                yield put({
+                    type: 'toggleAnswerVoting',
+                    payload: answerId
+                });
+            }
         },
         *answer({ payload }, { call, put }) {
             const { threadId, answer } = payload;
@@ -706,8 +724,8 @@ export default {
         toggleAnswerVoting(state, { payload: answerId }) {
             const answersData = [...state.thread.answers];
             const index = _.findIndex(answersData, ['_id', answerId]);
-            if (answersData[index].isVoted) answersData[index].numOfVotings -= 1;
-            else answersData[index].numOfVotings += 1;
+            if (answersData[index].isVoted) answersData[index].numOfVotes -= 1;
+            else answersData[index].numOfVotes += 1;
             answersData[index].isVoted = !answersData[index].isVoted;
             return {
                 ...state,

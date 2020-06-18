@@ -36,3 +36,16 @@ export async function follow(courseId, threadId) {
 export async function unfollow(courseId, threadId) {
     return apiDelete(`${QUESTION_API_URL}/courses/${courseId}/${threadId}/unfollow`);
 }
+
+export async function voteAnswer(courseId, threadId, answerId) {
+    return apiPost(`${QUESTION_API_URL}/answers/${answerId}/vote`, {
+        body: {
+            courseId,
+            questionId: threadId
+        }
+    });
+}
+
+export async function unvoteAnswer(courseId, threadId, answerId) {
+    return apiDelete(`${QUESTION_API_URL}/answers/${answerId}/unvote?courseId=${courseId}&questionId=${threadId}`);
+}

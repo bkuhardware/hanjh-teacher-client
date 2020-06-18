@@ -64,10 +64,15 @@ const Thread = ({ match, dispatch, ...props }) => {
         });
     };
 
-    const handleToggleAnswerVoting = answerId => {
+    const handleToggleAnswerVoting = (answerId, value) => {
         dispatch({
             type: 'manage/toggleAnswerVote',
-            payload: answerId
+            payload: {
+                answerId,
+                value,
+                courseId,
+                threadId
+            }
         });
     };
 
@@ -197,7 +202,7 @@ const Thread = ({ match, dispatch, ...props }) => {
                                             </Col>
                                             <div className={styles.votings}>
                                                 <span className={styles.value}>{answer.numOfVotes}</span>
-                                                <span onClick={() => handleToggleAnswerVoting(answer._id)}><Icon type="arrow-up" style={{ color: answer.isVoted ? '#fada5e' : 'inherit' }}/></span>
+                                                <span onClick={() => handleToggleAnswerVoting(answer._id, answer.isVoted)}><Icon type="arrow-up" style={{ color: answer.isVoted ? '#fada5e' : 'inherit' }}/></span>
                                             </div>
                                         </Row>
                                     )}
