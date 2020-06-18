@@ -2,6 +2,7 @@ import { delay } from '@/utils/utils';
 import _ from 'lodash';
 import router from 'umi/router';
 import * as questionService from '@/services/question';
+import * as courseService from '@/services/course';
 import QUESTIONS from '@/assets/fakers/questions';
 import LECTURE_OPTIONS from '@/assets/fakers/syllabus';
 import THREAD from '@/assets/fakers/thread';
@@ -151,11 +152,13 @@ export default {
             }
         },
         *fetchLectureOpts({ payload: courseId }, { call, put }) {
-            yield delay(1200);
-            yield put({
-                type: 'saveLectureOpts',
-                payload: LECTURE_OPTIONS
-            });
+            const response = yield call(courseService.fetchChaptersDetail, courseId);
+            if (response) {
+                yield put({
+                    type: 'saveLectureOpts',
+                    payload: response.data
+                });
+            }
         },
         *sortQuestions({ payload }, { call, put, select }) {
             const { courseId, value } = payload;

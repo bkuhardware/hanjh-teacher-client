@@ -100,6 +100,10 @@ export async function deleteLecture(courseId, chapterId, lectureId) {
     return apiDelete(`${COURSE_API_URL}/${courseId}/chapters/${chapterId}/lectures/${lectureId}`);
 }
 
+export async function fetchChaptersDetail(courseId) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/chapters/detail`);
+}
+
 export async function fetchLanding(courseId) {
     return apiGet(`${COURSE_API_URL}/${courseId}/landing`);
 }
