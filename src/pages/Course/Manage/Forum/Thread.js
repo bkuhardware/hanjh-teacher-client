@@ -83,6 +83,7 @@ const Thread = ({ match, dispatch, ...props }) => {
         dispatch({
             type: 'manage/answer',
             payload: {
+                courseId,
                 threadId,
                 answer: html
             }
@@ -180,7 +181,7 @@ const Thread = ({ match, dispatch, ...props }) => {
                                                     src={answer.owner.avatar}
                                                     alt="user-avatar"
                                                     size={48}
-                                                    textSize={51}
+                                                    textSize={50}
                                                     borderWidth={3}
                                                     text={answer.owner.name}
                                                     style={{ background: 'white', color: 'black' }}

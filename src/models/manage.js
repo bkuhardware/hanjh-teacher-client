@@ -361,31 +361,14 @@ export default {
             }
         },
         *answer({ payload }, { call, put }) {
-            const { threadId, answer } = payload;
-            yield delay(1200);
-            //call api with threadId, answer --> response --> answer
-            const response = {
-                data: {
-                    _id: `new_answer ${_.uniqueId('sndsdf')}`,
-                    user: {
-                        _id: 1,
-                        avatar: 'https://scontent.fdad1-1.fna.fbcdn.net/v/t1.0-9/51059227_2091470127614437_5419405170205261824_o.jpg?_nc_cat=106&_nc_ohc=LnSzD5KUUN4AX8EolVa&_nc_ht=scontent.fdad1-1.fna&oh=95b1eba87a97f6266a625c07caf68566&oe=5EAE6D56',
-                        name: 'HuYeFen Cute',
-                        isInstructor: true
-                    },
-                    createdAt: 1578818445997,
-                    content: answer,
-                    numOfVotings: 0,
-                    isVoted: false
-                }
-            };
-            const {
-                data: answerData
-            } = response;
-            yield put({
-                type: 'shiftAnswer',
-                payload: answerData
-            });
+            const { courseId, threadId, answer } = payload;
+            const response = yield call(questionService.answer, courseId, threadId, answer);
+            if (response) {
+                yield put({
+                    type: 'shiftAnswer',
+                    payload: response.data
+                });
+            }
         },
         *fetchAnnouncements({ payload: courseId }, { call, put }) {
             yield delay(1500);

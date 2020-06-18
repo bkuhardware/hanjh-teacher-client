@@ -49,3 +49,11 @@ export async function voteAnswer(courseId, threadId, answerId) {
 export async function unvoteAnswer(courseId, threadId, answerId) {
     return apiDelete(`${QUESTION_API_URL}/answers/${answerId}/unvote?courseId=${courseId}&questionId=${threadId}`);
 }
+
+export async function answer(courseId, threadId, answer) {
+    return apiPost(`${QUESTION_API_URL}/courses/${courseId}/${threadId}/answers`, {
+        body: {
+            content: answer
+        }
+    });
+}
