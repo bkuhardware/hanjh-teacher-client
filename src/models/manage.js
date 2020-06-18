@@ -133,9 +133,9 @@ export default {
                 },
                 list
             } = forum;
-            const currentPage = _.size(list) / 10;
+            const currentPage = _.size(list) / 12;
             const response = yield call(questionService.fetch, courseId, {
-                sortBy,
+                sort: sortBy,
                 lecture,
                 questionTypes
             }, currentPage + 1);
@@ -176,16 +176,22 @@ export default {
                     questionTypes
                 }
             } = forum;
-            //sort with lecture, types and value == sortBy
-            yield delay(1500);
-            yield put({
-                type: 'saveQuestions',
-                payload: {
-                    hasMore: true,
-                    total: 2197,
-                    data: QUESTIONS
-                }
+            const response = yield call(questionService.fetch, courseId, {
+                lecture,
+                sort: value,
+                questionTypes
             });
+            if (response) {
+                const { hasMore, total, list } = response.data;
+                yield put({
+                    type: 'saveQuestions',
+                    payload: {
+                        hasMore,
+                        total,
+                        data: list
+                    }
+                });
+            }
         },
         *filterQuestionsByLecture({ payload }, { call, put, select }) {
             const { courseId, value } = payload;
