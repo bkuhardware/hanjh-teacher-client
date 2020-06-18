@@ -291,18 +291,49 @@ export default {
                 });
             }
         },
-        *toggleVote({ payload: threadId }, { call, put }) {
+        *toggleVote({ payload }, { call, put }) {
+            const {
+                threadId,
+                courseId,
+                value
+            } = payload;
             yield put({
                 type: 'toggleVoting'
             });
-            yield delay(1000);
-            //call api
+            let response;
+            if (value) {
+                response = yield call(questionService.unvote, courseId, threadId);
+            }
+            else {
+                response = yield call(questionService.vote, courseId, threadId);
+            }
+            if (!response) {
+                yield put({
+                    type: 'toggleVoting'
+                });
+            }
         },
-        *toggleFollow({ payload: threadId }, { call, put }) {
+        *toggleFollow({ payload }, { call, put }) {
+            const {
+                threadId,
+                courseId,
+                value
+            } = payload;
             yield put({
-                type: 'toggleFollowing',
+                type: 'toggleFollowing'
             });
-            yield delay(800);
+            let response;
+            if (value) {
+                response = yield call(questionService.unfollow, courseId, threadId);
+            }
+            else {
+                response = yield call(questionService.follow, courseId, threadId);
+            }
+            if (!response) {
+                yield put({
+                    type: 'toggleFollowing'
+                });
+            }
         },
         *toggleAnswerVote({ payload: answerId }, { call, put }) {
             yield put({
@@ -653,12 +684,12 @@ export default {
             };
         },
         toggleVoting(state) {
-            const numOfVotings = state.thread.isVoted ? state.thread.numOfVotings - 1 : state.thread.numOfVotings + 1;
+            const numOfVotes = state.thread.isVoted ? state.thread.numOfVotes - 1 : state.thread.numOfVotes + 1;
             return {
                 ...state,
                 thread: {
                     ...state.thread,
-                    numOfVotings,
+                    numOfVotes,
                     isVoted: !state.thread.isVoted
                 }
             };

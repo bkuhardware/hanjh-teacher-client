@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { apiGet, apiPost } from '@/utils/request';
+import { apiGet, apiPost, apiDelete } from '@/utils/request';
 import { join } from 'lodash';
 
 export async function fetch(courseId, params, page = 1, limit = 12) {
@@ -19,4 +19,20 @@ export async function fetchThread(courseId, questionId) {
 
 export async function fetchAnswers(courseId, questionId, skip = 0, limit = 5) {
     return apiGet(`${QUESTION_API_URL}/courses/${courseId}/${questionId}/answers?skip=${skip}&limit=${limit}`);
+}
+
+export async function vote(courseId, threadId) {
+    return apiPost(`${QUESTION_API_URL}/courses/${courseId}/${threadId}/vote`);
+}
+
+export async function unvote(courseId, threadId) {
+    return apiDelete(`${QUESTION_API_URL}/courses/${courseId}/${threadId}/unvote`);
+}
+
+export async function follow(courseId, threadId) {
+    return apiPost(`${QUESTION_API_URL}/courses/${courseId}/${threadId}/follow`);
+}
+
+export async function unfollow(courseId, threadId) {
+    return apiDelete(`${QUESTION_API_URL}/courses/${courseId}/${threadId}/unfollow`);
 }

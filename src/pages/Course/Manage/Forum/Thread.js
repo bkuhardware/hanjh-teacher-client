@@ -42,17 +42,25 @@ const Thread = ({ match, dispatch, ...props }) => {
         });
     };
 
-    const handleToggleVoting = threadId => {
+    const handleToggleVoting = (threadId, value) => {
         dispatch({
             type: 'manage/toggleVote',
-            payload: threadId
+            payload: {
+                threadId,
+                courseId,
+                value
+            }
         });
     };
 
-    const handleToggleFollow = threadId => {
+    const handleToggleFollow = (threadId, value) => {
         dispatch({
             type: 'manage/toggleFollow',
-            payload: threadId
+            payload: {
+                threadId,
+                value,
+                courseId
+            }
         });
     };
 
@@ -132,14 +140,14 @@ const Thread = ({ match, dispatch, ...props }) => {
                     </Col>
                     <div className={styles.votings}>
                         <span className={styles.value}>{thread.numOfVotes}</span>
-                        <span onClick={() => handleToggleVoting(thread._id)}><Icon type="arrow-up" style={{ color: thread.isVoted ? '#fada5e' : 'inherit' }}/></span>
+                        <span onClick={() => handleToggleVoting(thread._id, thread.isVoted)}><Icon type="arrow-up" style={{ color: thread.isVoted ? '#fada5e' : 'inherit' }}/></span>
                     </div>
                 </Row>
             )}
             <Row className={styles.beginAnswers}>
                 <Col span={12} className={styles.total}>{!thread ||initLoading ? 'Loading...' : `${thread.numOfAnswers} ${thread.numOfAnswers < 2 ? 'answer' : 'answers'}`}</Col>
                 <Col span={12} className={styles.follow}>
-                    {thread && (<span style={{ color: thread.isFollowed ? '#fada5e' : 'inherit' }} onClick={() => handleToggleFollow(thread._id)}>{thread.isFollowed ? 'Unfollow' : 'Follow'}</span>)}
+                    {thread && (<span style={{ color: thread.isFollowed ? '#fada5e' : 'inherit' }} onClick={() => handleToggleFollow(thread._id, thread.isFollowed)}>{thread.isFollowed ? 'Unfollow' : 'Follow'}</span>)}
                 </Col>
             </Row>
             <Divider className={styles.divider} />
