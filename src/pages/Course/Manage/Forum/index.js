@@ -167,12 +167,12 @@ const Forum = ({ location, match, dispatch, ...props }) => {
                 ) : (
                     <Loading spinning={sortLoading || filterByLectureLoading || filterByTypesLoading} fontSize={8} isCenter>
                         {_.map(threadsData, (thread, i) => (
-                            <React.Fragment key={thread._id + _.uniqueId('thread_')}>
-                                {i > 0 && (<Divider className={styles.divider} dashed key={_.uniqueId('thread_divider_')} />)}
+                            <React.Fragment key={thread._id}>
+                                {i > 0 && (<Divider className={styles.divider} dashed key={thread._id} />)}
                                 {thread.loading ? (
-                                    <Skeleton active avatar={{ size: 40, shape: 'circle' }} title={false} key={thread._id + _.uniqueId('thread_')} paragraph={{ rows: 3, width: ['40%', '90%', '45%']}} />
+                                    <Skeleton active avatar={{ size: 40, shape: 'circle' }} title={false} key={thread._id} paragraph={{ rows: 3, width: ['40%', '90%', '45%']}} />
                                 ) : (
-                                    <Row className={styles.thread} key={thread._id + _.uniqueId('thread_')} onClick={() => router.push(`${location.pathname}/thread/${thread._id}`)}>
+                                    <Row className={styles.thread} key={thread._id} onClick={() => router.push(`${location.pathname}/thread/${thread._id}`)}>
                                         <Col span={2} className={styles.avatarCont}>
                                             <UserAvatar
                                                 alt="avat-user"

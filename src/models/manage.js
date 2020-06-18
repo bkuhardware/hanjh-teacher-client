@@ -261,15 +261,13 @@ export default {
         },
         *fetchThread({ payload }, { call, put }) {
             const { courseId, threadId } = payload;
-            //call api with threadId, courseId --> check for thread belong course
-            yield delay(1400);
-            const status = 0;
-            if (status === 0)
+            const response = yield call(questionService.fetchThread, courseId, threadId);
+            if (response) {
                 yield put({
                     type: 'saveThread',
-                    payload: THREAD
+                    payload: response.data
                 });
-            else router.replace('/error/404');
+            }
         },
         *moreAnswers({ payload }, { call, put, select }) {
             const {
@@ -280,15 +278,18 @@ export default {
             const {
                 answers
             } = thread;
-            //more answers baseon threadId, answers
-            yield delay(1200);
-            yield put({
-                type: 'pushAnswers',
-                payload: {
-                    hasMore: false,
-                    data: ANSWERS
-                }
-            });
+            const skip = _.size(answers);
+            const response = yield call(questionService.fetchAnswers, courseId, threadId, skip);
+            if (response) {
+                const { hasMore, list } = response.data;
+                yield put({
+                    type: 'pushAnswers',
+                    payload: {
+                        hasMore,
+                        data: list
+                    }
+                });
+            }
         },
         *toggleVote({ payload: threadId }, { call, put }) {
             yield put({

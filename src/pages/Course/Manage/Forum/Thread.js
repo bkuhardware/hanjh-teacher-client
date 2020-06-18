@@ -123,7 +123,7 @@ const Thread = ({ match, dispatch, ...props }) => {
                         <div className={styles.title}>{thread.title}</div>
                         <div className={styles.extra}>
                             <span className={styles.name}>{thread.user.name}</span>
-                            <span className={styles.order}>{`Lecture ${thread.lecture.order}`}</span>
+                            <span className={styles.order}>{`Lecture ${thread.lectureIndex}`}</span>
                             <span className={styles.time}>
                                 <TimeAgo date={thread.createdAt}/>
                             </span>
@@ -131,13 +131,13 @@ const Thread = ({ match, dispatch, ...props }) => {
                         <div className={styles.content} dangerouslySetInnerHTML={{ __html: thread.content }} />
                     </Col>
                     <div className={styles.votings}>
-                        <span className={styles.value}>{thread.numOfVotings}</span>
+                        <span className={styles.value}>{thread.numOfVotes}</span>
                         <span onClick={() => handleToggleVoting(thread._id)}><Icon type="arrow-up" style={{ color: thread.isVoted ? '#fada5e' : 'inherit' }}/></span>
                     </div>
                 </Row>
             )}
             <Row className={styles.beginAnswers}>
-                <Col span={12} className={styles.total}>{!thread ||initLoading ? 'Loading...' : `${thread.totalAnswers} ${thread.totalAnswers < 2 ? 'answer' : 'answers'}`}</Col>
+                <Col span={12} className={styles.total}>{!thread ||initLoading ? 'Loading...' : `${thread.numOfAnswers} ${thread.numOfAnswers < 2 ? 'answer' : 'answers'}`}</Col>
                 <Col span={12} className={styles.follow}>
                     {thread && (<span style={{ color: thread.isFollowed ? '#fada5e' : 'inherit' }} onClick={() => handleToggleFollow(thread._id)}>{thread.isFollowed ? 'Unfollow' : 'Follow'}</span>)}
                 </Col>
@@ -164,19 +164,19 @@ const Thread = ({ match, dispatch, ...props }) => {
                                         <Row className={styles.answer} key={answer._id}>
                                             <Col span={2} className={styles.avatarCont}>
                                                 <UserAvatar
-                                                    src={answer.user.avatar}
+                                                    src={answer.owner.avatar}
                                                     alt="user-avatar"
                                                     size={48}
                                                     textSize={51}
                                                     borderWidth={3}
-                                                    text={answer.user.name}
+                                                    text={answer.owner.name}
                                                     style={{ background: 'white', color: 'black' }}
                                                 />
                                             </Col>
                                             <Col span={22} className={styles.right}>
                                                 <div className={styles.name}>
-                                                    <span>{answer.user.name}</span>
-                                                    {answer.user.isInstructor && (
+                                                    <span>{answer.owner.name}</span>
+                                                    {answer.ownerType === 'Teacher' && (
                                                         <span style={{ marginLeft: 10 }}>{'(Instructor)'}</span>
                                                     )}
                                                 </div>
@@ -188,7 +188,7 @@ const Thread = ({ match, dispatch, ...props }) => {
                                                 </ViewMore>
                                             </Col>
                                             <div className={styles.votings}>
-                                                <span className={styles.value}>{answer.numOfVotings}</span>
+                                                <span className={styles.value}>{answer.numOfVotes}</span>
                                                 <span onClick={() => handleToggleAnswerVoting(answer._id)}><Icon type="arrow-up" style={{ color: answer.isVoted ? '#fada5e' : 'inherit' }}/></span>
                                             </div>
                                         </Row>
