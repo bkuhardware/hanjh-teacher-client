@@ -209,16 +209,22 @@ export default {
                     questionTypes
                 }
             } = forum;
-            //sort with lecture, types and value == lecture
-            yield delay(1500);
-            yield put({
-                type: 'saveQuestions',
-                payload: {
-                    hasMore: true,
-                    total: 702,
-                    data: QUESTIONS
-                }
+            const response = yield call(questionService.fetch, courseId, {
+                lecture: value,
+                sort: sortBy,
+                questionTypes
             });
+            if (response) {
+                const { hasMore, total, list } = response.data;
+                yield put({
+                    type: 'saveQuestions',
+                    payload: {
+                        hasMore,
+                        total,
+                        data: list
+                    }
+                });
+            }
         },
         *filterQuestionsByTypes({ payload }, { call, put, select }) {
             const { courseId, values } = payload;
@@ -236,16 +242,22 @@ export default {
                     lecture
                 }
             } = forum;
-            //sort with lecture, types and value == lecture
-            yield delay(1500);
-            yield put({
-                type: 'saveQuestions',
-                payload: {
-                    hasMore: true,
-                    total: 1643,
-                    data: QUESTIONS
-                }
+            const response = yield call(questionService.fetch, courseId, {
+                sort: sortBy,
+                lecture,
+                questionTypes: values
             });
+            if (response) {
+                const { hasMore, total, list } = response.data;
+                yield put({
+                    type: 'saveQuestions',
+                    payload: {
+                        hasMore,
+                        total,
+                        data: list
+                    }
+                });
+            }
         },
         *fetchThread({ payload }, { call, put }) {
             const { courseId, threadId } = payload;
