@@ -88,22 +88,17 @@ export default {
     effects: {
         *fetchPermission({ payload }, { call, put }) {
             const { courseId, type } = payload;
-            //call api with courseId, type, response return permission value
-            let permission;
-            if (type === 'announcements') permission = 1;
-            else if (type === 'settings') permission = {
-                privacy: 1,
-                members: 2,
-            };
-            else if (type === 'reviews') permission = 0;
-            yield delay(800);
-            yield put({
-                type: 'savePermission',
-                payload: {
-                    type,
-                    value: permission
-                }
-            });
+            const response = yield call(courseService.fetchPermission, courseId, type);
+            if (response) {
+                const permission = response.data;
+                yield put({
+                    type: 'savePermission',
+                    payload: {
+                        type,
+                        value: permission
+                    }
+                });
+            }
         },
         *fetchQuestions({ payload: courseId }, { call, put }) {
             const response = yield call(questionService.fetch, courseId, {

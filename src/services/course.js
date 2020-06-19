@@ -150,3 +150,7 @@ export async function updateMessages(courseId, welcome, congratulation) {
 export async function validate(courseId) {
     return apiGet(`${COURSE_API_URL}/${courseId}/validate`);
 }
+
+export async function fetchPermission(courseId, type) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/permission?type=${type}`)
+}
