@@ -502,17 +502,17 @@ export default {
                 password,
                 callback
             } = payload;
-            //call api with courseId, value, password
-            if (password) {
-                yield delay(1200);
-                //call api with type = 'password', password
-            }
-            else yield delay(1500);     //call api with only type.
-            yield put({
-                type: 'course/savePrivacy',
-                payload: value
+            const response = yield call(courseService.updatePrivacy, courseId, {
+                value,
+                password
             });
-            if (callback) callback();
+            if (response) {
+                yield put({
+                    type: 'course/savePrivacy',
+                    payload: value
+                });
+                if (callback) callback();
+            }
         },
         *updateMembers({ payload }, { call, put }) {
             const { courseId, data } = payload;
@@ -535,8 +535,10 @@ export default {
         },
         *addMember({ payload }, { call, put }) {
             const { courseId, email, callback } = payload;
-            yield delay(1200);
-            if (callback) callback();
+            const response = yield call(courseService.invite, courseId, email);
+            if (response) {
+                if (callback) callback();
+            }
         },
         *fetchReviewThread({ payload }, { call, put }) {
             const { courseId, threadId } = payload;

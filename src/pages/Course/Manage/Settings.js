@@ -315,7 +315,7 @@ const Settings = ({ dispatch, match, ...props }) => {
                         <div className={styles.text}>
                             {text}
                         </div>
-                        {courseInfo && !infoLoading && !initLoading && permission && permission.privacy === 1 && (
+                        {courseInfo && !infoLoading && !initLoading && permission && permission.privacy >= 1 && (
                             <div className={styles.btn}>
                                 <Button
                                     type="primary"

@@ -154,3 +154,17 @@ export async function validate(courseId) {
 export async function fetchPermission(courseId, type) {
     return apiGet(`${COURSE_API_URL}/${courseId}/permission?type=${type}`)
 }
+
+export async function updatePrivacy(courseId, params) {
+    return apiPut(`${COURSE_API_URL}/${courseId}/privacy`, {
+        body: params
+    });
+}
+
+export async function invite(courseId, email) {
+    return apiPost(`${COURSE_API_URL}/${courseId}/invite`, {
+        body: {
+            email
+        }
+    });
+}
