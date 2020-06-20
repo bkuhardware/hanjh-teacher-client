@@ -1,6 +1,4 @@
-import { delay } from '@/utils/utils';
-import NOTIFICATIONS from '@/assets/fakers/notifications';
-import { message } from 'antd';
+import * as notificationsService from '@/services/notification';
 import _ from 'lodash';
 
 export default {
@@ -13,15 +11,19 @@ export default {
         *fetch(action, { call, put, fork, take, cancel, cancelled }) {
             const task = yield fork(function*() {
                 try {
-                    yield delay(2000);
-                    yield put({
-                        type: 'save',
-                        payload: {
-                            data: NOTIFICATIONS,
-                            hasMore: true
-                        }
-                    });
-                    yield put({ type: 'notificationsFetchOk' });
+                    const response = yield call(notificationsService.fetch);
+                    if (response) {
+                        const { hasMore, list } = response.data;
+                        yield put({
+                            type: 'save',
+                            payload: {
+                                hasMore,
+                                data: list
+                            }
+                        });
+                        yield put({ type: 'notificationsFetchOk' });
+                    }
+                    else yield put({ type: 'notificationsFetchError' });
                 }
                 finally {
                     if (yield cancelled())
@@ -36,16 +38,20 @@ export default {
             const task = yield fork(function* () {
                 try {
                     const { list } = yield select(state => state.notifications);
-                    //
-                    yield delay(1300);
-                    yield put({
-                        type: 'push',
-                        payload: {
-                            data: NOTIFICATIONS,
-                            hasMore: false
-                        }
-                    });
-                    yield put({ type: 'notificationsMoreOk' });
+                    const currentSize = _.size(list);
+                    const response = yield call(notificationsService.fetch, currentSize);
+                    if (response) {
+                        const { hasMore, list } = response.data;
+                        yield put({
+                            type: 'push',
+                            payload: {
+                                data: list,
+                                hasMore
+                            }
+                        });
+                        yield put({ type: 'notificationsMoreOk' });
+                    }
+                    else yield put({ type: 'notificationsFetchError' });
                 }
                 finally {
                     if (yield cancelled())
@@ -56,7 +62,7 @@ export default {
             if (_action.type === 'notificationsResetted')
                 yield cancel(task);
         },
-        *read({ payload: notifyId }, { call, put }) {
+        *read({ payload: notifyId }, { call, put, select }) {
             yield put({
                 type: 'seen',
                 payload: {
@@ -64,18 +70,38 @@ export default {
                     seen: true
                 }
             });
-            //yield put({ 'user/setNoOF...' });
-            yield delay(1000);
-            //response with status Ok --> not do anything
-            //reseponse with status Err --> unseen, setNoOfUnseenNoti...
+            const response = yield call(notificationsService.seen, notifyId);
+            if (response) {
+                const status = response.data;
+                if (!status) {
+                    yield put({
+                        type: 'seen',
+                        payload: {
+                            notifyId,
+                            seen: false
+                        }
+                    });
+                }
+                else {
+                    const noOfUsNotification = yield select(state => state.user.noOfUsNotification);
+                    yield put({
+                        type: 'user/saveNoUsNotification',
+                        payload: noOfUsNotification - 1
+                    });
+                }
+            }
         },
         *maskAllAsRead(action, { call, put }) {
-            yield delay(1600);
-            //yield put({ type: 'user/saveNoOfUnseenNotification' });
-            //receive response only with OK status, and unseen num.
-            yield put({
-                type: 'allSeen'
-            });
+            const response = yield call(notificationsService.allSeen);
+            if (response) {
+                yield put({
+                    type: 'allSeen'
+                });
+                yield put({
+                    type: 'user/saveNoUsNotification',
+                    payload: 0
+                })
+            }
         },
         *reset(action, { put }) {
             yield put({ type: 'notificationsResetted' });
