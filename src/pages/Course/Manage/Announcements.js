@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import { connect } from 'dva';
 import { Skeleton, Avatar, Row, Col, Input, List, Button, Divider, Icon, Spin, message } from 'antd';
 import UserAvatar from '@/components/Avatar';
@@ -145,7 +146,7 @@ const Announcements = ({ match, dispatch, ...props }) => {
                         className={styles.list}
                         itemLayout="horizontal"
                         dataSource={announcementData}
-                        rowKey={announcement => announcement._id + _.uniqueId('announcement_')}
+                        rowKey={announcement => announcement._id}
                         split={false}
                         renderItem={announcement => (
                             <React.Fragment>
@@ -163,16 +164,16 @@ const Announcements = ({ match, dispatch, ...props }) => {
                                                         alt="ins-ava"
                                                         size={60}
                                                         borderWidth={3}
-                                                        src={announcement.user.avatar}
-                                                        text={announcement.user.name}
+                                                        src={announcement.teacher.avatar}
+                                                        text={announcement.teacher.name}
                                                         textSize={63}
                                                         style={{ fontSize: '26px', background: 'white', color: 'black' }}
                                                     />
                                                     
                                                 </div>
                                                 <div className={styles.txt}>
-                                                    <div className={styles.name}>{announcement.user.name}</div>
-                                                    <div className={styles.time}><TimeAgo date={announcement.createdAt} /></div>
+                                                    <div className={styles.name}>{announcement.teacher.name}</div>
+                                                    <div className={styles.time}><TimeAgo date={moment(announcement.createdAt)} /></div>
                                                 </div>
                                             </div>
                                             <Row className={styles.content}>
@@ -185,17 +186,17 @@ const Announcements = ({ match, dispatch, ...props }) => {
                                                 <List
                                                     itemLayout="horizontal"
                                                     dataSource={announcement.comments}
-                                                    rowKey={comment => comment._id + _.uniqueId('comment_')}
+                                                    rowKey={comment => comment._id}
                                                     split={false}
                                                     renderItem={comment => (
                                                         <Row className={styles.comment}>
                                                             <Col span={2} className={styles.avatarCont}>
                                                                 <UserAvatar
-                                                                    src={comment.user.avatar}
+                                                                    src={comment.owner.avatar}
                                                                     alt="user-avar"
                                                                     size={48}
                                                                     borderWidth={2}
-                                                                    text={comment.user.name}
+                                                                    text={comment.owner.name}
                                                                     textSize={50}
                                                                     style={{ background: 'white', color: 'black' }}
                                                                 />
@@ -203,8 +204,8 @@ const Announcements = ({ match, dispatch, ...props }) => {
                                                             <Col span={22} className={styles.right}>
                                                                 <div className={styles.nameAndTime}>
                                                                     <span className={styles.name}>
-                                                                        <span>{comment.user.name}</span>
-                                                                        {comment.user.isInstructor && (
+                                                                        <span>{comment.owner.name}</span>
+                                                                        {comment.ownerType === 'Teacher' && (
                                                                             <span style={{ marginLeft: 10 }}>{'(Instructor)'}</span>
                                                                         )}
                                                                     </span>
