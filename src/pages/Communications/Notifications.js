@@ -81,7 +81,7 @@ const Notifications = ({ dispatch, ...props }) => {
                         rowKey={item => item._id}
                         renderItem={item => (
                             <div className={!item.loading ? styles.notiItem : styles.loadingItem} onClick={!item.loading ? () => handleViewNotify(item) : () => {}}>
-                                    <List.Item style={{ background: (item.seen ? 'inherit' : 'rgba(255, 255, 255, 0.05)'), paddingLeft: 12, paddingRight: 12 }}>
+                                    <List.Item style={{ background: (item.seen ? 'inherit' : 'rgba(250, 218, 94, 0.05)'), paddingLeft: 12, paddingRight: 12 }}>
                                         <Skeleton active title={false} avatar loading={item.loading}
                                             paragraph={{
                                                 rows: 2,
@@ -89,25 +89,31 @@ const Notifications = ({ dispatch, ...props }) => {
                                             }}
                                         >
                                             <List.Item.Meta
-                                                avatar={item.user ? (
+                                                avatar={item.owner ? (
                                                     <UserAvatar
                                                         size={36}
                                                         textSize={36}
-                                                        style={{ background: 'white', color: 'black' }}
-                                                        src={item.user.avatar}
-                                                        text={item.user.name}
+                                                        style={{ background: '#FADA5E', color: 'white' }}
+                                                        src={item.owner.avatar}
+                                                        text={item.owner.name}
                                                         alt="user-avatar"
                                                         borderWidth={0}
                                                     />
-                                                ) : (
-                                                    <Avatar
-                                                        size={36}
-                                                        src={item.avatar}
-                                                        alt="avatar"
-                                                    />
-                                                )}
-                                                title={<span>{item.user ? `${item.user.name} ${item.content}` : item.content }</span>}
-                                                description={<span style={{ fontSize: 13, color: 'gray'}}>{ fromNow(moment(item.createdAt)) }</span>}
+                                                ) : null}
+                                                title={
+                                                    <span>
+                                                    {item.owner
+                                                        ? `${item.ownerType === 'Teacher'
+                                                            ? 'GV '
+                                                            : item.ownerType === 'Admin'
+                                                                ? 'Admin '
+                                                                : ''
+                                                        }${item.owner.name} ${item.content}`
+                                                        : ''
+                                                    }
+                                                    </span>
+                                                }
+                                                description={<span style={{ fontSize: 13, color: 'gray' }}>{fromNow(moment(item.createdAt))}</span>}
                                             />
                                         </Skeleton>
                                     </List.Item>

@@ -489,11 +489,13 @@ export default {
             yield delay(1000);
         },
         *fetchMembers({ payload: courseId }, { call, put }) {
-            yield delay(1800);
-            yield put({
-                type: 'saveMembers',
-                payload: MEMBERS
-            });
+            const response = yield call(courseService.fetchMembers, courseId);
+            if (response) {
+                yield put({
+                    type: 'saveMembers',
+                    payload: response.data
+                });
+            }
         },
         *updatePrivacy({ payload }, { call, put }) {
             const { 

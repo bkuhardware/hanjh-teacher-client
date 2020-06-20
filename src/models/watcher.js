@@ -12,33 +12,31 @@ export default {
     effects: {
         *notification({ payload }, { call, put, select }) {
             const { data } = payload;
-            let {
+            const {
                 _id,
-                userId,
-                userName,
-                userAvatar,
-                avatar,
-                content
+                ownerType,
+                ownerId,
+                ownerName,
+                ownerAvatar,
             } = data;
             let icon;
-            if (userId)
+            if (ownerId)
                 icon = (
                     <UserAvatar
-                        src={userAvatar}
+                        src={ownerAvatar}
                         alt='user-avatar'
                         borderWidth={1}
                         size={32}
                         textSize={33}
-                        text={userName}
+                        text={ownerName}
                         style={{ color: 'white', background: '#FADA5E', fontSize: '0.7em' }}
                     />
                 );
-            else if (avatar)
-                icon = <Avatar src={avatar} alt='avatar' size={25} />;
             else
-                icon = <Icon type="bell" style={{ fontSize: '24px', color: '#FADA5E' }} />
-            if (userId)
-                content = `${userName} ${content}`;
+                icon = <Icon type="bell" style={{ fontSize: '24px', color: '#FADA5E' }} />;
+            let content = data.content;
+            if (ownerId)
+                content = `${ownerType === 'Teacher' ? 'Giáo viên ' : ownerType === 'Admin' ? 'Quản trị viên ' : ''}${ownerName} ${content}`;
             notificationPopup.open({
                 key: _id,
                 icon,
@@ -47,13 +45,13 @@ export default {
                 placement: "topLeft"
             });
             const noOfUsNotification = yield select(state => state.user.noOfUsNotification);
-            const notificationItem = _.omit(data, ['userId', 'userName', 'userAvatar']);
-            notificationItem.user = null;
-            if (userId) {
-                notificationItem.user = {
-                    _id: userId,
-                    name: userName,
-                    avatar: userAvatar
+            const notificationItem = _.omit(data, ['ownerId', 'ownerName', 'ownerAvatar', 'pushType']);
+            notificationItem.owner = null;
+            if (ownerId) {
+                notificationItem.owner = {
+                    _id: ownerId,
+                    name: ownerName,
+                    avatar: ownerAvatar
                 };
             }
             yield put({

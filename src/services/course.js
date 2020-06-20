@@ -168,3 +168,7 @@ export async function invite(courseId, email) {
         }
     });
 }
+
+export async function fetchMembers(courseId) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/members`);
+}

@@ -41,25 +41,40 @@ const Notifications = ({ dispatch, ...props }) => {
                         <div className={styles.notiItem} onClick={() => handleViewNotify(item)}>
                             <List.Item style={{ background: (item.seen ? 'inherit' : 'rgba(255, 255, 255, 0.05)')}}>
                                 <List.Item.Meta
-                                    avatar={item.user ? (
+                                    avatar={
+                                    item.owner ? (
                                         <UserAvatar
-                                            size={36}
-                                            textSize={36}
-                                            style={{ background: 'white', color: 'black' }}
-                                            src={item.user.avatar}
-                                            text={item.user.name}
-                                            alt="user-avatar"
-                                            borderWidth={0}
+                                        size={36}
+                                        textSize={36}
+                                        style={{ background: '#FADA5E', color: 'white' }}
+                                        src={item.owner.avatar}
+                                        text={item.owner.name}
+                                        alt="user-avatar"
+                                        borderWidth={0}
                                         />
-                                    ) : (
-                                        <Avatar
-                                            size={36}
-                                            src={item.avatar}
-                                            alt="avatar"
-                                        />
-                                    )}
-                                    title={<span>{truncate(item.user ? `${item.user.name} ${item.content}` : item.content, 92)}</span>}
-                                    description={<span style={{ fontSize: 13, color: 'gray'}}>{ fromNow(moment(item.createdAt)) }</span>}
+                                    ) : null
+                                    }
+                                    title={
+                                    <span>
+                                        {item.owner
+                                        ? truncate(
+                                            `${
+                                                item.ownerType === 'Teacher'
+                                                ? 'GV '
+                                                : item.ownerType === 'Admin'
+                                                ? 'Admin '
+                                                : ''
+                                            }${item.owner.name} ${item.content}`,
+                                            92,
+                                            )
+                                        : ''}
+                                    </span>
+                                    }
+                                    description={
+                                    <span style={{ fontSize: 13, color: 'gray' }}>
+                                        {fromNow(moment(item.createdAt))}
+                                    </span>
+                                    }
                                 />
                             </List.Item>
                         </div>

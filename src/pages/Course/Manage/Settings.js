@@ -56,6 +56,7 @@ const Settings = ({ dispatch, match, ...props }) => {
         setMembersData([...newMembersData]);
     };
     const handleDeleteMember = index => {
+        
         const newMembersData = _.cloneDeep(membersData);
         _.pullAt(newMembersData, [index]);
         setMembersData([...newMembersData]);

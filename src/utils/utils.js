@@ -121,7 +121,8 @@ export const secondsToTime = time => {
 
 export const mapNotificationTypeToTitle = type => {
     const maps = {
-        'follow': 'Theo dõi'
+        'follow': 'Theo dõi',
+        'invite': 'Tham gia phát triển khoá học'
     };
     return maps[type] || 'Huyefen';
 }
