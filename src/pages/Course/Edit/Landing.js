@@ -253,7 +253,6 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                                         >
                                             <Option key="english">English (US)</Option>
                                             <Option key="vietnamese">Vietnamese</Option>
-                                            <Option key="japanese">Japanese</Option>
                                         </Select>
                                     )}
                                 </FormItem>

@@ -154,7 +154,7 @@ const Forum = ({ location, match, dispatch, ...props }) => {
                 </Form>
             </div>
             <Row className={styles.totalAndNew}>
-                <Col span={12} className={styles.total}>{(!forum.total || initLoading) ? 'Loading...' : `${forum.total} ${forum.total < 2 ? 'question' : 'questions'}`}</Col>
+                <Col span={12} className={styles.total}>{(forum.total === null|| initLoading) ? 'Loading...' : `${forum.total} ${forum.total < 2 ? 'question' : 'questions'}`}</Col>
             </Row>
             <Divider className={styles.divider} dashed/>
             <div className={styles.threads}>
@@ -168,11 +168,11 @@ const Forum = ({ location, match, dispatch, ...props }) => {
                     <Loading spinning={sortLoading || filterByLectureLoading || filterByTypesLoading} fontSize={8} isCenter>
                         {_.map(threadsData, (thread, i) => (
                             <React.Fragment key={thread._id}>
-                                {i > 0 && (<Divider className={styles.divider} dashed key={thread._id} />)}
+                                {i > 0 && (<Divider className={styles.divider} dashed key={`divider_${thread._id}`} />)}
                                 {thread.loading ? (
-                                    <Skeleton active avatar={{ size: 40, shape: 'circle' }} title={false} key={thread._id} paragraph={{ rows: 3, width: ['40%', '90%', '45%']}} />
+                                    <Skeleton active avatar={{ size: 40, shape: 'circle' }} title={false} key={`skeleton_${thread._id}`} paragraph={{ rows: 3, width: ['40%', '90%', '45%']}} />
                                 ) : (
-                                    <Row className={styles.thread} key={thread._id} onClick={() => router.push(`${location.pathname}/thread/${thread._id}`)}>
+                                    <Row className={styles.thread} key={`row_${thread._id}`} onClick={() => router.push(`${location.pathname}/thread/${thread._id}`)}>
                                         <Col span={2} className={styles.avatarCont}>
                                             <UserAvatar
                                                 alt="avat-user"

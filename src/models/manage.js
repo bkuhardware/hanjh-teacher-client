@@ -1,14 +1,9 @@
 import { delay } from '@/utils/utils';
 import _ from 'lodash';
-import router from 'umi/router';
 import * as questionService from '@/services/question';
 import * as courseService from '@/services/course';
 import * as announcementService from '@/services/announcement';
-import ANNOUNCEMENTS from '@/assets/fakers/announcements';
-import OLD_ANNOUNCEMENTS from '@/assets/fakers/oldAnnouncements';
-import COMMENTS from '@/assets/fakers/answers';
 import REVIEWS from '@/assets/fakers/reviews';
-import MEMBERS from '@/assets/fakers/members';
 
 const REVIEW_THREAD = {
     _id: 1,
@@ -638,8 +633,8 @@ export default {
                     lectureOptions: null,
                     hasMore: null,
                     filters: {
-                        lectures: 'all',
-                        sortBy: "recommend",
+                        lecture: 'all',
+                        sortBy: 'relevance',
                         questionTypes: []
                     }
                 }
