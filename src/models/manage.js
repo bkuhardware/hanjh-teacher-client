@@ -516,24 +516,27 @@ export default {
                 if (callback) callback();
             }
         },
+        *deleteMember({ payload }, { call, put }) {
+            const { courseId, memberId, index, callback } = payload;
+            const response = yield call(courseService.deleteMember, courseId, memberId);
+            if (response) {
+                yield put({
+                    type: 'removeMember',
+                    payload: index
+                });
+                if (callback) callback();
+            }
+        },
         *updateMembers({ payload }, { call, put }) {
             const { courseId, data } = payload;
-            yield delay(1600);
-            //call api with courseId, data
-            const keys = _.keys(data);
-            const returnData = _.map(keys, key => ({
-                _id: key,
-                permission: { ...data[key] }
-            }));
-            yield put({
-                type: 'saveMembers',
-                payload: _.map(returnData, (member, i) => ({
-                    ...member,
-                    avatar: null,
-                    name: 'Dang Thuy Huyen',
-                    isOwner: i === 0
-                }))
-            });
+            console.log(data);
+            const response = yield call(courseService.updateMembers, courseId, data);
+            if (response) {
+                yield put({
+                    type: 'upMembers',
+                    payload: data
+                });
+            }
         },
         *addMember({ payload }, { call, put }) {
             const { courseId, email, callback } = payload;
@@ -887,12 +890,39 @@ export default {
                 reviewThread: null
             };
         },
+        removeMember(state, { payload: index }) {
+            const membersData = _.cloneDeep(state.settings.members);
+            _.pullAt(membersData, [index]);
+            return {
+                ...state,
+                settings: {
+                    ...state.settings,
+                    members: [...membersData]
+                }
+            };
+        },
         saveMembers(state, { payload }) {
             return {
                 ...state,
                 settings: {
                     ...state.settings,
                     members: [...payload]
+                }
+            };
+        },
+        upMembers(state, { payload }) {
+            let membersData = _.cloneDeep(state.settings.members);
+            membersData = _.map(membersData, member => payload[member._id] ? ({
+                ...member,
+                permission: {
+                    ...payload[member._id]
+                }
+            }) : member);
+            return {
+                ...state,
+                settings: {
+                    ...state.settings,
+                    members: [...membersData]
                 }
             };
         },

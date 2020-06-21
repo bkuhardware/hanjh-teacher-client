@@ -172,3 +172,13 @@ export async function invite(courseId, email) {
 export async function fetchMembers(courseId) {
     return apiGet(`${COURSE_API_URL}/${courseId}/members`);
 }
+
+export async function deleteMember(courseId, memberId) {
+    return apiDelete(`${COURSE_API_URL}/${courseId}/members/${memberId}`);
+}
+
+export async function updateMembers(courseId, params) {
+    return apiPut(`${COURSE_API_URL}/${courseId}/members`, {
+        body: params
+    });
+}

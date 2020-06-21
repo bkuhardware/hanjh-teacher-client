@@ -15,6 +15,7 @@ const Settings = ({ dispatch, match, ...props }) => {
     const [password, setPassword] = useState('');
     const [membersData, setMembersData] = useState(null);
     const [email, setEmail] = useState('');
+    const [deleteVisible, setDeleteVisible] = useState(false);
     const {
         courseInfo,
         infoLoading,
@@ -55,11 +56,17 @@ const Settings = ({ dispatch, match, ...props }) => {
         };
         setMembersData([...newMembersData]);
     };
-    const handleDeleteMember = index => {
-        
-        const newMembersData = _.cloneDeep(membersData);
-        _.pullAt(newMembersData, [index]);
-        setMembersData([...newMembersData]);
+    const handleDeleteMember = (memberId, index) => {
+        setDeleteVisible(true);
+        dispatch({
+            type: 'manage/deleteMember',
+            payload: {
+                courseId,
+                memberId,
+                index,
+                callback: () => setDeleteVisible(false)
+            }
+        });
     };
     const handleSavePrivacy = () => {
         if (privacy === 'password') {
@@ -252,10 +259,10 @@ const Settings = ({ dispatch, match, ...props }) => {
             key: 'action',
             width: '5%',
             align: 'center',
-            render: (h, { _id: memberId }, index) => {
+            render: (h, { _id: memberId, isOwner }, index) => {
                 let visible = false;
-                if (permission && permission.members === 2 && userId !== memberId) visible = true;
-                return visible ? <Icon type="delete" theme="filled" className={styles.deleteBtn} onClick={() => handleDeleteMember(index)} /> : null
+                if (!isOwner && permission && permission.members === 2) visible = true;
+                return visible ? <Icon type="delete" theme="filled" className={styles.deleteBtn} onClick={() => handleDeleteMember(memberId, index)} /> : null
             }
         }
     ]
