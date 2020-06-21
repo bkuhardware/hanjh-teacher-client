@@ -665,7 +665,7 @@ export default {
                 ...state,
                 thread: {
                     ...state.thread,
-                    totalAnswers: state.thread.totalAnswers + 1,
+                    numOfAnswers: state.thread.numOflAnswers + 1,
                     answers: [answer, ...state.thread.answers]
                 }
             };
