@@ -165,9 +165,9 @@ const Settings = ({ dispatch, match, ...props }) => {
             )
         },
         {
-            title: 'Review',
-            dataIndex: ['permission', 'review'],
-            key: 'review',
+            title: 'Reviews',
+            dataIndex: ['permission', 'reviews'],
+            key: 'reviews',
             align: 'center',
             width: '10%',
             render: (review, { _id: memberId }, index) => {
@@ -177,15 +177,15 @@ const Settings = ({ dispatch, match, ...props }) => {
                     <Checkbox
                         checked={review}
                         // disabled={disabled}
-                        onChange={disabled ? () => {} : e => handleChangePermission(index, 'review', e.target.checked)}
+                        onChange={disabled ? () => {} : e => handleChangePermission(index, 'reviews', e.target.checked)}
                     />
                 )
             }
         },
         {
-            title: 'Announcement',
-            dataIndex: ['permission', 'announcement'],
-            key: 'announcement',
+            title: 'Announcements',
+            dataIndex: ['permission', 'announcements'],
+            key: 'announcements',
             align: 'center',
             width: '13%',
             render: (announcement, { _id: memberId }, index) => {
@@ -195,7 +195,7 @@ const Settings = ({ dispatch, match, ...props }) => {
                     <Checkbox
                         checked={announcement}
                         // disabled={disabled}
-                        onChange={disabled ? () => {} : e => handleChangePermission(index, 'announcement', e.target.checked)}
+                        onChange={disabled ? () => {} : e => handleChangePermission(index, 'announcements', e.target.checked)}
                     />
                 )
             }
