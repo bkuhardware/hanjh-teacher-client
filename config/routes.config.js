@@ -192,6 +192,11 @@ export default [
                 component: './Courses'
             },
             {
+                path: '/invitation/:notificationId',
+                title: 'route.basic.invitation',
+                component: './Invitation'
+            },
+            {
                 path: '/communications',
                 title: 'route.basic.communications',
                 routes: [

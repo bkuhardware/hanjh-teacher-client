@@ -129,7 +129,12 @@ const Notifications = ({ dispatch, ...props }) => {
     };
 
     const handleViewNotify = item => {
-        //switch(item.type)...
+        switch(item.type) {
+            case 'invite':
+                router.push(`/invitation/${item._id}`);
+                break;
+            default:
+        }
         if (!item.seen)
             dispatch({
                 type: 'notifications/read',

@@ -40,6 +40,7 @@ export default {
   'route.basic.tools': 'Tools',
   'route.basic.help': 'Help',
   'route.basic.settings': 'Settings',
+  'route.basic.invitation': 'Invitation',
   'route.exception.404': '404',
   'route.exception.403': '403',
   'route.exception.500': '500',

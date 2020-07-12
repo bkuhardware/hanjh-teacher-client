@@ -359,7 +359,6 @@ export default {
         },
         *fetchAnnouncements({ payload: courseId }, { call, put }) {
             const response = yield call(announcementService.fetch, courseId);
-            console.log(response);
             if (response) {
                 const { hasMore, list } = response.data;
                 yield put({

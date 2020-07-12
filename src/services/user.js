@@ -1,5 +1,6 @@
 /* eslint-disable  */
 import { apiPost, apiPut, apiGet } from '@/utils/request';
+import invitation from '@/models/invitation';
 
 export async function signIn(params) {
     return apiPost(`${AUTH_API_URL}/login/teacher`, {
@@ -38,4 +39,12 @@ export async function changePassword(oldPassword, newPassword) {
             newPassword
         }
     });
+}
+
+export async function fetchInvitation(notificationId) {
+    return apiGet(`${TEACHER_API_URL}/invitation/${notificationId}`);
+}
+
+export async function acceptInvitation(notificationId) {
+    return apiPut(`${TEACHER_API_URL}/invitation/${notificationId}/accept`);
 }
