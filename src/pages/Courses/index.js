@@ -89,7 +89,7 @@ const columns = [
             <span className={styles.action}>
                 <Link to={`/course/${course._id}/edit/goals`}>Edit content</Link>
                 <Divider type="vertical" className={styles.divider} />
-                <Link to={`/course/${course._id}/manage`}>Manage</Link>
+                <Link to={`/course/${course._id}/manage/settings`}>Manage</Link>
             </span>
         )
     }

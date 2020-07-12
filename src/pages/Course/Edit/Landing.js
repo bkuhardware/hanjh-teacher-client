@@ -183,6 +183,14 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                                     {
                                         max: 60,
                                         message: 'Course title must not has more than 60 characters!'
+                                    },
+                                    {
+                                        min: 8,
+                                        message: 'Course title must not has less than 8 characters!'
+                                    },
+                                    {
+                                        required: true,
+                                        message: 'Course title must be not empty!'
                                     }
                                 ],
                                 initialValue: (landing && landing.title) || ''

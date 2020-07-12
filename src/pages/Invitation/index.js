@@ -30,14 +30,14 @@ const Invitation = ({ dispatch, match, ...props }) => {
                 notificationId,
                 callback: (courseId) => {
                     message.success('Great, create awesome course together!');
-                    router.push(`/course/${courseId}/edit`);
+                    router.push(`/course/${courseId}/edit/goals`);
                 }
             }
         });
     };
 
     const handleIgnoreInvite = () => router.push('/');
-
+    console.log(invitationData);
     return (
         <div className={styles.invitationPage}>
             {!invitationData || loading ? (
@@ -68,10 +68,10 @@ const Invitation = ({ dispatch, match, ...props }) => {
                         </span>
                         )}
                         extra={[
-                            <Button type="primary" icon="check" onClick={() => handleAcceptInvite(invitationData.course._id, invitationData.owner._id)}>
+                            <Button key="ok" type="primary" icon="check" onClick={() => handleAcceptInvite(invitationData.course._id, invitationData.owner._id)}>
                                 Accept
                             </Button>,
-                            <Button icon="close" onClick={handleIgnoreInvite}>
+                            <Button key="no" icon="close" onClick={handleIgnoreInvite}>
                                 Ignore
                             </Button>
                         ]}
