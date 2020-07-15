@@ -182,3 +182,15 @@ export async function updateMembers(courseId, params) {
         body: params
     });
 }
+
+export async function fetchPublicReviews(courseId, page = 1, limit = 8) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/reviews/public?page=${page}&limit=${limit}`);
+}
+
+export async function voteReview(courseId, reviewId, value) {
+    return apiPut(`${COURSE_API_URL}/${courseId}/reviews/${reviewId}/vote`, {
+        body: {
+            value
+        }
+    })
+}

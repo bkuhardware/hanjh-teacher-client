@@ -444,18 +444,34 @@ export default {
                 if (callback) callback();
             }
         },
-        
         *fetchReviews({ payload: courseId }, { call, put }) {
-            yield delay(1500);
-            yield put({
-                type: 'saveReviews',
-                payload: {
-                    ...REVIEWS,
-                    hasMore: true
+            const response = yield call(courseService.fetchPublicReviews, courseId);
+            if (response) {
+                const { list: reviewsData, hasMore } = response.data;
+                let featuredReviews = [];
+                let featuredMaxLength = _.min([2, reviewsData]);
+                for (let i = 0; i < featuredMaxLength; i++) {
+                    const review = reviewsData[i];
+                    if (
+                        (review.numOfLikes > 0 && review.numOfLikes >= review.numOfDislikes)
+                        || (review.numOfDislikes === 0 && review.answers.length > 0)
+                    ) {
+                        featuredReviews.push(review);
+                    }
+                    else break;
                 }
-            });
+                const normalReviews = _.slice(reviewsData, featuredReviews.length);
+                yield put({
+                    type: 'saveReviews',
+                    payload: {
+                        featured: featuredReviews,
+                        list: normalReviews,
+                        hasMore
+                    }
+                });
+            }
         },
-        *moreReviews({ payload: courseId }, { call, put }) {
+        *moreReviews({ payload: courseId }, { call, put, select }) {
             yield delay(1200);
             yield put({
                 type: 'pushReviews',
@@ -470,6 +486,7 @@ export default {
                 type,
                 reviewId,
                 value,
+                courseId,
                 oldValue
             } = payload;
             yield put({
@@ -480,7 +497,20 @@ export default {
                     value
                 }
             });
-            yield delay(1000);
+            const response = yield call(courseService.voteReview, courseId, reviewId, value);
+            if (response) {
+                const errorCode = 1 * response.errorCode;
+                if (errorCode > 0) {
+                    yield put({
+                        type: 'saveReviewVote',
+                        payload: {
+                            type,
+                            reviewId,
+                            oldValue
+                        }
+                    });
+                }
+            }
         },
         *fetchMembers({ payload: courseId }, { call, put }) {
             const response = yield call(courseService.fetchMembers, courseId);
