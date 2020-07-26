@@ -26,7 +26,7 @@ const Thread = ({ dispatch, match, ...props }) => {
             type: 'manage/fetchReviewThread',
             payload: {
                 courseId,
-                reviewId: threadId
+                threadId
             }
         });
         return () => dispatch({ type: 'manage/resetReviewThread' });
@@ -38,6 +38,7 @@ const Thread = ({ dispatch, match, ...props }) => {
         dispatch({
             type: 'manage/answerReview',
             payload: {
+                courseId,
                 reviewId,
                 answer: html,
                 callback: () => setYourAnswer(EditorState.createEmpty())
@@ -83,7 +84,7 @@ const Thread = ({ dispatch, match, ...props }) => {
                                 <TimeAgo date={review.createdAt}/>
                             </span>
                         </div>
-                        <div className={styles.content} dangerouslySetInnerHTML={{ __html: review.content }} />
+                        <div className={styles.content} dangerouslySetInnerHTML={{ __html: review.comment }} />
                     </Col>
                     <div className={styles.more}>
                         <Icon type="more" />
@@ -110,21 +111,19 @@ const Thread = ({ dispatch, match, ...props }) => {
                             <Row className={styles.answer} key={answer._id}>
                                 <Col span={2} className={styles.avatarCont}>
                                     <UserAvatar
-                                        src={answer.user.avatar}
-                                        alt="user-avatar"
+                                        src={answer.teacher.avatar}
+                                        alt="teacher-avatar"
                                         size={48}
                                         textSize={51}
                                         borderWidth={3}
-                                        text={answer.user.name}
+                                        text={answer.teacher.name}
                                         style={{ background: 'white', color: 'black' }}
                                     />
                                 </Col>
                                 <Col span={22} className={styles.right}>
                                     <div className={styles.name}>
-                                        <span>{answer.user.name}</span>
-                                        {answer.user.isInstructor && (
-                                            <span style={{ marginLeft: 10 }}>{'(Instructor)'}</span>
-                                        )}
+                                        <span>{answer.teacher.name}</span>
+                                        <span style={{ marginLeft: 10 }}>{'(Instructor)'}</span>
                                     </div>
                                     <div className={styles.time}>
                                         <TimeAgo date={answer.createdAt} />

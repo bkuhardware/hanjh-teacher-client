@@ -61,19 +61,19 @@ const Answer = ({ answer }) => {
             <div className={styles.user}>
                 <div className={styles.avatarCont}>
                     <UserAvatar
-                        src={answer.user.avatar}
+                        src={answer.teacher.avatar}
                         size={48}
                         textSize={48}
-                        alt="ava-user"
-                        text={answer.user.name}
+                        alt="ava-teacher"
+                        text={answer.teacher.name}
                         borderWidth={0}
                         style={{ background: '#fada5e', color: 'white' }}
                     />
                 </div>
                 <div className={styles.info}>
                     <div className={styles.names}>
-                        <span className={styles.name}>{answer.user.name}</span>
-                        {answer.user.isInstructor && <span className={styles.instructor}>{`(Instructor)`}</span>}
+                        <span className={styles.name}>{answer.teacher.name}</span>
+                        <span className={styles.instructor}>{`(Instructor)`}</span>
                     </div>
                     <div className={styles.time}>
                         <TimeAgo date={answer.createdAt} />
@@ -115,7 +115,7 @@ const FeaturedReview = ({ data: review, handleVoting, handleViewReview, permissi
                     </div>
                 </div>
             </div>
-            <div className={styles.content} onClick={handleViewReview}>
+            <div className={styles.content}>
                 <ViewMore height={250}>
                     <div dangerouslySetInnerHTML={{ __html: review.comment || '<span style="opacity: 0.8">No comment.</span>' }}/>
                 </ViewMore>
@@ -282,7 +282,7 @@ const Reviews = ({ dispatch, match, location, ...props }) => {
                             <div className={styles.title}>Featured reviews</div>
                             <div className={styles.main}>
                                 {_.map(featuredReviews, (review, i) => (
-                                    <React.Fragment key={review._id + _.uniqueId('feature_review_')}>
+                                    <React.Fragment key={review._id}>
                                         {i > 0 && (
                                             <Divider dashed className={styles.divider} />
                                         )}
@@ -306,7 +306,7 @@ const Reviews = ({ dispatch, match, location, ...props }) => {
                                 itemLayout="horizontal"
                                 split={false}
                                 className={styles.list}
-                                rowKey={item => item._id + _.uniqueId('review_')}
+                                rowKey={item => item._id}
                                 loadMore={loadMore}
                                 renderItem={item => (
                                     <>

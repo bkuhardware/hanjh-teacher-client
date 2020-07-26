@@ -472,14 +472,20 @@ export default {
             }
         },
         *moreReviews({ payload: courseId }, { call, put, select }) {
-            yield delay(1200);
-            yield put({
-                type: 'pushReviews',
-                payload: {
-                    hasMore: false,
-                    data: REVIEWS.list
-                }
-            });
+            const { list, featured } = yield select(state => state.manage.reviews);
+            const currentSize = _.size(featured) + _.size(list);
+            const currentPage = currentSize / 8;
+            const response = yield call(courseService.fetchPublicReviews, courseId, currentPage + 1);
+            if (response) {
+                const { hasMore, list } = response.data;
+                yield put({
+                    type: 'pushReviews',
+                    payload: {
+                        hasMore,
+                        data: list
+                    }
+                });
+            }
         },
         *voteReview({ payload }, { call, put }) {
             const {
@@ -571,30 +577,24 @@ export default {
         },
         *fetchReviewThread({ payload }, { call, put }) {
             const { courseId, threadId } = payload;
-            yield delay(1600);
-            yield put({
-                type: 'saveReviewThread',
-                payload: REVIEW_THREAD
-            });
+            const response = yield call(courseService.fetchReviewThread, courseId, threadId);
+            if (response) {
+                yield put({
+                    type: 'saveReviewThread',
+                    payload: response.data
+                });
+            }
         },
         *answerReview({ payload }, { call, put }) {
-            const { reviewId, answer, callback } = payload;
-            yield delay(1200);
-            yield put({
-                type: 'shiftReviewAnswer',
-                payload: {
-                    _id: `new_answer ${_.uniqueId('sndsdf')}`,
-                    user: {
-                        _id: 1,
-                        avatar: 'https://scontent.fdad1-1.fna.fbcdn.net/v/t1.0-9/51059227_2091470127614437_5419405170205261824_o.jpg?_nc_cat=106&_nc_ohc=LnSzD5KUUN4AX8EolVa&_nc_ht=scontent.fdad1-1.fna&oh=95b1eba87a97f6266a625c07caf68566&oe=5EAE6D56',
-                        name: 'HuYeFen Cute',
-                        isInstructor: true
-                    },
-                    createdAt: Date.now(),
-                    content: answer
-                }
-            });
-            if (callback) callback();
+            const { courseId, reviewId, answer, callback } = payload;
+            const response = yield call(courseService.answerReview, courseId, reviewId, answer);
+            if (response) {
+                yield put({
+                    type: 'shiftReviewAnswer',
+                    payload: response.data
+                });
+                if (callback) callback();
+            }
         }
     },
     reducers: {
@@ -867,9 +867,25 @@ export default {
                 reviewId,
                 value
             } = payload;
+            const mapValueToProp = {
+                '1': 'numOfLikes',
+                '-1': 'numOfDislikes'
+            };
             const attr = type === 'default' ? 'list' : 'featured';
             const list = [...state.reviews[attr]];
             const index = _.findIndex(list, ['_id', reviewId]);
+            if (list[index].status !== 0) {
+                if ((list[index].status) === 1) {
+                    list[index].numOfLikes -= 1;
+                }
+                else if (list[index].status === -1) {
+                    list[index].numOfDislikes -= 1;
+                }
+            }
+            if (value !== 0) {
+                const prop = mapValueToProp[value.toString()];
+                list[index][prop] += 1;
+            }
             list[index].status = value;
             return {
                 ...state,

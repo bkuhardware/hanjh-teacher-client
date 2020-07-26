@@ -194,3 +194,15 @@ export async function voteReview(courseId, reviewId, value) {
         }
     })
 }
+
+export async function fetchReviewThread(courseId, reviewId) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/reviews/${reviewId}`);
+}
+
+export async function answerReview(courseId, reviewId, answer) {
+    return apiPost(`${COURSE_API_URL}/${courseId}/reviews/${reviewId}/answers`, {
+        body: {
+            answer
+        }
+    });
+}
