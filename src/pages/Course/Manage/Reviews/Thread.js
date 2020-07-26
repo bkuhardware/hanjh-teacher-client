@@ -137,7 +137,7 @@ const Thread = ({ dispatch, match, ...props }) => {
                     ))}
                     {!initLoading && permission !== null ? (
                         <React.Fragment>
-                            {permission === 1 ? (
+                            {permission >= 1? (
                                 <div className={styles.yourAnswer}>
                                     <div className={styles.editor}>
                                         <Spin spinning={answerLoading} tip="Submitting...">

@@ -45,7 +45,7 @@ const ReviewStatus = ({ numOfLikes, numOfDislikes, status, handleVoting, reviewI
                 </span>
             </Col>
             <Col span={8} className={styles.detail}>
-                {permission === 1 && (
+                {permission >= 1 && (
                      <span onClick={handleViewReview}>
                      <span className={styles.text}>Answer</span>
                           <Icon type="enter" />
