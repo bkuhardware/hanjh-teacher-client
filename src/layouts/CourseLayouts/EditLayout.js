@@ -163,14 +163,14 @@ const Sider = ({ courseId, syllabus, completeStatus, loading, selectedKeys }) =>
                                 popupClassName={styles.subMenuPopup}
                             >
                                 {_.map(chapter.lectures, lecture => lecture.type === 'Video' ? (
-                                    <MenuItem key={`/lecture/video/${lecture._id}`}>
-                                        <Link to={`/course/${courseId}/edit/lecture/video/${lecture._id}`}>
+                                    <MenuItem key={`/lecture/video/${chapter._id}/${lecture._id}`}>
+                                        <Link to={`/course/${courseId}/edit/lecture/video/${chapter._id}/${lecture._id}`}>
                                             {lecture.title}
                                         </Link>
                                     </MenuItem>
                                 ) : (
-                                    <MenuItem key={`/lecture/article/${lecture._id}`}>
-                                        <Link to={`/course/${courseId}/edit/lecture/article/${lecture._id}`}>
+                                    <MenuItem key={`/lecture/article/${chapter._id}/${lecture._id}`}>
+                                        <Link to={`/course/${courseId}/edit/lecture/article/${chapter._id}/${lecture._id}`}>
                                             {lecture.title}
                                         </Link>
                                     </MenuItem>

@@ -99,7 +99,7 @@ const Description = ({ description, loading, onSave }) => {
 }
 
 const ArticleLecture = ({ dispatch, match, ...props }) => {
-    const { courseId, lectureId } = match.params;
+    const { courseId, chapterId, lectureId } = match.params;
     const {
         article,
         description,
@@ -154,6 +154,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             type: 'article/fetch',
             payload: {
                 courseId,
+                chapterId,
                 lectureId
             }
         });
@@ -203,6 +204,8 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         dispatch({
             type: 'article/updateContent',
             payload: {
+                courseId,
+                chapterId,
                 lectureId,
                 content: rawData,
                 callback: () => {
@@ -395,6 +398,8 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             type: 'article/preview',
             payload: {
                 lectureId,
+                courseId,
+                chapterId,
                 value: checked,
                 callback: () => message.success('Preview status has been updated!')
             }

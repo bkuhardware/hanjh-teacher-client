@@ -78,7 +78,7 @@ function checkErrorCode(response) {
 export default async function request(url, options) {
 	const defaultOptions = {
 		headers: {
-			'Access-Control-Allow-Credentials': false,
+			'Access-Control-Allow-Credentials': false
 		},
 	};
 	let qs = '';

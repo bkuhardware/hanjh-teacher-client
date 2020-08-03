@@ -78,12 +78,12 @@ export default [
                         component: './Course/Edit/Syllabus'
                     },
                     {
-                        path: '/course/:courseId/edit/lecture/video/:lectureId',
+                        path: '/course/:courseId/edit/lecture/video/:chapterId/:lectureId',
                         title: 'route.course.edit.lecture',
                         component: './Course/Edit/VideoLecture'
                     },
                     {
-                        path: '/course/:courseId/edit/lecture/article/:lectureId',
+                        path: '/course/:courseId/edit/lecture/article/:chapterId/:lectureId',
                         title: 'route.course.edit.lecture',
                         component: './Course/Edit/ArticleLecture'
                     },

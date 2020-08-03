@@ -346,25 +346,22 @@ const Video = ({ videoRes, resolutions, captionsLoading, captions, onSelectResol
                         {!editing && !captioning && (
                             <>
                                 <span className={styles.btn}>
-                                    <Tooltip placement="top" title="Add caption">
-                                        <Button type="primary" size="small" shape="circle" onClick={() => setCaptioning(true)}>
-                                            <CreditCardFilled />
-                                        </Button>
-                                    </Tooltip>
+                                    <Button onClick={() => setCaptioning(true)}>
+                                        <CreditCardFilled />
+                                        Add caption
+                                    </Button>
                                 </span>
                                 <span className={styles.btn}>
-                                    <Tooltip placement="top" title="Change video">
-                                        <Button type="primary" size="small" onClick={handleChange} shape="circle">
-                                            <EditFilled />
-                                        </Button>
-                                    </Tooltip>
+                                    <Button onClick={handleChange}>
+                                        <EditFilled />
+                                        Change video
+                                    </Button>
                                 </span>
                                 <span className={styles.btn}>
-                                    <Tooltip placement="top" title="Delete video">
-                                        <Button type="primary" size="small" onClick={handleDelete} shape="circle">
-                                            <DeleteFilled />
-                                        </Button>
-                                    </Tooltip>
+                                    <Button onClick={handleDelete}>
+                                        <DeleteFilled />
+                                        Delete video
+                                    </Button>
                                 </span>
                             </>
                         )}

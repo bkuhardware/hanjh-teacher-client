@@ -206,3 +206,23 @@ export async function answerReview(courseId, reviewId, answer) {
         }
     });
 }
+
+export async function fetchArticleLecture(courseId, chapterId, lectureId) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/${chapterId}/article/${lectureId}`);
+}
+
+export async function updateArticleLectureContent(courseId, chapterId, lectureId, newContent) {
+    return apiPut(`${COURSE_API_URL}/${courseId}/${chapterId}/article/${lectureId}`, {
+        body: {
+            content: newContent
+        }
+    });
+}
+
+export async function setArticleLecturePreview(courseId, chapterId, lectureId, value) {
+    return apiPut(`${COURSE_API_URL}/${courseId}/${chapterId}/article/${lectureId}/preview`, {
+        body: {
+            value
+        }
+    });
+}
