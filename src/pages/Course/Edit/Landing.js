@@ -10,6 +10,7 @@ import Editor from '@/components/Editor/DescriptionEditor';
 import { TweenOneGroup } from 'rc-tween-one';
 import { exportToHTML } from '@/utils/editor';
 import styles from './Landing.less';
+import { b64toBlob } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -22,6 +23,7 @@ const Landing = ({ form, match, dispatch, ...props }) => {
     const [topics, setTopics] = useState([]);
     const [primaryTopic, setPrimaryTopic] = useState(null);
     const [avatar, setAvatar] = useState(null);
+    const [rawAvatar, setRawAvatar] = useState(null);
     const [fileList, setFileList] = useState([]);
     const [cropVisible, setCropVisible] = useState(false);
     const [originImg, setOriginImg] = useState(null);
@@ -130,6 +132,8 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                 setCropVisible(true);
                 setCropCallback({
                     callback: croppedAvatar => {
+                        const blob = b64toBlob(croppedAvatar);
+                        setRawAvatar(blob);
                         setAvatar(croppedAvatar);
                         setFileList(fileList);
                     }
@@ -145,11 +149,13 @@ const Landing = ({ form, match, dispatch, ...props }) => {
         setFileList([]);
     };
     const handleSetAvatar = () => {
+        const formData = new FormData();
+        formData.append('avatar', rawAvatar);
         dispatch({
             type: 'course/changeAvatar',
             payload: {
                 courseId,
-                file: avatar,
+                formData,
                 callback: () => {
                     setAvatar(null);
                     setFileList([]);
@@ -159,7 +165,7 @@ const Landing = ({ form, match, dispatch, ...props }) => {
     };
     const avatarProps = {
         accept: 'image/*',
-        name: 'avatarfile',
+        name: 'avatarFile',
         beforeUpload: handleBeforeUpload,
         onRemove: handleRemoveAvatar,
         fileList: fileList,

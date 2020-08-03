@@ -1,6 +1,7 @@
 import { delay } from '@/utils/utils';
 import _ from 'lodash';
 import * as courseService from '@/services/course';
+import * as cloudServices from '@/services/cloud';
 import HISTORY from '@/assets/fakers/history';
 import { message } from 'antd';
 
@@ -381,28 +382,30 @@ export default {
             }
         },
         *changeAvatar({ payload }, { call, put }) {
-            const { courseId, file, callback } = payload;
-            //call cloud api for upload avatar
-            yield delay(1000);
-            const avatarUrl = 'https://images.pexels.com/photos/4352247/pexels-photo-4352247.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260';
-            const response = yield call(courseService.updateAvatar, courseId, avatarUrl);
+            const { courseId, formData, callback } = payload;
+            let response;
+            response = yield call(cloudServices.uploadCourseAvatar, courseId, formData);
             if (response) {
-                const {
-                    progress,
-                    data
-                } = response.data;
-                yield put({
-                    type: 'pushLanding',
-                    payload: data
-                });
-                yield put({
-                    type: 'saveCompleteStatus',
-                    payload: {
-                        type: 'landing',
-                        status: progress === 100
-                    }
-                });
-                if (callback) callback();
+                const avatarUrl = response.data.url;
+                response = yield call(courseService.updateAvatar, courseId, avatarUrl);
+                if (response) {
+                    const {
+                        progress,
+                        data
+                    } = response.data;
+                    yield put({
+                        type: 'pushLanding',
+                        payload: data
+                    });
+                    yield put({
+                        type: 'saveCompleteStatus',
+                        payload: {
+                            type: 'landing',
+                            status: progress === 100
+                        }
+                    });
+                    if (callback) callback();
+                }
             }
         },
         *fetchPrice({ payload: courseId }, { call, put }) {

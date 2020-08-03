@@ -6,3 +6,9 @@ export async function uploadAvatar(formData) {
 		body: formData
 	});
 }
+
+export async function uploadCourseAvatar(courseId, formData) {
+	return apiPostFormData(`${CLOUD_API_URL}/upload/course/${courseId}/avatar`, {
+		body: formData
+	});
+}
