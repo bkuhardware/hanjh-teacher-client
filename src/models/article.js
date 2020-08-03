@@ -49,16 +49,18 @@ export default {
             }
         },
         *updateEstimateTime({ payload }, { call, put }) {
-            const { hour, minute, callback } = payload;
-            yield delay(1200);
-            yield put({
-                type: 'saveEstimateTime',
-                payload: {
-                    hour,
-                    minute
-                }
-            });
-            if (callback) callback();
+            const { courseId, lectureId, chapterId, hour, minute, callback } = payload;
+            const response = yield call(courseServices.updateArticleLectureEstimateTime, courseId, chapterId, lectureId, hour, minute);
+            if (response) {
+                yield put({
+                    type: 'saveEstimateTime',
+                    payload: {
+                        hour,
+                        minute
+                    }
+                });
+                if (callback) callback();
+            }
         },
         *updateDescription({ payload }, { call, put }) {
             const { lectureId, content } = payload;

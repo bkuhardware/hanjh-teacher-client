@@ -180,6 +180,8 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             type: 'article/updateEstimateTime',
             payload: {
                 lectureId,
+                courseId,
+                chapterId,
                 hour,
                 minute,
                 callback: () => {

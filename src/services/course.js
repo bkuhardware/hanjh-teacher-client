@@ -226,3 +226,12 @@ export async function setArticleLecturePreview(courseId, chapterId, lectureId, v
         }
     });
 }
+
+export async function updateArticleLectureEstimateTime(courseId, chapterId, lectureId, hour, minute) {
+    return apiPut(`${COURSE_API_URL}/${courseId}/${chapterId}/article/${lectureId}/estimate-time`, {
+        body: {
+            hour,
+            minute
+        }
+    });
+}
