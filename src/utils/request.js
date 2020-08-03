@@ -75,7 +75,7 @@ function checkErrorCode(response) {
  * @param  {object} [option] The options we want to pass to "fetch"
  * @return {object}           An object containing either "data" or "err"
  */
-export default async function request(url, options) {
+export default async function request(url, options, contentType = 'application/json; charset=utf-8') {
 	const defaultOptions = {
 		headers: {
 			'Access-Control-Allow-Credentials': false
@@ -91,7 +91,7 @@ export default async function request(url, options) {
 		if (!(newOptions.body instanceof FormData)) {
 			newOptions.headers = {
 				Accept: 'application/json',
-				'Content-Type': 'application/json; charset=utf-8',
+				'Content-Type': contentType,
 				...newOptions.headers,
 			};
 			newOptions.body = JSON.stringify(newOptions.body);
@@ -157,4 +157,8 @@ export async function apiPut(url, options) {
 
 export async function apiDelete(url, options) {
   	return request(url, { method: 'DELETE', ...options });
+}
+
+export async function apiPostFormData(url, options) {
+	return request(url, { method: 'POST', ...options }, 'multipart/form-data')
 }

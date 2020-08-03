@@ -44,6 +44,7 @@ const FinishInfo = ({ dispatch, callback, ...props }) => {
     const [current, setCurrent] = useState(initialCurrent);
     const [next, setNext] = useState([0, 0, 0]);
     const [avatar, setAvatar] = useState(null);
+    const [rawAvatar, setRawAvatar] = useState(null);
     const [fileList, setFileList] = useState([]);
     const [uploadLoading, setUploadLoading] = useState(false);
     const [email, setEmail] = useState({
@@ -153,14 +154,17 @@ const FinishInfo = ({ dispatch, callback, ...props }) => {
     const handleNext = () => {
         if (next[current] === 1) {
             if (current === 0) {
+                const formData = new FormData();
+                formData.append('avatar', rawAvatar);
                 dispatch({
                     type: 'user/changeAvatar',
                     payload: {
-                        file: avatar,
+                        formData,
                         callback: () => {
                             saveNext(0, 0);
                             setAvatar(null);
                             setFileList(null);
+                            setRawAvatar(null);
                             setCurrent(current + 1);
                         }
                     }
@@ -228,11 +232,12 @@ const FinishInfo = ({ dispatch, callback, ...props }) => {
                 fileReader.readAsDataURL(file);
                 fileReader.onload = () => {
                     setAvatar(fileReader.result);
+                    setRawAvatar(file);
                     setFileList(fileList);
                     saveNext(0, 1);
                     setUploadLoading(false);
                 };
-                
+
                 return false;
             };
         
@@ -244,7 +249,7 @@ const FinishInfo = ({ dispatch, callback, ...props }) => {
         
             const avatarProps = {
                 accept: 'image/*',
-                name: 'avatarfile',
+                name: 'avatarFile',
                 beforeUpload: handleBeforeUpload,
                 onRemove: handleRemoveAvatar,
                 fileList: fileList,

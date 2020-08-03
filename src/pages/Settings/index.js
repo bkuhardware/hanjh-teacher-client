@@ -120,20 +120,18 @@ const Settings = ({ dispatch, form, ...props }) => {
 
     const handleUploadAvatar = e => {
         setAvatarLoading(true);
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(avatar);
-        fileReader.onload = () => {
-            dispatch({
-                type: 'user/changeAvatar',
-                payload: {
-                    file: fileReader.result,
-                    callback: () => {
-                        setAvatar(null);
-                        setAvatarLoading(false);
-                    }
+        const formData = new FormData();
+        formData.append('avatar', avatar);
+        dispatch({
+            type: 'user/changeAvatar',
+            payload: {
+                formData,
+                callback: () => {
+                    setAvatar(null);
+                    setAvatarLoading(false)
                 }
-            });
-        };
+            }
+        });
         setFileList([]);
         e.preventDefault();
     };

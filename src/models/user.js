@@ -3,6 +3,7 @@ import _ from 'lodash';
 import storage from '@/utils/storage';
 import router from 'umi/router';
 import * as userService from '@/services/user';
+import * as cloudServices from '@/services/cloud';
 
 export default {
     namespace: 'user',
@@ -20,16 +21,18 @@ export default {
             }
         },
         *changeAvatar({ payload }, { call, put }) {
-            const { file, callback } = payload;
-            yield delay(1200);
-            const avatarUrl = 'https://images.pexels.com/photos/4321944/pexels-photo-4321944.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260';
-            const response = yield call(userService.updateAvatar, avatarUrl);
+            const { formData, callback } = payload;
+            let response = yield call(cloudServices.uploadAvatar, formData);
             if (response) {
-                yield put({
-                    type: 'update',
-                    payload: response.data
-                });
-                if (callback) callback();
+                const avatarUrl = response.data.url;
+                response = yield call(userService.updateAvatar, avatarUrl);
+                if (response) {
+                    yield put({
+                        type: 'update',
+                        payload: response.data
+                    });
+                    if (callback) callback();
+                }
             }
         },
         *changeInfo({ payload }, { call, put }) {
