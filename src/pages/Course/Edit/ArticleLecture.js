@@ -195,6 +195,8 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         dispatch({
             type: 'article/updateDescription',
             payload: {
+                courseId,
+                chapterId,
                 lectureId,
                 content: description
             }
@@ -380,7 +382,8 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     type: 'article/fetchDescription',
                     payload: {
                         courseId,
-                        lectureId
+                        lectureId,
+                        chapterId
                     }
                 });
             if (resources === null)
@@ -388,7 +391,8 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
                     type: 'article/fetchResources',
                     payload: {
                         courseId,
-                        lectureId
+                        lectureId,
+                        chapterId
                     }
                 });
         }

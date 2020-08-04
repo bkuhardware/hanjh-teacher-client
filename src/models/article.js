@@ -22,12 +22,14 @@ export default {
             }
         },
         *fetchDescription({ payload }, { call, put }) {
-            const { courseId, lectureId } = payload;
-            yield delay(1000);
-            yield put({
-                type: 'saveDescription',
-                payload: 'Hello'
-            });
+            const { courseId, lectureId, chapterId } = payload;
+            const response = yield call(courseServices.fetchLectureDescription, courseId, chapterId, lectureId);
+            if (response) {
+                yield put({
+                    type: 'saveDescription',
+                    payload: response.data
+                });
+            }
         },
         *fetchResources({ payload }, { call, put }) {
             const { courseId, lectureId } = payload;
@@ -63,12 +65,14 @@ export default {
             }
         },
         *updateDescription({ payload }, { call, put }) {
-            const { lectureId, content } = payload;
-            yield delay(1600);
-            yield put({
-                type: 'saveDescription',
-                payload: content
-            });
+            const { courseId, chapterId, lectureId, content } = payload;
+            const response = yield call(courseServices.updateDescription, courseId, chapterId, lectureId, content);
+            if (response) {
+                yield put({
+                    type: 'saveDescription',
+                    payload: content
+                });
+            }
         },
         *updateContent({ payload }, { call, put }) {
             const { courseId, chapterId, lectureId, content, callback } = payload;

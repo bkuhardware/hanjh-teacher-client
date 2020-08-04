@@ -3,6 +3,7 @@ import _ from 'lodash';
 import RESOURCES from '@/assets/fakers/resources';
 import testVtt from '@/assets/fakers/test.vtt';
 import testVttvn from '@/assets/fakers/testvn.vtt';
+import * as courseServices from '@/services/course';
 
 export default {
     namespace: 'video',
@@ -165,12 +166,14 @@ export default {
             if (callback) callback();
         },
         *fetchDescription({ payload }, { call, put }) {
-            const { courseId, lectureId } = payload;
-            yield delay(1000);
-            yield put({
-                type: 'saveDescription',
-                payload: '<div>Đại bàng tung cánh</div>'
-            });
+            const { courseId, lectureId, chapterId } = payload;
+            const response = yield call(courseServices.fetchLectureDescription, courseId, chapterId, lectureId);
+            if (response) {
+                yield put({
+                    type: 'saveDescription',
+                    payload: response.data
+                });
+            }
         },
         *fetchResources({ payload }, { call, put }) {
             const { courseId, lectureId } = payload;
@@ -181,12 +184,14 @@ export default {
             })
         },
         *updateDescription({ payload }, { call, put }) {
-            const { lectureId, content } = payload;
-            yield delay(1600);
-            yield put({
-                type: 'saveDescription',
-                payload: content
-            });
+            const { courseId, chapterId, lectureId, content } = payload;
+            const response = yield call(courseServices.updateDescription, courseId, chapterId, lectureId, content);
+            if (response) {
+                yield put({
+                    type: 'saveDescription',
+                    payload: content
+                });
+            }
         },
         *addDownloadable({ payload }, { call, put }) {
             const {

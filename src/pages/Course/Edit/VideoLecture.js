@@ -417,7 +417,7 @@ const Description = ({ description, loading, onSave }) => {
 };
 
 const VideoLecture = ({ dispatch, match, ...props }) => {
-    const { courseId, lectureId } = match.params;
+    const { courseId, lectureId, chapterId } = match.params;
     const {
         video,
         description,
@@ -521,6 +521,8 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             type: 'video/updateDescription',
             payload: {
                 lectureId,
+                courseId,
+                chapterId,
                 content: description
             }
         });
@@ -705,6 +707,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                     type: 'video/fetchDescription',
                     payload: {
                         courseId,
+                        chapterId,
                         lectureId
                     }
                 });
@@ -713,6 +716,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                     type: 'video/fetchResources',
                     payload: {
                         courseId,
+                        chapterId,
                         lectureId
                     }
                 });

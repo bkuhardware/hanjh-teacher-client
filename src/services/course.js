@@ -235,3 +235,15 @@ export async function updateArticleLectureEstimateTime(courseId, chapterId, lect
         }
     });
 }
+
+export async function updateDescription(courseId, chapterId, lectureId, content) {
+    return apiPut(`${COURSE_API_URL}/${courseId}/${chapterId}/${lectureId}/description`, {
+        body: {
+            content
+        }
+    });
+}
+
+export async function fetchLectureDescription(courseId, chapterId, lectureId) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/${chapterId}/${lectureId}/description`);
+}
