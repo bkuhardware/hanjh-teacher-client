@@ -2,6 +2,7 @@ import { delay } from '@/utils/utils';
 import _ from 'lodash';
 import RESOURCES from '@/assets/fakers/resources';
 import * as courseServices from '@/services/course';
+import * as cloudServices from '@/services/cloud';
 
 export default {
     namespace: 'article',
@@ -11,7 +12,7 @@ export default {
         resources: null
     },
     effects: {
-        *fetch({ payload }, { call, put }) {
+        *fetch({ payload }, { call, put, select }) {
             const { courseId, chapterId, lectureId } = payload;
             const response = yield call(courseServices.fetchArticleLecture, courseId, chapterId, lectureId);
             if (response) {
@@ -32,12 +33,14 @@ export default {
             }
         },
         *fetchResources({ payload }, { call, put }) {
-            const { courseId, lectureId } = payload;
-            yield delay(1200);
-            yield put({
-                type: 'saveResources',
-                payload: RESOURCES
-            })
+            const { courseId, chapterId, lectureId } = payload;
+            const response = yield call(courseServices.fetchLectureResources, courseId, chapterId, lectureId);
+            if (response) {
+                yield put({
+                    type: 'saveResources',
+                    payload: response.data
+                })
+            }
         },
         *preview({ payload }, { call, put }) {
             const { courseId, chapterId, lectureId, value, callback } = payload;
@@ -87,45 +90,48 @@ export default {
         },
         *addDownloadable({ payload }, { call, put }) {
             const {
+                courseId,
+                chapterId,
                 lectureId,
                 name,
-                mimeType,
-                file,
+                formData,
                 callback,
                 extra
             } = payload;
-            yield delay(1000);
-            //call cloud api to upload file.
-            //api cloud return file url,
-            yield delay(1500);
-            //call api to add resource to lecture with correspond lectureId, params is url, name, extra, type = 'downloadable'.
-            //server return new object.
-            //front end push to downloadable list.
-            yield put({
-                type: 'pushDownloadable',
-                payload: {
-                    _id: _.uniqueId('resource_new_'),
-                    name: name,
-                    extra: extra,
-                    url: 'https://fb.com'
+            let response;
+            response = yield call(cloudServices.uploadCourseLectureResource, courseId, lectureId, formData);
+            if (response) {
+                const resourceUrl = response.data.url;
+                response = yield call(courseServices.addResource, courseId, chapterId, lectureId, {
+                    name,
+                    extra,
+                    url: resourceUrl,
+                    type: 'downloadable'
+                });
+                if (response) {
+                    yield put({
+                        type: 'pushDownloadable',
+                        payload: response.data
+                    });
+                    if (callback) callback();
                 }
-            });
-            if (callback) callback();
+            }
         },
         *addExternal({ payload }, { call, put }) {
-            const { lectureId, callback, name, url } = payload;
-            yield delay(1200);
-            //call api with id, name, url, extra default = null, type = 'external'
-            yield put({
-                type: 'pushExternal',
-                payload: {
-                    _id: _.uniqueId('resource_external_'),
-                    name: name,
-                    extra: null,
-                    url: url
-                }
+            const { courseId, chapterId, lectureId, callback, name, url } = payload;
+            const response = yield call(courseServices.addResource, courseId, chapterId, lectureId, {
+                name,
+                url,
+                extra: '',
+                type: 'external'
             });
-            if (callback) callback();
+            if (response) {
+                yield put({
+                    type: 'pushExternal',
+                    payload: response.data
+                });
+                if (callback) callback();
+            }
         },
         *deleteResource({ payload }, { call, put }) {
             const { resourceId, type } = payload;

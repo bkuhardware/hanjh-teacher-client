@@ -247,3 +247,15 @@ export async function updateDescription(courseId, chapterId, lectureId, content)
 export async function fetchLectureDescription(courseId, chapterId, lectureId) {
     return apiGet(`${COURSE_API_URL}/${courseId}/${chapterId}/${lectureId}/description`);
 }
+
+export async function addResource(courseId, chapterId, lectureId, resource) {
+    return apiPost(`${COURSE_API_URL}/${courseId}/${chapterId}/${lectureId}/resources`, {
+        body: {
+            resource
+        }
+    });
+}
+
+export async function fetchLectureResources(courseId, chapterId, lectureId) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/${chapterId}/${lectureId}/resources`);
+}

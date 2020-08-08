@@ -454,6 +454,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         help: ''
     });
     //downloadable states
+    const [rawFile, setRawFile] = useState(null);
     const [file, setFile] = useState(null);
     const [fileList, setFileList] = useState([]);
     const [fileInfo, setFileInfo] = useState({
@@ -591,6 +592,8 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             type: 'video/addExternal',
             payload: {
                 lectureId,
+                courseId,
+                chapterId,
                 name: title.value,
                 url: url.value,
                 callback: () => resetExternal()
@@ -626,6 +629,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
         setErrorTimer(null);
     };
     const resetUpload = () => {
+        setRawFile(null);
         setFile(null);
         setFileList([]);
         setFileInfo({
@@ -653,6 +657,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             fileReader.readAsDataURL(file);
             const fileName = file.name;
             fileReader.onload = () => {
+                setRawFile(file);
                 const result = fileReader.result;
                 setFile(result);
                 setFileList(fileList);
@@ -675,14 +680,17 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                 extra = secondsToTime(playerRef.current.duration);
             }
         }
+        const formData = new FormData();
+        formData.append('resource', rawFile);
         dispatch({
             type: 'video/addDownloadable',
             payload: {
                 lectureId,
+                chapterId,
+                courseId,
                 name: fileInfo.name,
-                mimeType: fileInfo.mimeType,
                 extra: extra,
-                file: file,
+                formData,
                 callback: () => handleRemoveFile()
             }
         });
