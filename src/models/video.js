@@ -14,98 +14,62 @@ export default {
         resources: null
     },
     effects: {
-        *fetch({ payload }, { call, put }) {
-            const { courseId, lectureId } = payload;
-            yield delay(2000);
-            yield put({
-                type: 'saveInfo',
-                payload: {
-                    _id: lectureId,
-                    title: 'The Vue instance',
-                    createdAt: 1578813445900,
-                    updatedAt: 1578813445900,
-                    isPreviewed: false,
-                    isDownloadable: false,
-                    chapter: {
-                        _id: 1,
-                        title: 'ES6 Javscript'
-                    },
-                    owner: {
-                        _id: 2,
-                        name: 'Trong Luan',
-                        avatar: null
-                    },
-                    captions: [
-                        // {
-                        //     _id: 'caption_1',
-                        //     srcLang: 'en',
-                        //     label: 'English',
-                        //     src: testVtt
-                        // },
-                        // {
-                        //     _id: 'caption_3',
-                        //     srcLang: 'vi',
-                        //     label: 'Vietnamese',
-                        //     src: testVttvn
-                        // }
-                    ],
-                    resolutions: {
-                        720: {
-                            resolution: 720,
-                            src: 'http://media.w3.org/2010/05/bunny/movie.mp4'
-                        },
-                        480: {
-                            resolution: 480,
-                            src: 'http://www.peach.themazzone.com/durian/movies/sintel-1024-surround.mp4'
-                        },
-                        360 : {
-                            resolution: 360,
-                            src: 'http://media.w3.org/2010/05/bunny/movie.mp4'
-                        }
-                    },
-                    videoRes: 720
-                }
-            });
+        *fetchVideoLecture({ payload }, { call, put }) {
+            const { courseId, chapterId, lectureId } = payload;
+            const response = yield call(courseServices.fetchVideoLecture, courseId, chapterId, lectureId);
+            if (response) {
+                const result = response.data;
+                result.resolutions = _.keyBy(result.resolutions, 'resolution');
+                const videoRes = _.max(_.map(_.keys(result.resolutions), key => parseInt(key)));
+                result.videoRes = videoRes;
+                yield put({
+                    type: 'saveInfo',
+                    payload: result
+                });
+            }
         },
         *upload({ payload }, { call, put }) {
-            const {
-                lectureId,
-                name,
-                file,
-                saveProgress,
-                callback
-            } = payload;
-            saveProgress(38);
-            yield delay(2500);
-            //call cloud api to upload video, return url, this cloud api is different, only for video.
-            saveProgress(66);
-            //call api to update videoUrl for lecture.
-            yield delay(2200);
-            saveProgress(89);
-            yield put({
-                type: 'saveVideo',
-                payload: {
-                    videoRes: '1024p',
-                    resolutions: {
-                        1024: {
-                            resolution: 1024,
-                            src: file
-                        },
-                        720: {
-                            resolution: 720,
-                            src: 'http://media.w3.org/2010/05/bunny/movie.mp4'
-                        },
-                        480: {
-                            resolution: 480,
-                            src: 'http://www.peach.themazzone.com/durian/movies/sintel-1024-surround.mp4'
-                        }
-                    }
-                }
-                //resolution nữa.
-            });
-            saveProgress(100);
-            yield delay(1000); //delay for UI
-            if (callback) callback();    
+            // const {
+            //     lectureId,
+            //     chapterId,
+            //     courseId,
+            //     name,
+            //     formData,
+            //     saveProgress,
+            //     callback
+            // } = payload;
+            //
+            // saveProgress(38);
+            // yield delay(2500);
+            // //call cloud api to upload video, return url, this cloud api is different, only for video.
+            // saveProgress(66);
+            // //call api to update videoUrl for lecture.
+            // yield delay(2200);
+            // saveProgress(89);
+            // yield put({
+            //     type: 'saveVideo',
+            //     payload: {
+            //         videoRes: '1024p',
+            //         resolutions: {
+            //             1024: {
+            //                 resolution: 1024,
+            //                 src: file
+            //             },
+            //             720: {
+            //                 resolution: 720,
+            //                 src: 'http://media.w3.org/2010/05/bunny/movie.mp4'
+            //             },
+            //             480: {
+            //                 resolution: 480,
+            //                 src: 'http://www.peach.themazzone.com/durian/movies/sintel-1024-surround.mp4'
+            //             }
+            //         }
+            //     }
+            //     //resolution nữa.
+            // });
+            // saveProgress(100);
+            // yield delay(1000); //delay for UI
+            // if (callback) callback();
         },
         *delete({ payload: lectureId }, { call, put }) {
             //call api to delete
@@ -117,36 +81,42 @@ export default {
         },
         *addCaption({ payload }, { call, put }) {
             const {
+                courseId,
+                chapterId,
                 lectureId,
                 lang,
-                name,
-                file,
+                label,
+                formData,
                 callback
             } = payload;
-            //call cloud api for upload vtt file
-            yield delay(1340);
-            //call api for add caption to lecture use lectureId, url, lang.
-            yield delay(1100);
-            //then get return value is new caption object
-            yield put({
-                type: 'pushCaption',
-                payload: {
-                    _id: _.uniqueId('caption_'),
-                    srcLang: lang.key,
-                    label: lang.label,
-                    src: testVtt
+            let response = yield call(cloudServices.uploadCourseLectureVideoVtt, courseId, lectureId, formData);
+            if (response) {
+                const url = response.data.url;
+                response = yield call(courseServices.updateVideoLectureVtt, courseId, chapterId, lectureId, {
+                    lang, url, label
+                });
+                if (response) {
+                    const newVttData = response.data;
+                    yield put({
+                        type: 'pushCaption',
+                        payload: newVttData
+                    });
+                    if (callback) {
+                        callback();
+                    }
                 }
-            });
-            if (callback) callback();
+            }
         },
         *deleteCaption({ payload }, { call, put }) {
-            const { captionId, lectureId, callback } = payload;
-            yield delay(1500);
-            yield put({
-                type: 'removeCaption',
-                payload: captionId
-            });
-            if (callback) callback();
+            const { captionId, lectureId, courseId, chapterId, callback } = payload;
+            const response = yield call(courseServices.deleteCaptionVideoLecture, courseId, chapterId, lectureId, captionId);
+            if (response) {
+                yield put({
+                    type: 'removeCaption',
+                    payload: captionId
+                });
+                if (callback) callback();
+            }
         },
         *preview({ payload }, { call, put }) {
             const { lectureId, value, callback } = payload;
@@ -256,9 +226,16 @@ export default {
     },
     reducers: {
         saveInfo(state, { payload }) {
+            let uploadStatus;
+            if (_.isEmpty(payload.resolutions) || !payload.videoRes) {
+                uploadStatus = 'NOT_YET';
+            }
+            else {
+                uploadStatus = 'OK';
+            }
             return {
                 ...state,
-                info: { ...payload }
+                info: { ...payload, uploadStatus }
             };
         },
         saveVideo(state, { payload }) {
@@ -364,7 +341,28 @@ export default {
                 }
             };
         },
-        reset(state) {
+        updateVideoUploadStatus(state, { payload: value }) {
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    uploadStatus: value
+                }
+            };
+        },
+        saveResolutionsAfterUpload(state, { payload }) {
+            const { resolutions, videoRes } = payload;
+            return {
+                ...state,
+                info: {
+                    ...state.info,
+                    resolutions,
+                    videoRes
+                }
+            };
+        },
+        resetLecture() {
+            console.log('gdafdfafd');
             return {
                 info: null,
                 description: null,

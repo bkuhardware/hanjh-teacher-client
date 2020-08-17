@@ -259,3 +259,17 @@ export async function addResource(courseId, chapterId, lectureId, resource) {
 export async function fetchLectureResources(courseId, chapterId, lectureId) {
     return apiGet(`${COURSE_API_URL}/${courseId}/${chapterId}/${lectureId}/resources`);
 }
+
+export async function fetchVideoLecture(courseId, chapterId, lectureId) {
+    return apiGet(`${COURSE_API_URL}/${courseId}/${chapterId}/video/${lectureId}`);
+}
+
+export async function updateVideoLectureVtt(courseId, chapterId, lectureId, payload) {
+    return apiPost(`${COURSE_API_URL}/${courseId}/${chapterId}/video/${lectureId}/captions`, {
+        body: payload
+    });
+}
+
+export async function deleteCaptionVideoLecture(courseId, chapterId, lectureId, captionId) {
+    return apiDelete(`${COURSE_API_URL}/${courseId}/${chapterId}/video/${lectureId}/captions/${captionId}`);
+}

@@ -18,7 +18,9 @@ import styles from './default.less';
 
 const MenuItem = Menu.Item;
 
+
 const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelectCaption, onSelectResolution, ...props }) => {
+
     const divRef = useRef(null);
     const videoRef = useRef(null);
     const sliderRef = useRef(null);
@@ -105,7 +107,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
                         setBufferTime(buffer);
                         return;
                     }
-                } 
+                }
             };
             videoEle.oncanplay = () => {
                 setError({
@@ -120,7 +122,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
                         changing: false,
                         value: videoEle.currentTime
                     };
-                })
+                });
             }
             videoEle.onwaiting = () => setWaiting(true);
             videoEle.onplaying = () => setWaiting(false);
@@ -129,7 +131,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
             videoEle.onended = () => setPlayingStatus(2);
             videoEle.onerror = () => handleError('Sorry, there was an error');
             videoEle.onstalled = () => handleError('Sorry, the video is not available.');
-            videoEle.onabort = () => handleError('Sorry, the video is stoped downloading.');
+            videoEle.onabort = () => handleError('Sorry, the video stops downloading.');
             return () => {
                 videoEle.ondurationchange = null;
                 videoEle.onloadeddata = null;
@@ -147,7 +149,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
                 videoEle.onabort = null;
             };
         }
-    }, [baseHeight]);
+    }, []);
     useEffect(() => {
         const fullscreenFn = e => setFullScreen(!!document.fullscreenElement);
         const webkitFullScreenFn = e => setFullScreen(!!document.webkitFullscreenElement);
@@ -173,13 +175,13 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
             setPlaybackRate('1.0');
             setSrcObj(null);
         };
-    }, [resolutions, videoRes]);
+    }, [resolutions]);
     useEffect(() => {
         if (oldCurTime !== null) {
             setBufferTime(0);
             setSrcObj(resolutions[videoRes].src);
         }
-    }, [oldCurTime, resolutions, videoRes]);
+    }, [videoRes]);
     useEffect(() => {
         if (srcObj && oldCurTime  !== null) {
             const videoEle = videoRef.current;
@@ -190,7 +192,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
                 setOldCurTime(null);
             }
         }
-    }, [handleSelectRate, oldCurTime, playbackRate, playingStatus, srcObj]);
+    }, [srcObj]);
     const handleError = messageText => {
         setError({
             status: 1,
@@ -502,6 +504,7 @@ const Video = ({ videoRes, resolutions, baseWidth, baseHeight, captions, onSelec
                             e.preventDefault();
                             return false;
                         }}
+                        crossorigin="use-credentials"
                     >
                         {_.map(captions, captionItem => (
                             <track

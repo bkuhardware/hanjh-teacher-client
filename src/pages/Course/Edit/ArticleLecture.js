@@ -160,7 +160,7 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
             }
         });
         return () => dispatch({ type: 'article/reset' });
-    }, [courseId, lectureId]);
+    }, [courseId, chapterId, lectureId]);
     useEffect(() => {
         if (resources !== null) {
             setResourcesData({ ...resources });
@@ -170,8 +170,12 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         if (article) {
             const getLectureContentState = content => {
                 if (!content) return EditorState.createEmpty();
-                const contentState = convertFromRaw(content);
-                return EditorState.createWithContent(contentState);
+                const blocksFromHTML = convertFromHTML(content);
+                const lectureContent = ContentState.createFromBlockArray(
+                    blocksFromHTML.contentBlocks,
+                    blocksFromHTML.entityMap,
+                );
+                return EditorState.createWithContent(lectureContent);
             };
             setLectureContent(getLectureContentState(article.content));
         }
@@ -204,15 +208,16 @@ const ArticleLecture = ({ dispatch, match, ...props }) => {
         });
     };
     const handleSaveContent = () => {
-        const contentState = lectureContent.getCurrentContent();
-        const rawData = convertToRaw(contentState);
+        const html = exportToHTML(lectureContent);
+        // const contentState = lectureContent.getCurrentContent();
+        // const rawData = convertToRaw(contentState);
         dispatch({
             type: 'article/updateContent',
             payload: {
                 courseId,
                 chapterId,
                 lectureId,
-                content: rawData,
+                content: html,
                 callback: () => {
                     message.success('Your article is saved successfully!');
                     setSaveStatus(0);

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import fetch from 'dva/fetch';
 import { notification } from 'antd';
 import router from 'umi/router';
@@ -75,7 +76,7 @@ function checkErrorCode(response) {
  * @param  {object} [option] The options we want to pass to "fetch"
  * @return {object}           An object containing either "data" or "err"
  */
-export default async function request(url, options, contentType = 'application/json; charset=utf-8') {
+export default async function request(url, options) {
 	const defaultOptions = {
 		headers: {
 			'Access-Control-Allow-Credentials': false
@@ -91,7 +92,7 @@ export default async function request(url, options, contentType = 'application/j
 		if (!(newOptions.body instanceof FormData)) {
 			newOptions.headers = {
 				Accept: 'application/json',
-				'Content-Type': contentType,
+				'Content-Type': 'application/json; charset=utf-8',
 				...newOptions.headers,
 			};
 			newOptions.body = JSON.stringify(newOptions.body);
@@ -159,6 +160,20 @@ export async function apiDelete(url, options) {
   	return request(url, { method: 'DELETE', ...options });
 }
 
-export async function apiPostFormData(url, options) {
-	return request(url, { method: 'POST', ...options }, 'multipart/form-data')
+export function uploadCourseLectureVideo(courseId, chapterId, lectureId, { formData, setProgress, loadedCallback, errorCallback }) {
+	const xmlHttpRequest = new XMLHttpRequest();
+	const token = storage.getToken();
+
+	xmlHttpRequest.open('POST', `${CLOUD_API_URL}/upload/course/${courseId}/${chapterId}/${lectureId}/video`);
+	xmlHttpRequest.setRequestHeader('Access-Control-Allow-Credentials', false);
+	xmlHttpRequest.setRequestHeader('Authorization', `Bearer ${token}`);
+	xmlHttpRequest.setRequestHeader('Accept', 'application/json');
+	//xmlHttpRequest.setRequestHeader('Content-Type', 'multipart/form-data');
+	xmlHttpRequest.upload.addEventListener('progress', function (e) {
+		let percentComplete = (e.loaded / e.total) * 100;
+		setProgress(percentComplete);
+	});
+	xmlHttpRequest.onload = loadedCallback;
+	xmlHttpRequest.onerror = errorCallback;
+	xmlHttpRequest.send(formData);
 }

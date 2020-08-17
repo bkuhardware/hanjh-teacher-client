@@ -17,13 +17,15 @@ import { captionLanguages } from '@/config/constants';
 import { exportToHTML } from '@/utils/editor';
 import { bytesToSize, checkValidLink, secondsToTime } from '@/utils/utils';
 import styles from './VideoLecture.less';
+import { uploadCourseLectureVideo } from '@/utils/request';
+import io from 'socket.io-client';
 
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
 
-const Video = ({ videoRes, resolutions, captionsLoading, captions, onSelectResolution, onUpload, onDelete, onDeleteCaption, onUploadVtt }) => {
+const Video = ({ uploadStatus, videoRes, resolutions, captionsLoading, captions, onSelectResolution, onUpload, onDelete, onDeleteCaption, onUploadVtt }) => {
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -97,20 +99,13 @@ const Video = ({ videoRes, resolutions, captionsLoading, captions, onSelectResol
 
     const handleUploadFile = () => {
         setUploading(true);
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(file);
-        setProgress(5);
-        fileReader.onloadstart = () => setProgress(8);
-        fileReader.onprogress = () => setProgress(12);
-        fileReader.onload = () => {
-            const result = fileReader.result;
-            setProgress(20);
-            onUpload(fileName, result, val => setProgress(val), () => {
-                handleCancelChange();
-                setProgress(0);
-                setUploading(false);
-            });
-        }
+        const formData = new FormData();
+        formData.append('video', file);
+        onUpload(fileName, formData, val => setProgress(val), () => {
+            handleCancelChange();
+            setProgress(0);
+            setUploading(false);
+        });
     };
     
     const uploadProps = {
@@ -132,16 +127,10 @@ const Video = ({ videoRes, resolutions, captionsLoading, captions, onSelectResol
     const handleUploadVttFile = () => {
         if (newLang) {
             setVttUploading(true);
-            const fileReader = new FileReader();
-            fileReader.readAsDataURL(vttFile);
-            fileReader.onload = () => {
-                const result = fileReader.result;
-                console.log(newLang);
-                onUploadVtt(newLang, vttFileName, result, () => {
-                    handleCancelAddCaption();
-                    setVttUploading(false);
-                })
-            }
+            onUploadVtt(newLang, vttFile, () => {
+                handleCancelAddCaption();
+                setVttUploading(false);
+            })
         }
         else {
             message.error('Please select language.');
@@ -172,7 +161,7 @@ const Video = ({ videoRes, resolutions, captionsLoading, captions, onSelectResol
             </span>
         </span>
     ) : (
-        <Upload {...uploadProps}>
+        <Upload {...uploadProps} disabled={uploadStatus === 'PENDING'}>
             <span className={styles.suffix}>
                 <Icon type="upload" />
             </span>
@@ -200,10 +189,10 @@ const Video = ({ videoRes, resolutions, captionsLoading, captions, onSelectResol
     );
     return(
         <div className={styles.uploadVideoContainer}>
-            {(!videoRes || _.isEmpty(resolutions) || editing) && (
+            {(uploadStatus === 'NOT_YET' || uploadStatus === 'PENDING' || !videoRes || _.isEmpty(resolutions) || editing) && (
                 <Fade duration={700}>
                     <>
-                        {(!videoRes || _.isEmpty(resolutions)) && (
+                        {(uploadStatus === 'NOT_YET' || uploadStatus === 'PENDING' || !videoRes || _.isEmpty(resolutions)) && (
                             <div className={styles.empty}>
                                 <span className={styles.icon}>
                                     <CloseCircleFilled />
@@ -234,6 +223,7 @@ const Video = ({ videoRes, resolutions, captionsLoading, captions, onSelectResol
                                             {addOnAfter}
                                         </span>
                                     )}
+                                    disabled={uploadStatus === 'PENDING'}
                                 />
                                 <div
                                     className={styles.progressBar}
@@ -340,6 +330,11 @@ const Video = ({ videoRes, resolutions, captionsLoading, captions, onSelectResol
                     </div>
                 </Fade>
             )}
+            {uploadStatus === 'PENDING' && (
+                <div className={styles.pendingLoading} style={{ padding: '80px 0', textAlign: 'center' }}>
+                    <Spin spinning  tip="Processing video..." />
+                </div>
+            )}
             {videoRes && !_.isEmpty(resolutions) && (
                 <div className={styles.videoPlayer}>
                     <div className={styles.btns}>
@@ -352,13 +347,13 @@ const Video = ({ videoRes, resolutions, captionsLoading, captions, onSelectResol
                                     </Button>
                                 </span>
                                 <span className={styles.btn}>
-                                    <Button onClick={handleChange}>
+                                    <Button onClick={handleChange} disabled>
                                         <EditFilled />
                                         Change video
                                     </Button>
                                 </span>
                                 <span className={styles.btn}>
-                                    <Button onClick={handleDelete}>
+                                    <Button onClick={handleDelete} disabled>
                                         <DeleteFilled />
                                         Delete video
                                     </Button>
@@ -419,6 +414,7 @@ const Description = ({ description, loading, onSave }) => {
 const VideoLecture = ({ dispatch, match, ...props }) => {
     const { courseId, lectureId, chapterId } = match.params;
     const {
+        userId,
         video,
         description,
         resources,
@@ -464,30 +460,61 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
     });
     useEffect(() => {
         dispatch({
-            type: 'video/fetch',
+            type: 'video/fetchVideoLecture',
             payload: {
                 courseId,
+                chapterId,
                 lectureId
             }
         });
-        return () => dispatch({ type: 'video/reset '});
-    }, [courseId, dispatch, lectureId]);
+        return () => dispatch({ type: 'video/resetLecture' });
+    }, [courseId, chapterId, lectureId]);
     useEffect(() => {
         if (resources !== null) {
             setResourcesData({ ...resources });
         }
     }, [resources]);
-    const handleUploadVideo = (name, file, saveProgress, callback) => {
-        dispatch({
-            type: 'video/upload',
-            payload: {
-                lectureId,
-                name,
-                file,
-                saveProgress,
-                callback
-            }
+    const handleUploadVideo = (name, formData, saveProgress, callback) => {
+        const newSocket = io(`https://localhost:3443/chapter?userId=${userId}&lectureId=${lectureId}`);
+        newSocket.on('connect', () => {
+            console.log('Connect socket successfully!');
         });
+        newSocket.on('disconnect', () => {
+            console.log('Disconnect socket!');
+        });
+        newSocket.on('uploadOk', handleUploadOK(newSocket));
+        uploadCourseLectureVideo(courseId, chapterId, lectureId, {
+            formData,
+            setProgress: saveProgress,
+            loadedCallback: () => {
+                callback();
+                dispatch({
+                    type: 'video/updateVideoUploadStatus',
+                    payload: 'PENDING'
+                });
+                //TODO: Connect socket.
+            },
+            errorCallback: (e) => console.log(e.message)
+        });
+    };
+    const handleUploadOK = (socket) => {
+        return (resolutions) => {
+            if (socket) {
+                socket.emit('close', { userId, lectureId });
+            }
+            const videoRes = _.max(_.map(_.keys(resolutions), key => parseInt(key)));
+            dispatch({
+                type: 'video/saveResolutionsAfterUpload',
+                payload: {
+                    resolutions,
+                    videoRes
+                }
+            });
+            dispatch({
+                type: 'video/updateVideoUploadStatus',
+                payload: 'OK'
+            });
+        }
     };
     const handleDeleteVideo = () => {
         return dispatch({
@@ -495,14 +522,18 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             payload: lectureId
         });
     };
-    const handleUploadCaption = (lang, name, file, callback) => {
+    const handleUploadCaption = (lang, file, callback) => {
+        const formData = new FormData();
+        formData.append('caption', file);
         dispatch({
             type: 'video/addCaption',
             payload: {
                 lectureId,
-                lang,
-                name, 
-                file,
+                chapterId,
+                courseId,
+                lang: lang.key,
+                label: lang.label,
+                formData,
                 callback
             }
         });
@@ -512,6 +543,8 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             type: 'video/deleteCaption',
             payload: {
                 captionId,
+                courseId,
+                chapterId,
                 lectureId,
                 callback: () => message.success('Deleted caption successfully!')
             }
@@ -932,6 +965,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                         ) : (
                             <Fade duration={500}>
                                 <Video
+                                    uploadStatus={video.uploadStatus}
                                     resolutions={video.resolutions}
                                     videoRes={video.videoRes}
                                     captionsLoading={captionsLoading}
@@ -1141,7 +1175,8 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
 };
 
 export default connect(
-    ({ video, loading }) => ({
+    ({ user, video, loading }) => ({
+        userId: user._id,
         video: video.info,
         description: video.description,
         resources: video.resources,
