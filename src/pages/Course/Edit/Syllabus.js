@@ -51,13 +51,11 @@ const StaticLecture = ({ lecture, currentUser, onEditLecture, onDeleteLecture })
             <List.Item.Meta
                 avatar={(
                     <Avatar
-                        size={16}
+                        size={24}
                         icon={lecture.type === 'Video' ? <YoutubeFilled /> : <ReadOutlined />}
                         style={{
                             background: lecture.type === 1 ? "white" : '#fada5e',
-                            color: 'black',
-                            position: 'relative',
-                            top: '3px'
+                            color: 'black'
                         }}
                     />
                 )}

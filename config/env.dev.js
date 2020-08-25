@@ -8,6 +8,7 @@ module.exports = {
     QUESTION_API_URL: 'https://localhost:3443/api/questions',
     ANNOUNCE_API_URL: 'https://localhost:3443/api/announcements',
     CLOUD_API_URL: 'https://localhost:3443/api/cloud',
+    TOPIC_API_URL: 'https://localhost:3443/api/topics',
     FIREBASE: {
         apiKey: "AIzaSyCy0-aVl3F5qXjnG6TrxyVc6TW7G58SQBU",
         authDomain: "huyefen-2102.firebaseapp.com",

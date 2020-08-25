@@ -160,11 +160,11 @@ export async function apiDelete(url, options) {
   	return request(url, { method: 'DELETE', ...options });
 }
 
-export function uploadCourseLectureVideo(courseId, chapterId, lectureId, { formData, setProgress, loadedCallback, errorCallback }) {
+export function uploadCourseLectureVideo(courseId, chapterId, lectureId, duration, { formData, setProgress, loadedCallback, errorCallback }) {
 	const xmlHttpRequest = new XMLHttpRequest();
 	const token = storage.getToken();
 
-	xmlHttpRequest.open('POST', `${CLOUD_API_URL}/upload/course/${courseId}/${chapterId}/${lectureId}/video`);
+	xmlHttpRequest.open('POST', `${CLOUD_API_URL}/upload/course/${courseId}/${chapterId}/${lectureId}/video?duration=${duration}`);
 	xmlHttpRequest.setRequestHeader('Access-Control-Allow-Credentials', false);
 	xmlHttpRequest.setRequestHeader('Authorization', `Bearer ${token}`);
 	xmlHttpRequest.setRequestHeader('Accept', 'application/json');

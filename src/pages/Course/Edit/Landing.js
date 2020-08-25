@@ -14,6 +14,7 @@ import { b64toBlob } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
+const { Option: AutoCompleteOption } = AutoComplete;
 
 const Landing = ({ form, match, dispatch, ...props }) => {
     const cropper = useRef();
@@ -38,7 +39,9 @@ const Landing = ({ form, match, dispatch, ...props }) => {
         landing,
         loading,
         basicLoading,
-        avatarLoading
+        avatarLoading,
+        searchedTopics,
+        isSearchingTopics
     } = props;
     const previousLanding = usePrevious(landing);
     useEffect(() => {
@@ -174,6 +177,30 @@ const Landing = ({ form, match, dispatch, ...props }) => {
             showRemoveIcon: true
         }
     };
+    const debouncedSearchTopics = _.debounce((searchText) => {
+        dispatch({
+            type: 'search/searchTopics',
+            payload: searchText
+        })
+    }, 400);
+    const handleSearchTopics = (searchText) => {
+        if (searchText === '') {
+            dispatch({
+                type: 'search/resetSearchTopics'
+            });
+        }
+        debouncedSearchTopics(searchText);
+    }
+    const handleSelectTopic = (topicId, option) => {
+        setTopics(oldList => [...oldList, option.props.topic]);
+    }
+    const suggestTopicOptions = _.map(searchedTopics, topic => {
+        return (
+            <AutoCompleteOption key={topic._id} value={topic._id} topic={topic}>
+                {topic.title}
+            </AutoCompleteOption>
+        )
+    });
     return (
         <div className={styles.landing}>
             <div className={styles.content}>
@@ -352,11 +379,12 @@ const Landing = ({ form, match, dispatch, ...props }) => {
                                 placeholder="Topics"
                                 dropdownMatchSelectWidth={false}
                                 className={styles.topicsAutoComplete}
-                                dataSource={dataSource}
-                                onSearch={searchText => setDataSource(!searchText ? [] : [searchText, searchText.repeat(2), searchText.repeat(3)])}
+                                dataSource={suggestTopicOptions}
+                                onSearch={handleSearchTopics}
+                                onSelect={handleSelectTopic}
                                 disabled={!landing || loading}
                             >
-                                <Input suffix={!landing || loading ? <Icon type="loading" /> : <Icon type="search" />} />
+                                <Input suffix={isSearchingTopics ? <Icon type="loading" /> : <Icon type="search" />} />
                             </AutoComplete>
                             <div className={styles.topicsList}>
                                 {landing && !loading ? (
@@ -485,11 +513,13 @@ const Landing = ({ form, match, dispatch, ...props }) => {
 };
 
 export default Form.create()(connect(
-    ({ settings, course, loading }) => ({
+    ({ settings, search, course, loading }) => ({
         areasMenu: settings.areasMenu,
         landing: course.landing,
         loading: !!loading.effects['course/fetchLanding'],
         basicLoading: !!loading.effects['course/changeBasicInfo'],
-        avatarLoading: !!loading.effects['course/changeAvatar']
+        avatarLoading: !!loading.effects['course/changeAvatar'],
+        searchedTopics: search.topics,
+        isSearchingTopics: !!loading.effects['search/searchTopics']
     })
 )(Landing));

@@ -14,8 +14,6 @@ export default {
     },
     effects: {
         *fetch(action, { call, put }) {
-            yield delay(1500);
-            //call api with sort newest, page = 1.
             const response = yield call(courseService.fetch, 'newest');
             if (response) {
                 const { total, list } = response.data;
@@ -48,16 +46,19 @@ export default {
         },
         *page({ payload: pageVal }, { call, put, select }) {
             const { sortBy } = yield select(state => state.courses);
-            yield delay(1500);
-            yield put({
-                type: 'save',
-                payload: {
-                    currentPage: pageVal,
-                    total: 20,
-                    sortBy,
-                    list: _.shuffle(COURSES)
-                }
-            })
+            const response = yield call(courseService.fetch, sortBy, pageVal);
+            if (response) {
+                const { total, list } = response.data;
+                yield put({
+                    type: 'save',
+                    payload: {
+                        total,
+                        list,
+                        sortBy,
+                        currentPage: pageVal
+                    }
+                });
+            }
         },
         *create({ payload }, { call, put }) {
             const { title, area, callback } = payload;

@@ -42,6 +42,7 @@ const Video = ({ uploadStatus, videoRes, resolutions, captionsLoading, captions,
         setFile(null);
         setFileName(null);
     };
+    const [duration, setDuration] = useState(0);
     const handleChange = () => setEditing(true);
     const handleDelete = () => {
         Modal.confirm({
@@ -89,6 +90,14 @@ const Video = ({ uploadStatus, videoRes, resolutions, captionsLoading, captions,
         if (fileSize > 4294967296) message.error('Your video is too big.');
         else if (fileType !== 'video/mp4') message.error('Only support .mp4 video! Please replace with .mp4 video.');
         else {
+            const video = document.createElement('video');
+            const fileURL = URL.createObjectURL(file);
+            video.src = fileURL;
+            // wait for duration to change from NaN to the actual duration
+            video.ondurationchange = function() {
+                console.log(this.duration);
+                setDuration(this.duration);
+            }
             setFile(file);
             setFileName(file.name);
         }
@@ -101,10 +110,11 @@ const Video = ({ uploadStatus, videoRes, resolutions, captionsLoading, captions,
         setUploading(true);
         const formData = new FormData();
         formData.append('video', file);
-        onUpload(fileName, formData, val => setProgress(val), () => {
+        onUpload(fileName, formData, duration, val => setProgress(val), () => {
             handleCancelChange();
             setProgress(0);
             setUploading(false);
+            setDuration(0);
         });
     };
     
@@ -474,7 +484,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             setResourcesData({ ...resources });
         }
     }, [resources]);
-    const handleUploadVideo = (name, formData, saveProgress, callback) => {
+    const handleUploadVideo = (name, formData, duration, saveProgress, callback) => {
         const newSocket = io(`https://localhost:3443/chapter?userId=${userId}&lectureId=${lectureId}`);
         newSocket.on('connect', () => {
             console.log('Connect socket successfully!');
@@ -483,7 +493,7 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
             console.log('Disconnect socket!');
         });
         newSocket.on('uploadOk', handleUploadOK(newSocket));
-        uploadCourseLectureVideo(courseId, chapterId, lectureId, {
+        uploadCourseLectureVideo(courseId, chapterId, lectureId, duration, {
             formData,
             setProgress: saveProgress,
             loadedCallback: () => {
@@ -492,7 +502,6 @@ const VideoLecture = ({ dispatch, match, ...props }) => {
                     type: 'video/updateVideoUploadStatus',
                     payload: 'PENDING'
                 });
-                //TODO: Connect socket.
             },
             errorCallback: (e) => console.log(e.message)
         });
